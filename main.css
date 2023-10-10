@@ -1,0 +1,143 @@
+/* START GLOBAL STYLES */
+body,
+html {
+  margin: 0;
+}
+
+h1 {
+}
+h2 {
+}
+h3 {
+}
+h4 {
+}
+
+a {
+}
+/* END GLOBAL STYLES */
+
+#page-container {
+  /* Your styles for #page-container here */
+  border: 1px solid green;
+}
+
+/* START SUMMARY CONTAINER */
+
+#summary-container {
+  /* Your styles for #summary-container here */
+  border: 1px solid red;
+}
+
+#democrat-summary {
+  /* Your styles for #democrat-summary here */
+  border: 1px solid blue;
+
+}
+
+#republican-summary {
+  /* Your styles for #republican-summary here */
+  border: 1px solid blue;
+
+}
+
+/* END SUMMARY CONTAINER */
+
+/* START FILTER CONTAINER */
+
+#filter-container {
+  /* Your styles for #filter-container here */
+  border: 1px solid yellow;
+}
+
+#filter-container #party-filter {
+  /* Your styles for #party here */
+}
+
+#filter-container #state-filter {
+  /* Your styles for #state here */
+}
+
+#filter-container #rank-filter {
+  /* Your styles for #rank here */
+}
+
+/* END FILTER CONTAINER */
+
+/* START FILTER PREVIEW CONTAINER */
+
+#filter-preview-container {
+  /* Your styles for #filter-preview-container here */
+  border: 1px solid purple;
+
+}
+
+#filter-preview-container .filter {
+  /* Your styles for .filter here */
+}
+
+/* END FILTER PREVIEW CONTAINER */
+
+/* START CARDS */
+
+#cards-container {
+  /* Your styles for #cards-container here */
+  border: 1px solid orange;
+
+}
+
+#democrat-cards {
+  /* Your styles for #democrat-cards here */
+}
+
+#republican-cards {
+  /* Your styles for #republican-cards here */
+}
+
+#independent-cards {
+  /* Your styles for #independent-cards here */
+}
+
+.card {
+  /* Your styles for .card here */
+  border: 1px solid pink;
+}
+
+.card .name {
+  /* Your styles for .name here */
+}
+
+.card .party {
+  /* Your styles for .party here */
+}
+
+.card .state {
+  /* Your styles for .state here */
+}
+
+.card .gender {
+  /* Your styles for .gender here */
+}
+
+.card .rank {
+  /* Your styles for .rank here */
+}
+
+/* END CARDS */
+
+/* START SENATOR POPUP */
+
+#senator-container {
+  /* Your styles for #senator-container here */
+  display: none;
+}
+
+a#twitter {
+  /* Your styles for #twitter here */
+}
+
+a#youtube {
+  /* Your styles for #youtube here */
+}
+
+/* END SENATOR POPUP */
