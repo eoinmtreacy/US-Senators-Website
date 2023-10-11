@@ -52,7 +52,6 @@ class FilterOptions {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const FILTER_LIST = filter();
   const FILTER_OPTIONS = loadFilterOptions();
 
   // TODO: this variable is not actually being used anywhere;
@@ -60,6 +59,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   // currentFilter.addFilter()/removeFilter()
   const currentFilter = new FilterOptions();
 
+  /** DEMO PURPOSE ONLY BELOW **/
+  let filteredList = filter(currentFilter);
+  console.log(filteredList); // filter is empty, should return all senators
+  currentFilter.addFilter("gender", "Female");
+  filteredList = filter(currentFilter);
+  console.log(filteredList); // Should only contain female senators
+  /** END DEMO SECTION */
 });
 
 function loadFilterOptions() {
@@ -82,14 +88,18 @@ function loadFilterOptions() {
 
 // Function which takes in a FilterOptions object and returns a filtered
 // array of senators filtered down based on the filters passed.
-export function filter(filterOptionsObj) {
+function filter(filterOptionsObj) {
   let output = [];
   senators.objects.forEach((senator) => {
     if (
-      filterOptionsObj.rank.has(senator.senator_rank) ||
-      filterOptionsObj.gender.has(senator.person.gender_label) ||
-      filterOptionsObj.state.has(senator.state) ||
-      filterOptionsObj.party.has(senator.party)
+      (filterOptionsObj.rank.has(senator.senator_rank) ||
+        !filterOptionsObj.rank.size) &&
+      (filterOptionsObj.gender.has(senator.person.gender_label) ||
+        !filterOptionsObj.gender.size) &&
+      (filterOptionsObj.state.has(senator.state) ||
+        !filterOptionsObj.state.size) &&
+      (filterOptionsObj.party.has(senator.party) ||
+        !filterOptionsObj.party.size)
     ) {
       let item = new Object();
       item.id = senator.person.bioguideid;
