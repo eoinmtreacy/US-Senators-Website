@@ -68,11 +68,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   /** DEMO PURPOSE ONLY BELOW **/
   let filteredList = filter(currentFilter);
-  console.log(filteredList); // filter is empty, should return all senators
-  currentFilter.addFilter("gender", "Female");
-  filteredList = filter(currentFilter);
-  console.log(filteredList); // Should only contain female senators
-  /** END DEMO SECTION */
+  drawHtml(filteredList)
+  // console.log(filteredList); // filter is empty, should return all senators
+  // currentFilter.addFilter("gender", "Female");
+  // filteredList = filter(currentFilter);
+  // console.log(filteredList); // Should only contain female senators
+  // /** END DEMO SECTION */
 });
 
 function loadFilterOptions() {
@@ -160,3 +161,27 @@ function drawFilters(filterOptions) {
 function capitalizeFirstLetter(str) {
   return str[0].toUpperCase() + str.slice(1);
 }
+
+// draw HTML elements
+
+function drawHtml (senators)
+{
+
+  senators.forEach(s =>
+    {
+      let child = document.createElement("div")
+      child.setAttribute("id", s.id)
+      document.getElementById(s.id).innerHTML = 
+        `<span>${s.firstname} ${s.secondname}</span>
+        <span>${s.party}</span>
+        <span>${s.state}</span>
+        <span>${s.gender}</span>
+        <span>${s.rank}</span>` 
+      document.getElementById("senator-container").append(child)
+    })
+}
+
+// document.createElement('div')
+// []
+// // document.getElementById("senator-container").append(...[])
+
