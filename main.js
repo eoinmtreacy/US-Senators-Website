@@ -166,22 +166,20 @@ function capitalizeFirstLetter(str) {
 
 function drawHtml (senators)
 {
-
   senators.forEach(s =>
     {
       let child = document.createElement("div")
       child.setAttribute("id", s.id)
-      document.getElementById(s.id).innerHTML = 
-        `<span>${s.firstname} ${s.secondname}</span>
-        <span>${s.party}</span>
-        <span>${s.state}</span>
-        <span>${s.gender}</span>
-        <span>${s.rank}</span>` 
-      document.getElementById("senator-container").append(child)
-    })
+      child.innerHTML = `
+      <span>${s.firstname} 
+      ${s.secondname}</span>
+      <span>${s.party}</span>
+      <span>${s.state}</span>
+      <span>${s.gender}</span>
+      <span>${s.rank}</span>
+      `
+      document.getElementById("senator-container").appendChild(child)
+    }
+  )
 }
-
-// document.createElement('div')
-// []
-// // document.getElementById("senator-container").append(...[])
 
