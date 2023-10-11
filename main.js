@@ -116,6 +116,12 @@ function filter(filterOptionsObj) {
       item.state = senator.state;
       item.rank = senator.senator_rank;
       item.gender = senator.person.gender_label;
+      item.office = senator.extra.office
+      item.dob = senator.person.birthday
+      item.startdate = senator.startdate
+      item.twitter = senator.person.twitterid
+      item.youtube = senator.person.youtubeid
+      item.website = senator.website
       output.push(item);
     }
   });
@@ -153,30 +159,4 @@ function drawFilters(filterOptions) {
 // Utility functions
 function capitalizeFirstLetter(str) {
   return str[0].toUpperCase() + str.slice(1);
-}
-
-function draw()
-{
-  let output = []
-  senators.objects.forEach(senator =>
-    {
-      let item = new Object()
-      item.id = senator.person.bioguideid
-      item.party = senator.party
-      item.state = senator.state
-      item.rank = senator.senator_rank
-      item.gender = senator.person.gender
-      item.firstname = senator.person.firstname
-      item.lastname = senator.person.lastname
-      item.office = senator.extra.office
-      item.dob = senator.person.birthday
-      item.startdate = senator.startdate
-      item.twitter = senator.person.twitterid
-      item.youtube = senator.person.youtubeid
-      item.website = senator.website
-    
-      output.push(item)
-    })
-
-    return output
 }
