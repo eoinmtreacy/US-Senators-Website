@@ -173,5 +173,8 @@ function drawSummary(senators)
       } else ind.push(s)
     })
 
-  console.log(rep.length, dem.length, ind.length)
+  rep.forEach(r =>
+    {
+      console.log(r)
+    })
 }
