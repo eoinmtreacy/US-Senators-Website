@@ -1,5 +1,11 @@
 import senators from "./data/senators.js";
 
+// GLOBAL VARIABLES
+const PARTY = "party";
+const STATE = "state";
+const RANK = "rank";
+const GENDER = "gender";
+
 // Class which represents the selected filters
 // For each filter type (eg: rank), contains a set of the selected values (eg: "Junior", "Senior")
 class FilterOptions {
@@ -53,6 +59,7 @@ class FilterOptions {
 
 document.addEventListener("DOMContentLoaded", async () => {
   const FILTER_OPTIONS = loadFilterOptions();
+  drawFilters(FILTER_OPTIONS);
 
   // TODO: this variable is not actually being used anywhere;
   // When we do start adding/removing filters, we can call
@@ -70,17 +77,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function loadFilterOptions() {
   var filterOptions = {
-    party: new Set(),
-    state: new Set(),
-    rank: new Set(),
-    gender: new Set(),
+    [PARTY]: new Set(),
+    [STATE]: new Set(),
+    [RANK]: new Set(),
+    [GENDER]: new Set(),
   };
 
   senators.objects.forEach((senator) => {
-    filterOptions["party"].add(senator.party);
-    filterOptions["state"].add(senator.state);
-    filterOptions["rank"].add(senator.senator_rank);
-    filterOptions["gender"].add(senator.person.gender);
+    filterOptions[PARTY].add(senator.party);
+    filterOptions[STATE].add(senator.state);
+    filterOptions[RANK].add(senator.senator_rank);
+    filterOptions[GENDER].add(senator.person.gender);
   });
 
   return filterOptions;
@@ -113,4 +120,37 @@ function filter(filterOptionsObj) {
     }
   });
   return output;
+}
+
+function drawFilters(filterOptions) {
+  let filterContainer = document.getElementById("filter-container");
+  Object.entries(filterOptions).forEach(([key, val]) => {
+    let filterId = key;
+    let filterOptions = val;
+
+    // Create a label
+    let filterLabelEl = document.createElement("label");
+    filterLabelEl.setAttribute("for", filterId);
+    filterLabelEl.innerText = capitalizeFirstLetter(filterId);
+
+    // Create select
+    let selectEl = document.createElement("select", { multiple: true });
+
+    // Create options
+    Array.from(filterOptions)
+      .sort()
+      .forEach((option) => {
+        let optionEl = document.createElement("option", { value: option });
+        optionEl.innerText = option;
+        selectEl.appendChild(optionEl);
+      });
+
+    filterContainer.appendChild(filterLabelEl);
+    filterContainer.appendChild(selectEl);
+  });
+}
+
+// Utility functions
+function capitalizeFirstLetter(str) {
+  return str[0].toUpperCase() + str.slice(1);
 }
