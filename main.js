@@ -1,5 +1,7 @@
 import senators from "./data/senators.js";
 
+// Class which represents the selected filters
+// For each filter type (eg: rank), contains a set of the selected values (eg: "Junior", "Senior")
 class FilterOptions {
   constructor() {
     this.rank = new Set();
@@ -8,6 +10,7 @@ class FilterOptions {
     this.party = new Set();
   }
 
+  // When a user selects a new filter, we call this to update our stored filter values
   addFilter(type, value) {
     switch (type) {
       case "rank":
@@ -27,6 +30,7 @@ class FilterOptions {
     }
   }
 
+  // When a user unselects a filter, we call this to update our stored filter values
   removeFilter(type, value) {
     switch (type) {
       case "rank":
@@ -50,6 +54,10 @@ class FilterOptions {
 document.addEventListener("DOMContentLoaded", async () => {
   const FILTER_LIST = filter();
   const FILTER_OPTIONS = loadFilterOptions();
+
+  // TODO: this variable is not actually being used anywhere;
+  // When we do start adding/removing filters, we can call
+  // currentFilter.addFilter()/removeFilter()
   const currentFilter = new FilterOptions();
 
 });
@@ -72,6 +80,8 @@ function loadFilterOptions() {
   return filterOptions;
 }
 
+// Function which takes in a FilterOptions object and returns a filtered
+// array of senators filtered down based on the filters passed.
 export function filter(filterOptionsObj) {
   let output = [];
   senators.objects.forEach((senator) => {
