@@ -16,6 +16,21 @@ class FilterOptions {
     this.party = new Set();
   }
 
+  hasFilter(type, value) {
+    switch (type) {
+      case "rank":
+        return this.rank.has(value);
+      case "gender":
+        return this.gender.has(value);
+      case "party":
+        return this.party.has(value);
+      case "state":
+        return this.state.has(value);
+      default:
+        return;
+    }
+  }
+
   // When a user selects a new filter, we call this to update our stored filter values
   addFilter(type, value) {
     switch (type) {
@@ -57,14 +72,10 @@ class FilterOptions {
   }
 }
 
+const currentFilter = new FilterOptions();
 document.addEventListener("DOMContentLoaded", async () => {
   const FILTER_OPTIONS = loadFilterOptions();
   drawFilters(FILTER_OPTIONS);
-
-  // TODO: this variable is not actually being used anywhere;
-  // When we do start adding/removing filters, we can call
-  // currentFilter.addFilter()/removeFilter()
-  const currentFilter = new FilterOptions();
 
   /** DEMO PURPOSE ONLY BELOW **/
   let filteredList = filter(currentFilter);
@@ -91,6 +102,17 @@ function loadFilterOptions() {
   });
 
   return filterOptions;
+}
+
+function handleFilterSelected(e, id) {
+  let value = e.target.value;
+  if (currentFilter.hasFilter(id, value)) {
+    currentFilter.addFilter(id, value);
+  } else {
+    currentFilter.removeFilter(id, value);
+  }
+
+  applyFilterToSenatorElements(currentFilter);
 }
 
 // Function which takes in a FilterOptions object and returns a filtered
@@ -124,8 +146,8 @@ function filter(filterOptionsObj) {
 
 function applyFilterToSenatorElements(filterOptions) {
   let senatorsToShow = filter(filterOptions);
-  let senatorIds = senatorsToShow.map(s => s.id);
-  for (let senator of senators) {
+  let senatorIds = senatorsToShow.map((s) => s.id);
+  for (let senator of senators.objects) {
     let senatorEl = document.getElementById(senator.id);
     senatorEl.hidden = !senatorIds.includes(senator.id);
   }
@@ -144,6 +166,8 @@ function drawFilters(filterOptions) {
 
     // Create select
     let selectEl = document.createElement("select", { multiple: true });
+    selectEl.multiple = true;
+    selectEl.onchange = (e) => handleFilterSelected(e, filterId);
 
     // Create options
     Array.from(filterOptions)
