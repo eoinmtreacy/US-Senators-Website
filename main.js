@@ -79,11 +79,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   /** DEMO PURPOSE ONLY BELOW **/
   let filteredList = filter(currentFilter);
-  console.log(filteredList); // filter is empty, should return all senators
-  currentFilter.addFilter("gender", "Female");
-  filteredList = filter(currentFilter);
-  console.log(filteredList); // Should only contain female senators
-  /** END DEMO SECTION */
+  drawHtml(filteredList)
+  // console.log(filteredList); // filter is empty, should return all senators
+  // currentFilter.addFilter("gender", "Female");
+  // filteredList = filter(currentFilter);
+  // console.log(filteredList); // Should only contain female senators
+  // /** END DEMO SECTION */
 });
 
 function loadFilterOptions() {
@@ -138,6 +139,12 @@ function filter(filterOptionsObj) {
       item.state = senator.state;
       item.rank = senator.senator_rank;
       item.gender = senator.person.gender_label;
+      item.office = senator.extra.office
+      item.dob = senator.person.birthday
+      item.startdate = senator.startdate
+      item.twitter = senator.person.twitterid
+      item.youtube = senator.person.youtubeid
+      item.website = senator.website
       output.push(item);
     }
   });
@@ -187,3 +194,25 @@ function drawFilters(filterOptions) {
 function capitalizeFirstLetter(str) {
   return str[0].toUpperCase() + str.slice(1);
 }
+
+// draw HTML elements
+
+function drawHtml (senators)
+{
+  senators.forEach(s =>
+    {
+      let child = document.createElement("div")
+      child.setAttribute("id", s.id)
+      child.innerHTML = `
+      <span>${s.firstname}</span>
+      <span>${s.secondname}</span>
+      <span>${s.party}</span>
+      <span>${s.state}</span>
+      <span>${s.gender}</span>
+      <span>${s.rank}</span>
+      `
+      document.getElementById("senator-container").appendChild(child)
+    }
+  )
+}
+
