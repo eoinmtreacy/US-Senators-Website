@@ -122,6 +122,15 @@ function filter(filterOptionsObj) {
   return output;
 }
 
+function applyFilterToSenatorElements(filterOptions) {
+  let senatorsToShow = filter(filterOptions);
+  let senatorIds = senatorsToShow.map(s => s.id);
+  for (let senator of senators) {
+    let senatorEl = document.getElementById(senator.id);
+    senatorEl.hidden = !senatorIds.includes(senator.id);
+  }
+}
+
 function drawFilters(filterOptions) {
   let filterContainer = document.getElementById("filter-container");
   Object.entries(filterOptions).forEach(([key, val]) => {
