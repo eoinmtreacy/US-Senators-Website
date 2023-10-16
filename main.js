@@ -171,8 +171,8 @@ function drawHtml (senators)
       let child = document.createElement("div")
       child.setAttribute("id", s.id)
       child.innerHTML = `
-      <span>${s.firstname} 
-      ${s.secondname}</span>
+      <span>${s.firstname}</span>
+      <span>${s.secondname}</span>
       <span>${s.party}</span>
       <span>${s.state}</span>
       <span>${s.gender}</span>
