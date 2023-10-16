@@ -166,20 +166,43 @@ function capitalizeFirstLetter(str) {
 
 function drawHtml (senators)
 {
-  senators.forEach(s =>
+
+  const dem = []
+  const rep = []
+  const ind = []
+
+  senators.forEach(s => {
+    if (s.party == "Democrat") {
+      dem.push(s)
+    } else if (s.party == "Republican") {
+      rep.push(s)
+    } else {
+      ind.push(s)
+    }
+  }
+  )
+
+  const parties = [dem, rep, ind]
+  parties.forEach(p => 
     {
-      let child = document.createElement("div")
-      child.setAttribute("id", s.id)
-      child.innerHTML = `
-      <span>${s.firstname}</span>
-      <span>${s.secondname}</span>
-      <span>${s.party}</span>
-      <span>${s.state}</span>
-      <span>${s.gender}</span>
-      <span>${s.rank}</span>
-      `
-      document.getElementById("senator-container").appendChild(child)
+      p.forEach(s =>
+        {
+          let child = document.createElement("div")
+          child.setAttribute("id", s.id)
+          child.innerHTML = `
+          <span>${s.firstname}</span>
+          <span>${s.secondname}</span>
+          <span>${s.party}</span>
+          <span>${s.state}</span>
+          <span>${s.gender}</span>
+          <span>${s.rank}</span>
+          `
+          document.getElementById("senator-container").appendChild(child)
+        }
+      )
     }
   )
+
+  
 }
 
