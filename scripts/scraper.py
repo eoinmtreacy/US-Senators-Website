@@ -12,25 +12,29 @@ for s in sen["objects"]:
   url = s["person"]["link"]
   urls.append(url)
   id = s["person"]["bioguideid"]
+  ids.append(id)
 
-urlTest = urls[0:2]
-idsTest = ids[0:2]
 
 imgSource = []
 
-for url in urlTest:
+for url in urls:
   response = requests.get(url)
   html = response.text
   soup = BeautifulSoup(html, "html.parser")
   img = soup.find_all("img", {"class": "img-fluid"})
   src = "https://www.govtrack.us" + img[0].get("src")
   imgSource.append(src)
+  print(src)
 
 res = {}
-for key in idsTest:
+
+for id in ids:
     for img in imgSource:
-        res[key] = img
+        res[id] = img
         break
- 
-# Printing resultant dictionary
-print("Resultant dictionary is : " + str(res))
+
+out_file = open("./data/imgSources.json", "w") 
+   
+json.dump(res, out_file, indent = "") 
+   
+out_file.close() 
