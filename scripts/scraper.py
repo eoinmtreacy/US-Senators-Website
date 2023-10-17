@@ -12,25 +12,25 @@ for s in sen["objects"]:
   url = s["person"]["link"]
   urls.append(url)
   id = s["person"]["bioguideid"]
-  ids.append(id)
 
-imgSources = []
+urlTest = urls[0:2]
+idsTest = ids[0:2]
 
-urlTest = urls[0:3]
+imgSource = []
 
-# for url in urlTest:
-#   response = requests.get(url)
-#   html = response.text
-#   soup = BeautifulSoup(html, "html.parser")
-#   imgs = soup.find_all("img", {"class": "img-fluid"})
-#   src = "https://www.govtrack.us" + imgs[0].get("src")
-#   imgSources.append(src)
+for url in urlTest:
+  response = requests.get(url)
+  html = response.text
+  soup = BeautifulSoup(html, "html.parser")
+  img = soup.find_all("img", {"class": "img-fluid"})
+  src = "https://www.govtrack.us" + img[0].get("src")
+  imgSource.append(src)
 
-# res = dict(zip(ids, imgSources))
-
-# out_file = open("./data/imgSouces.json", "w")
-# json.dump(res, out_file, indent = "")
-# out_file.close()
-
-for u in urlTest:
-  print(u)
+res = {}
+for key in idsTest:
+    for img in imgSource:
+        res[key] = img
+        break
+ 
+# Printing resultant dictionary
+print("Resultant dictionary is : " + str(res))
