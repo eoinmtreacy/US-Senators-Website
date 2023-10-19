@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   /** DEMO PURPOSE ONLY BELOW **/
   let filteredList = filter(currentFilter);
-  drawHtml(filteredList)
+  drawHtml(filteredList);
   // console.log(filteredList); // filter is empty, should return all senators
   // currentFilter.addFilter("gender", "Female");
   // filteredList = filter(currentFilter);
@@ -106,11 +106,14 @@ function loadFilterOptions() {
 }
 
 function handleFilterSelected(e, id) {
-  let value = e.target.value;
-  if (currentFilter.hasFilter(id, value)) {
+  let selected = e.target.checked;
+  let value = e.target.id;
+  if (selected) {
     currentFilter.addFilter(id, value);
+    drawFilterTag(id, value);
   } else {
     currentFilter.removeFilter(id, value);
+    removeFilterTag(id, value);
   }
 
   applyFilterToSenatorElements(currentFilter);
@@ -139,12 +142,12 @@ function filter(filterOptionsObj) {
       item.state = senator.state;
       item.rank = senator.senator_rank;
       item.gender = senator.person.gender_label;
-      item.office = senator.extra.office
-      item.dob = senator.person.birthday
-      item.startdate = senator.startdate
-      item.twitter = senator.person.twitterid
-      item.youtube = senator.person.youtubeid
-      item.website = senator.website
+      item.office = senator.extra.office;
+      item.dob = senator.person.birthday;
+      item.startdate = senator.startdate;
+      item.twitter = senator.person.twitterid;
+      item.youtube = senator.person.youtubeid;
+      item.website = senator.website;
       output.push(item);
     }
   });
@@ -155,38 +158,158 @@ function applyFilterToSenatorElements(filterOptions) {
   let senatorsToShow = filter(filterOptions);
   let senatorIds = senatorsToShow.map((s) => s.id);
   for (let senator of senators.objects) {
-    let senatorEl = document.getElementById(senator.id);
-    senatorEl.hidden = !senatorIds.includes(senator.id);
+    let senatorEl = document.getElementById(senator.person.bioguideid);
+    senatorEl.hidden = !senatorIds.includes(senator.person.bioguideid);
   }
+}
+
+function drawFilterTag(filterType, value) {
+  console.log("drawFilterTag: ", filterType, value)
+  var tagContainerEl = document.getElementById("filter-tag-container");
+
+  var tagEl = document.createElement("div");
+  tagEl.classList = `tag ${value}`;
+  tagEl.innerText = value;
+
+  var deleteEl = createFontAwesomeIcon(
+    "close",
+    () => removeFilterTag(filterType, value, tagEl, true)
+  );
+  tagEl.prepend(deleteEl);
+  tagContainerEl.append(tagEl);
+  return tagEl;
+}
+
+function removeFilterTag(filterType, value, el, shouldRemoveFilter) {
+  console.info("removeFilterTag: ", filterType, value, el, shouldRemoveFilter)
+  if (shouldRemoveFilter) {
+    // TODO: uncheck the input
+    currentFilter.removeFilter(filterType, value);
+    let inputEl = document.getElementById(value);
+    inputEl.checked = false;
+  }
+  if (!el) {
+    el = document.getElementsByClassName(`tag ${value}`)[0];
+  }
+  el.remove();
+}
+
+function createDropdown(filterId, options) {
+  let dropdownContainerEl = document.createElement("div");
+  dropdownContainerEl.classList.add("dropdown-container");
+
+  let textInputContainer = document.createElement("div");
+  textInputContainer.className = "text-input-container";
+  let textInputEl = document.createElement("input");
+  textInputEl.type = "text";
+
+  let searchIcon = createFontAwesomeIcon("search");
+  textInputContainer.append(searchIcon, textInputEl);
+  dropdownContainerEl.appendChild(textInputContainer);
+
+  let dropdownEl = document.createElement("div");
+  dropdownEl.className = "dropdown";
+  dropdownEl.style.visibility = "hidden"; // Default to hidden
+  Array.from(options)
+    .sort()
+    .forEach((option) => {
+      let optionEl = document.createElement("div");
+      optionEl.classList.add(option);
+
+      let labelEl = document.createElement("label", { for: option });
+      labelEl.innerText = capitalizeFirstLetter(option);
+      let inputEl = document.createElement("input");
+      inputEl.type = "checkbox";
+      inputEl.id = `${option}`;
+      inputEl.onchange = (e) => handleFilterSelected(e, filterId);
+
+      optionEl.appendChild(inputEl);
+      optionEl.appendChild(labelEl);
+
+      dropdownEl.appendChild(optionEl);
+    });
+  dropdownContainerEl.appendChild(dropdownEl);
+
+  textInputEl.onclick = () => {
+    const isVisible = dropdownEl.style.visibility === "visible";
+    // If we are toggling this dropdown on, we need to hide all of the others!
+    if (!isVisible) {
+      let allVisibleDropdowns = Array.from(
+        document.getElementsByClassName("dropdown")
+      ).filter((e) => e.style.visibility === "visible");
+      allVisibleDropdowns.forEach((d) => (d.style.visibility = "hidden"));
+      dropdownEl.style.visibility = "visible";
+    } else {
+      dropdownEl.style.visibility = "hidden";
+    }
+  };
+
+  dropdownEl.onmouseleave = () => {
+    dropdownEl.style.visibility = "hidden";
+  };
+
+  return dropdownContainerEl;
+}
+
+// TODO: use this for sorts
+function createButtonGroup(options) {
+  let filterInputEl = document.createElement("div");
+  filterInputEl.classList.add("button-group");
+
+  Array.from(options)
+    .sort()
+    .forEach((option) => {
+      let optionEl = document.createElement("div");
+      optionEl.classList.add(option);
+
+      let buttonEl = document.createElement("button");
+      buttonEl.innerText = capitalizeFirstLetter(option);
+      // TODO
+      buttonEl.onchange = (e) => handleFilterSelected(e, filterId);
+      filterInputEl.appendChild(buttonEl);
+    });
+  return filterInputEl;
 }
 
 function drawFilters(filterOptions) {
   let filterContainer = document.getElementById("filter-container");
+
   Object.entries(filterOptions).forEach(([key, val]) => {
     let filterId = key;
     let filterOptions = val;
+    let filterSectionEl = document.createElement("div");
+    let filterSectionHeaderEl = document.createElement("div");
+    filterSectionHeaderEl.classList.add("filter-section-header", filterId);
 
     // Create a label
-    let filterLabelEl = document.createElement("label");
-    filterLabelEl.setAttribute("for", filterId);
+    let filterLabelEl = document.createElement("h5");
     filterLabelEl.innerText = capitalizeFirstLetter(filterId);
+    filterSectionHeaderEl.appendChild(filterLabelEl);
 
-    // Create select
-    let selectEl = document.createElement("select", { multiple: true });
-    selectEl.multiple = true;
-    selectEl.onchange = (e) => handleFilterSelected(e, filterId);
+    let chevronIconEl = document.createElement("i");
+    chevronIconEl.classList = ["fa fa-chevron-down"];
+    filterSectionHeaderEl.appendChild(chevronIconEl);
 
-    // Create options
-    Array.from(filterOptions)
-      .sort()
-      .forEach((option) => {
-        let optionEl = document.createElement("option", { value: option });
-        optionEl.innerText = option;
-        selectEl.appendChild(optionEl);
-      });
+    filterSectionEl.appendChild(filterSectionHeaderEl);
 
-    filterContainer.appendChild(filterLabelEl);
-    filterContainer.appendChild(selectEl);
+    let filterInputEl;
+    switch (filterId) {
+      case STATE:
+        filterInputEl = createDropdown(filterId, filterOptions);
+        break;
+      case PARTY:
+      case RANK:
+      case GENDER:
+        filterInputEl = createDropdown(filterId, filterOptions);
+        break;
+      default:
+        // If its a filter we aren't expecting, default it to a dropdown
+        filterInputEl = createDropdown(filterId, filterOptions);
+        break;
+    }
+
+    filterSectionEl.appendChild(filterInputEl);
+    filterContainer.appendChild(filterSectionEl);
   });
 }
 
@@ -195,24 +318,61 @@ function capitalizeFirstLetter(str) {
   return str[0].toUpperCase() + str.slice(1);
 }
 
-// draw HTML elements
+function createFontAwesomeIcon(iconName, handleClick) {
+  let icon = document.createElement("i");
+  icon.classList = `fa fa-${iconName}`;
+  if (handleClick) {
+    icon.onclick = handleClick;
+  }
+  return icon;
+}
 
-function drawHtml (senators)
-{
-  senators.forEach(s =>
-    {
-      let child = document.createElement("div")
-      child.setAttribute("id", s.id)
-      child.innerHTML = `
+// draw HTML elements
+function drawHtml(senators) {
+  senators.forEach((s) => {
+    let child = document.createElement("div");
+    child.setAttribute("id", s.id);
+    child.innerHTML = `
       <span>${s.firstname}</span>
       <span>${s.secondname}</span>
       <span>${s.party}</span>
       <span>${s.state}</span>
       <span>${s.gender}</span>
       <span>${s.rank}</span>
-      `
-      document.getElementById("senator-container").appendChild(child)
-    }
-  )
+      `;
+
+    document.getElementById("senator-container").appendChild(child);
+  });
 }
 
+// Pseudo code
+// 1. Load JSON data
+// 2. Draw all html on the page
+//    a. Filter selectors
+//    b. List of senators
+//    c. "Summary" info of congress
+// 3. Add filter event listeners
+//    a. when a filter is selected or unselected, show/hide senators
+//    b. when reset button is clicked, remove all filters
+// 4. Add senator card event listeners
+//    a. when a senator is clicked, open a pop-up window with senator info
+
+// Methods:
+// async loadData()
+// drawHtml()
+//   - drawSummary()
+//   - drawSenators()
+//   - drawFilters()
+// handleFilterSelected() <- event listener
+// handleResetClicked() <- event listener, button
+// handleSenatorClicked() <- event listener, senator element
+//   - drawSenatorPopUp()
+// filter(senators: obj)
+// filterSenatorElements()
+
+// Constants:
+// ALL_JSON_DATA <- constant, list of JSON data unmanipulated
+// ALL_FILTER_OPTIONS <- constant, obj containing options for each filter (eg: party: [Democrat, Republican])
+
+// Variables:
+// currentFilters <- obj containing the currently selected filters
