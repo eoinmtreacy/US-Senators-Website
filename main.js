@@ -182,22 +182,31 @@ function drawHtml (senators)
   }
   )
 
-  const parties = [dem, rep, ind]
-  parties.forEach(p => 
+  const parties = [[dem, "Democrat"], [rep, "Republican"], [ind, "Independent"]]
+  parties.forEach(party => 
     {
-      p.forEach(s =>
+      let partyBucket = document.createElement("div")
+      partyBucket.setAttribute("id", party[1])
+      document.getElementById("senator-container").appendChild(partyBucket)
+      let partyTitle = document.createElement("h1")
+      partyTitle.setAttribute("id", "party-title")
+      partyTitle.innerText = party[1]
+      document.getElementById(party[1]).appendChild(partyTitle)
+    
+      party[0].forEach(s =>
         {
           let child = document.createElement("div")
           child.setAttribute("id", s.id)
+          child.setAttribute("class", "card")
           child.innerHTML = `
-          <span>${s.firstname}</span>
-          <span>${s.secondname}</span>
-          <span>${s.party}</span>
-          <span>${s.state}</span>
-          <span>${s.gender}</span>
-          <span>${s.rank}</span>
+            <div class="name">${s.firstname} ${s.secondname}</div>
+            <div class="party">${s.party}</div>
+            <div class="state">${s.state}</div>
+            <div class="gender">${s.gender}</div>
+            <div clalss="rank">${s.rank}</div>
+
           `
-          document.getElementById("senator-container").appendChild(child)
+          document.getElementById(party[1]).appendChild(child)
         }
       )
     }
