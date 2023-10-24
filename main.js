@@ -158,9 +158,9 @@ function capitalizeFirstLetter(str) {
 
 function drawSummary(senators)
 {
-  let dem = [0,[]]
-  let rep = [0,[]]
-  let ind = [0,[]]
+  let dem = [0,[], "democrat"]
+  let rep = [0,[], "republican"]
+  let ind = [0,[], "independent"]
 
   senators.objects.forEach(s =>
     {
@@ -168,7 +168,6 @@ function drawSummary(senators)
       {
         rep[0]++
         if (s.leadership_title != null) {
-          console.log("fire")
           rep[1].push({name: s.person.name, role: s.leadership_title})
         }
       } else if (s.party == "Democrat")
@@ -187,9 +186,26 @@ function drawSummary(senators)
 
   let parties = [dem, rep, ind]
   parties.forEach(party => {
+    let partyBucket = document.createElement("div")
+    partyBucket.setAttribute("id", `${party[2]}-container`)
+    document.getElementById("summary-container").appendChild(partyBucket)
+    let bucketTitle = document.createElement("div")
+    bucketTitle.innerText = `${capitalizeFirstLetter(party[2])}: ${party[0]}`
+    document.getElementById(`${party[2]}-container`).appendChild(bucketTitle)
     party[1].forEach(senator => {
-      console.log(senator.name, senator.role)
+      let leader = document.createElement("div")
+      leader.innerText = `${senator.role}: ${senator.name.slice(0, -6)}`
+      document.getElementById(`${party[2]}-container`).appendChild(leader)
     })
   }
   )
+
+  // child.append = `
+  //   <div id="democrat-summary">
+  //     <div>Democrats:<span>10</span></div>
+  //     <div>Senate Minority Leader: Chuck Schumer (Democrat)</div>
+  //     <div>Senate Minority Leader: Chuck Schumer (Democrat)</div>
+  //     <div>Senate Minority Leader: Chuck Schumer (Democrat)</div>
+  //   </div>
+  // `
 }
