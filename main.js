@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   /** DEMO PURPOSE ONLY BELOW **/
   let filteredList = filter(currentFilter);
-  drawSummary(filteredList)
+  drawSummary(senators)
   // console.log(filteredList); // filter is empty, should return all senators
   // currentFilter.addFilter("gender", "Female");
   // filteredList = filter(currentFilter);
@@ -158,23 +158,38 @@ function capitalizeFirstLetter(str) {
 
 function drawSummary(senators)
 {
-  let rep = []
-  let dem = []
-  let ind = []
+  let dem = [0,[]]
+  let rep = [0,[]]
+  let ind = [0,[]]
 
-  senators.forEach(s =>
+  senators.objects.forEach(s =>
     {
       if (s.party == "Republican")
       {
-        rep.push(s)
+        rep[0]++
+        if (s.leadership_title != null) {
+          console.log("fire")
+          rep[1].push({name: s.person.name, role: s.leadership_title})
+        }
       } else if (s.party == "Democrat")
       {
-        dem.push(s)
-      } else ind.push(s)
+        dem[0]++
+        if (s.leadership_title != null) {
+          dem[1].push({name: s.person.name, role: s.leadership_title})
+        }
+      } else {
+        ind[0]++
+        if (s.leadership_title != null) {
+          ind[1].push({name: s.person.name, role: s.leadership_title})
+        }
+      }
     })
 
-  rep.forEach(r =>
-    {
-      console.log(r)
+  let parties = [dem, rep, ind]
+  parties.forEach(party => {
+    party[1].forEach(senator => {
+      console.log(senator.name, senator.role)
     })
+  }
+  )
 }
