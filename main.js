@@ -1,4 +1,12 @@
-import senators from "./data/senators.js";
+// import senators from "./data/senators.js";
+
+fetch("./data/senators.json")
+  .then(response => {
+    if (response.ok) {
+      const senators = response.json()
+      return senators
+    }
+  })
 
 // GLOBAL VARIABLES
 const PARTY = "party";
