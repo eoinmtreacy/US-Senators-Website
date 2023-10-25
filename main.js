@@ -189,7 +189,6 @@ function drawHtml (senators)
       partyBucket.setAttribute("id", party[1]) // creating top level party name divs
       document.getElementById("senator-container").appendChild(partyBucket)
       let partyTitle = document.createElement("h1") // appending party names
-      partyTitle.setAttribute("id", "party-title")
       partyTitle.innerText = party[1]
       document.getElementById(party[1]).appendChild(partyTitle)
       
