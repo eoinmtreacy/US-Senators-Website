@@ -164,16 +164,14 @@ function applyFilterToSenatorElements(filterOptions) {
 }
 
 function drawFilterTag(filterType, value) {
-  console.log("drawFilterTag: ", filterType, value)
   var tagContainerEl = document.getElementById("filter-tag-container");
 
   var tagEl = document.createElement("div");
   tagEl.classList = `tag ${value}`;
   tagEl.innerText = value;
 
-  var deleteEl = createFontAwesomeIcon(
-    "close",
-    () => removeFilterTag(filterType, value, tagEl, true)
+  var deleteEl = createFontAwesomeIcon("close", () =>
+    removeFilterTag(filterType, value, tagEl, true)
   );
   tagEl.prepend(deleteEl);
   tagContainerEl.append(tagEl);
@@ -181,7 +179,6 @@ function drawFilterTag(filterType, value) {
 }
 
 function removeFilterTag(filterType, value, el, shouldRemoveFilter) {
-  console.info("removeFilterTag: ", filterType, value, el, shouldRemoveFilter)
   if (shouldRemoveFilter) {
     // TODO: uncheck the input
     currentFilter.removeFilter(filterType, value);
@@ -211,6 +208,9 @@ function createDropdown(filterId, options) {
   let dropdownEl = document.createElement("div");
   dropdownEl.className = "dropdown";
   dropdownEl.style.visibility = "hidden"; // Default to hidden
+
+  // Dictionary containing each option el so we can easily access them later
+  const optionEls = {};
   Array.from(options)
     .sort()
     .forEach((option) => {
@@ -226,6 +226,7 @@ function createDropdown(filterId, options) {
 
       optionEl.appendChild(inputEl);
       optionEl.appendChild(labelEl);
+      optionEls[option] = optionEl;
 
       dropdownEl.appendChild(optionEl);
     });
@@ -247,6 +248,26 @@ function createDropdown(filterId, options) {
 
   dropdownEl.onmouseleave = () => {
     dropdownEl.style.visibility = "hidden";
+  };
+
+  // Handle input
+  textInputEl.oninput = (e) => {
+    const { value } = e.target;
+    // Find all values that are potential matches, set display none to the rest
+    const optionsToUpdate = {
+      hide: [],
+      show: [],
+    };
+    Object.entries(optionEls).forEach(([key, val]) => {
+      if (!key.toLowerCase().startsWith(value.toLowerCase())) {
+        optionsToUpdate["hide"].push(val);
+      } else {
+        optionsToUpdate["show"].push(val);
+      }
+    });
+
+    optionsToUpdate["hide"].forEach(o => o.style.display = "none");
+    optionsToUpdate["show"].forEach(o => o.style.display = null);
   };
 
   return dropdownContainerEl;
