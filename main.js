@@ -199,13 +199,4 @@ function drawSummary(senators)
     })
   }
   )
-
-  // child.append = `
-  //   <div id="democrat-summary">
-  //     <div>Democrats:<span>10</span></div>
-  //     <div>Senate Minority Leader: Chuck Schumer (Democrat)</div>
-  //     <div>Senate Minority Leader: Chuck Schumer (Democrat)</div>
-  //     <div>Senate Minority Leader: Chuck Schumer (Democrat)</div>
-  //   </div>
-  // `
 }
