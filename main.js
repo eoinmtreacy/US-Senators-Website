@@ -192,6 +192,7 @@ function removeFilterTag(filterType, value, el, shouldRemoveFilter) {
     el = document.getElementsByClassName(`tag ${value}`)[0];
   }
   el.remove();
+  applyFilterToSenatorElements(currentFilter);
 }
 
 function createDropdown(filterId, options) {
