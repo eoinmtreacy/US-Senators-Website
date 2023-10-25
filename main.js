@@ -186,13 +186,15 @@ function drawHtml (senators)
   parties.forEach(party => 
     {
       let partyBucket = document.createElement("div")
-      partyBucket.setAttribute("id", party[1])
+      partyBucket.setAttribute("id", party[1]) // creating top level party name divs
       document.getElementById("senator-container").appendChild(partyBucket)
-      let partyTitle = document.createElement("h1")
+      let partyTitle = document.createElement("h1") // appending party names
       partyTitle.setAttribute("id", "party-title")
       partyTitle.innerText = party[1]
       document.getElementById(party[1]).appendChild(partyTitle)
-    
+      
+      // append card div with unique id to each grouping
+      // may have to change later unless we are always grouping by party
       party[0].forEach(s =>
         {
           let child = document.createElement("div")
