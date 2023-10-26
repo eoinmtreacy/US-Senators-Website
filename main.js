@@ -208,7 +208,7 @@ function drawHtml(senators)
           child.setAttribute("id", s.person.bioguideid)
           child.setAttribute("class", "card")
           child.innerHTML = `
-            <div class="name">${s.person.firstname} ${s.person.secondname}</div>
+            <div class="name">${s.person.firstname} ${s.person.lastname}</div>
             <div class="party">${s.party}</div>
             <div class="state">${s.state}</div>
             <div class="gender">${s.person.gender}</div>
