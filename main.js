@@ -221,7 +221,6 @@ function drawFilterTag(filterType, value) {
 
 function removeFilterTag(filterType, value, el, shouldRemoveFilter) {
   if (shouldRemoveFilter) {
-    // TODO: uncheck the input
     CURRENT_FILTER.removeFilter(filterType, value);
     let inputEl = document.getElementById(value);
     inputEl.checked = false;
