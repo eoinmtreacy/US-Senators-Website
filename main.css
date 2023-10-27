@@ -54,6 +54,7 @@ a {
 #filter-container {
   border: 1px solid black;
   width: 25vw;
+  max-width: 200px;
   display: flex;
   flex-direction: column;
 }

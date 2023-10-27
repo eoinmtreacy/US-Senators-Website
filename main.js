@@ -77,14 +77,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const FILTER_OPTIONS = loadFilterOptions();
   drawFilters(FILTER_OPTIONS);
 
-  /** DEMO PURPOSE ONLY BELOW **/
   let filteredList = filter(currentFilter);
   drawHtml(filteredList);
-  // console.log(filteredList); // filter is empty, should return all senators
-  // currentFilter.addFilter("gender", "Female");
-  // filteredList = filter(currentFilter);
-  // console.log(filteredList); // Should only contain female senators
-  // /** END DEMO SECTION */
 });
 
 function loadFilterOptions() {
@@ -309,11 +303,6 @@ function drawFilters(filterOptions) {
     let filterLabelEl = document.createElement("h5");
     filterLabelEl.innerText = capitalizeFirstLetter(filterId);
     filterSectionHeaderEl.appendChild(filterLabelEl);
-
-    let chevronIconEl = document.createElement("i");
-    chevronIconEl.classList = ["fa fa-chevron-down"];
-    filterSectionHeaderEl.appendChild(chevronIconEl);
-
     filterSectionEl.appendChild(filterSectionHeaderEl);
 
     let filterInputEl;
