@@ -1,5 +1,3 @@
-// import senators from "./data/senators.js";
-
 // GLOBAL VARIABLES
 const PARTY = "party";
 const STATE = "state";
@@ -242,11 +240,10 @@ function renderPopUp(id, senators)
     let popUp = document.getElementById("pop-up")
     popUp.innerHTML = ""
     popUp.style.display = "block"
-    // const close = document.createElement("div")
-    // popUp.appendChild(close)
-    // close.innerText = "X"
     popUp.onclick = () => popUp.style.display = "none"
-
+    const curtain = document.createElement("div")
+    curtain.setAttribute("id", "curtain")
+    document.getElementsByTagName("body")[0].appendChild(curtain)
     senators.forEach((senator) => {
       if (id == senator.person.bioguideid) {
         popUp.innerHTML = `
