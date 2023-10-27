@@ -17,6 +17,10 @@ a {
 }
 /* END GLOBAL STYLES */
 
+#pop-up {
+  display: none;
+}
+
 #page-container {
   /* Your styles for #page-container here */
   border: 1px solid green;
@@ -101,6 +105,18 @@ a {
 .card {
   /* Your styles for .card here */
   border: 1px solid pink;
+}
+
+.card div {
+  display: block;
+  margin: 0;
+}
+
+.card img {
+  height: 90px;
+  float: left;
+  display: block;
+  margin: 0;
 }
 
 .card .name {

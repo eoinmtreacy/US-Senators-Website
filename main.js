@@ -211,6 +211,7 @@ function drawHtml(senators)
           let child = document.createElement("div")
           child.setAttribute("id", s.person.bioguideid)
           child.setAttribute("class", "card")
+          child.onclick = () => renderPopUp(s.person.bioguideid)
           child.innerHTML = `
             <div class="name">${s.person.firstname} ${s.person.lastname}</div>
             <div class="party">${s.party}</div>
@@ -229,13 +230,19 @@ function drawHtml(senators)
 function appendProfileImage (imgSources)
 {
   Object.keys(imgSources).forEach((key) => {
-    console.log(key)
     let image = document.createElement("img")
     image.setAttribute("src", imgSources[key])
-    console.log(imgSources[key])
-    // console.log(imgSources[key])
     document.getElementById([key]).appendChild(image)
   })
   
 }
 
+function renderPopUp(id, senators)
+{
+    let popUp = document.getElementById("pop-up")
+    popUp.style.display = "block"
+    const close = document.createElement("div")
+    popUp.appendChild(close)
+    close.innerText = "X"
+    close.onclick = () => popUp.style.display = "none"
+}
