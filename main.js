@@ -245,7 +245,7 @@ function renderPopUp(id, senators)
     // const close = document.createElement("div")
     // popUp.appendChild(close)
     // close.innerText = "X"
-    popUp.onclick = () => {popUp.style.display = "none"}
+    popUp.onclick = () => popUp.style.display = "none"
 
     senators.forEach((senator) => {
       if (id == senator.person.bioguideid) {

@@ -20,11 +20,12 @@ a {
 #pop-up {
   display: none;
   position: absolute;
-  background-color: white solid fill;
+  background: white;
   border: 1px solid black;
   border-radius: 5%;
   height: 300px;
   width: 300px;
+  margin: auto;
 }
 
 #page-container {
