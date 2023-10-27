@@ -26,6 +26,16 @@ class FilterOptions {
   removeFilter(type, value) {
     return this.state[type].delete(value);
   }
+
+  resetFilters() {
+    this.state = {
+      rank: new Set(),
+      gender: new Set(),
+      state: new Set(),
+      party: new Set()
+    }
+  }
+
 }
 
 var isSenatorsLoaded = false;
@@ -115,7 +125,7 @@ function handleFilterSelected(e, filterId) {
  * Function which removes all filters
  */
 function handleResetClicked() {
-
+  CURRENT_FILTER.resetFilters();
 }
 
 /**
