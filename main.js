@@ -189,12 +189,21 @@ function removeFilterTag(filterType, value, el, shouldRemoveFilter) {
     el = document.getElementsByClassName(`tag ${value}`)[0];
   }
   el.remove();
+
+  // TODO
+  // Update the filtered options
+  const dropdownEl = document.getElementsByClassName(`dropdown-container ${filterType}`)[0];
+  const optionEls = dropdownEl.getElementsByClassName(value);
+  console.log(optionEls)
+  filterOptionElements("", optionEls)
+
   applyFilterToSenatorElements(currentFilter);
 }
 
 function createDropdown(filterId, options) {
   let dropdownContainerEl = document.createElement("div");
   dropdownContainerEl.classList.add("dropdown-container");
+  dropdownContainerEl.classList.add(filterId);
 
   let textInputContainer = document.createElement("div");
   textInputContainer.className = "text-input-container";
@@ -222,7 +231,12 @@ function createDropdown(filterId, options) {
       let inputEl = document.createElement("input");
       inputEl.type = "checkbox";
       inputEl.id = `${option}`;
-      inputEl.onchange = (e) => handleFilterSelected(e, filterId);
+      inputEl.onchange = (e) => {
+        handleFilterSelected(e, filterId);
+        // If the input has text, clear it
+        textInputEl.value = "";
+        filterOptionElements("", optionEls)
+      };
 
       optionEl.appendChild(inputEl);
       optionEl.appendChild(labelEl);
@@ -253,21 +267,7 @@ function createDropdown(filterId, options) {
   // Handle input
   textInputEl.oninput = (e) => {
     const { value } = e.target;
-    // Find all values that are potential matches, set display none to the rest
-    const optionsToUpdate = {
-      hide: [],
-      show: [],
-    };
-    Object.entries(optionEls).forEach(([key, val]) => {
-      if (!key.toLowerCase().startsWith(value.toLowerCase())) {
-        optionsToUpdate["hide"].push(val);
-      } else {
-        optionsToUpdate["show"].push(val);
-      }
-    });
-
-    optionsToUpdate["hide"].forEach(o => o.style.display = "none");
-    optionsToUpdate["show"].forEach(o => o.style.display = null);
+    filterOptionElements(value, optionEls)
   };
 
   return dropdownContainerEl;
@@ -333,6 +333,24 @@ function drawFilters(filterOptions) {
     filterSectionEl.appendChild(filterInputEl);
     filterContainer.appendChild(filterSectionEl);
   });
+}
+
+function filterOptionElements(value, els) {
+  console.log(els)
+  const optionsToUpdate = {
+    hide: [],
+    show: [],
+  };
+  Object.entries(els).forEach(([key, val]) => {
+    if (!key.toLowerCase().startsWith(value.toLowerCase())) {
+      optionsToUpdate["hide"].push(val);
+    } else {
+      optionsToUpdate["show"].push(val);
+    }
+  });
+
+  optionsToUpdate["hide"].forEach((o) => (o.style.display = "none"));
+  optionsToUpdate["show"].forEach((o) => (o.style.display = null));
 }
 
 // Utility functions
