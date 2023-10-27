@@ -1,13 +1,8 @@
-// import senators from "./data/senators.js";
-
-// GLOBAL VARIABLES
-const PARTY = "party";
-const STATE = "state";
-const RANK = "rank";
-const GENDER = "gender";
-
-// Class which represents the selected filters
-// For each filter type (eg: rank), contains a set of the selected values (eg: "Junior", "Senior")
+// CLASSES
+/**
+ * @class
+ * Represents the selected filters. For each filter type (eg: rank), contains a set of the selected values (eg: "Junior", "Senior")
+ */
 class FilterOptions {
   constructor() {
     this.rank = new Set();
@@ -72,29 +67,49 @@ class FilterOptions {
   }
 }
 
-const currentFilter = new FilterOptions();
-document.addEventListener("DOMContentLoaded", async () => {
-  await fetch("./data/senators.json")
+var isSenatorsLoaded = false;
+
+// GLOBAL CONSTANTS
+const PARTY = "party";
+const STATE = "state";
+const RANK = "rank";
+const GENDER = "gender";
+
+// 1. Fetch our senator data
+const ALL_SENATORS = await fetch("./data/senators.json")
+  .then((response) => response.json())
+  .then((data) => {
+    isSenatorsLoaded = true;
+    return data.objects;
+  })
+  .catch(() => {
+    // TODO: render some error element
+  });
+
+if (isSenatorsLoaded) {
+  const FILTER_OPTIONS = loadFilterOptions(ALL_SENATORS);
+
+  var CURRENT_FILTER = new FilterOptions();
+
+  // 2. Fetch all our images
+  fetch("./data/imgSources.json")
     .then((response) => response.json())
     .then((data) => {
-      const senators = data.objects
-      const FILTER_OPTIONS = loadFilterOptions(senators);
-      drawFilters(FILTER_OPTIONS);
-      const currentFilter = new FilterOptions();
-    
-      let filteredList = filter(currentFilter, senators);
-      // filtererdList called by function to hide/show the html right?
-      drawHtml(senators)
-    })
+      const imgSources = data;
+      appendProfileImage(imgSources);
+    });
 
-    fetch("./data/imgSources.json")
-      .then((response) => response.json())
-        .then((data) => {
-          const imgSources = data
-          appendProfileImage(imgSources)
-        })
-});
+  // 3. Draw our page
+  drawFilters(FILTER_OPTIONS);
+  drawHtml(ALL_SENATORS);
+}
 
+/**
+ * Given a list of senators, finds all of the possible options for party, state, rank and gender
+ *
+ * @param {any[]} senators list of senators extracted from json
+ * @returns
+ */
 function loadFilterOptions(senators) {
   var filterOptions = {
     [PARTY]: new Set(),
@@ -113,22 +128,36 @@ function loadFilterOptions(senators) {
   return filterOptions;
 }
 
-function handleFilterSelected(e, id) {
+/**
+ * Function which is called when a filter is selected via an input el (eg: text input). It will check whether the element
+ * has been selected or unselected. If selected, it will add the filter to our global FilterOptions object and draw a filter
+ * tag. If unselected, it will remove the filter from our global FilterOptions object and remove the existing filter tag.
+ * It will then apply the new filter to our senator elements (ie hiding/showing as necessary).
+ *
+ * @param {Event} e - Event received from an event listener (eg onchange)
+ * @param {string} filterId - The identifier of the filter type (eg: Party, State, Rank, Gender)
+ */
+function handleFilterSelected(e, filterId) {
   let selected = e.target.checked;
   let value = e.target.id;
   if (selected) {
-    currentFilter.addFilter(id, value);
-    drawFilterTag(id, value);
+    CURRENT_FILTER.addFilter(filterId, value);
+    drawFilterTag(filterId, value);
   } else {
-    currentFilter.removeFilter(id, value);
-    removeFilterTag(id, value);
+    CURRENT_FILTER.removeFilter(filterId, value);
+    removeFilterTag(filterId, value);
   }
-
-  applyFilterToSenatorElements(currentFilter);
+  applyFilterToSenatorElements(CURRENT_FILTER);
 }
 
-// Function which takes in a FilterOptions object and returns a filtered
-// array of senators filtered down based on the filters passed.
+/**
+ * Function which takes in a FilterOptions object and returns a filtered array of senators filtered down based
+ * on the filters passed.
+ *
+ * @param {FilterOptions} filterOptionsObj - An instance of the FilterOptions class
+ * @param {array} senators - List of senators directly from our data (TODO: we should abstract out the senator data)
+ * @returns
+ */
 function filter(filterOptionsObj, senators) {
   let output = [];
   senators.forEach((senator) => {
@@ -162,6 +191,10 @@ function filter(filterOptionsObj, senators) {
   return output;
 }
 
+/**
+ * Given a FilterOptions instance, finds all senator elements that should be hidden and hides them
+ * @param {FilterOptions} filterOptions
+ */
 function applyFilterToSenatorElements(filterOptions) {
   let senatorsToShow = filter(filterOptions);
   let senatorIds = senatorsToShow.map((s) => s.id);
@@ -209,6 +242,14 @@ function removeFilterTag(filterType, value, el, shouldRemoveFilter) {
 
   applyFilterToSenatorElements(currentFilter);
 }
+
+/**
+ * Function which, given a filter type, generates a searchable dropdown menu containing all the options.
+ *
+ * @param {string} filterId the filter type we are creating a dropdown for (eg: 'Party')
+ * @param {Set<string>} options list of all possible options for the filter type (eg: 'Republican', 'Democrat')
+ * @returns
+ */
 
 function createDropdown(filterId, options) {
   let dropdownContainerEl = document.createElement("div");
@@ -303,6 +344,19 @@ function createButtonGroup(options) {
   return filterInputEl;
 }
 
+/**
+ * Given an object filterOptions containing every filter type and its possible options, generates HTML elements:
+ * filter container, sections for each filter type, drop down menus containining all options.
+ *
+ * @param {Object.<string, Set>} filterOptions - Dictionary of all possible filters, where key is the filterId (eg: Party),
+ * and the value is the set of options (eg: Republican, Democrat)
+ *
+ * @return {null}
+ *
+ * DESIGN NOTES
+ * This function is intended to only be called once on our initial load of the page.
+ *
+ */
 function drawFilters(filterOptions) {
   let filterContainer = document.getElementById("filter-container");
 
@@ -319,22 +373,7 @@ function drawFilters(filterOptions) {
     filterSectionHeaderEl.appendChild(filterLabelEl);
     filterSectionEl.appendChild(filterSectionHeaderEl);
 
-    let filterInputEl;
-    switch (filterId) {
-      case STATE:
-        filterInputEl = createDropdown(filterId, filterOptions);
-        break;
-      case PARTY:
-      case RANK:
-      case GENDER:
-        filterInputEl = createDropdown(filterId, filterOptions);
-        break;
-      default:
-        // If its a filter we aren't expecting, default it to a dropdown
-        filterInputEl = createDropdown(filterId, filterOptions);
-        break;
-    }
-
+    let filterInputEl = createDropdown(filterId, filterOptions);
     filterSectionEl.appendChild(filterInputEl);
     filterContainer.appendChild(filterSectionEl);
   });
@@ -359,107 +398,101 @@ function filterOptionElements(value, els) {
 }
 
 // Utility functions
+
+/**
+ * Helped function to capitalize first letter of a string
+ * @param {string} str
+ * @returns str with first letter capitalized
+ */
 function capitalizeFirstLetter(str) {
   return str[0].toUpperCase() + str.slice(1);
 }
 
+/**
+ * Creates an "i" element with the appropriate font awesome icon class. Does not append anywhere to the dom, just returns the element.
+ *
+ * @param {string} iconName name of the icon (eg: 'search')
+ * @param {?function} handleClick optional function to bind to the onclick event listener of the icon
+ * @returns {HTMLElement} the icon element
+ */
 function createFontAwesomeIcon(iconName, handleClick) {
   let icon = document.createElement("i");
   icon.classList = `fa fa-${iconName}`;
   if (handleClick) {
     icon.onclick = handleClick;
+    return icon;
+  }
   return icon;
 }
 // draw HTML elements
 
-function drawHtml(senators)
-{
-  const dem = []
-  const rep = []
-  const ind = []
+/**
+ * Function which draws a list of senator elements onto our page
+ *
+ * @param {[]} senators senators to draw
+ * @return {null}
+ *
+ * DESIGN NOTES
+ * This function is intended to only be called once on our initial load of the page.
+ *
+ */
+function drawHtml(senators) {
+  const dem = [];
+  const rep = [];
+  const ind = [];
 
-  senators.forEach(s => {
+  senators.forEach((s) => {
     if (s.party == "Democrat") {
-      dem.push(s)
+      dem.push(s);
     } else if (s.party == "Republican") {
-      rep.push(s)
+      rep.push(s);
     } else {
-      ind.push(s)
+      ind.push(s);
     }
-  })
-  const parties = [[dem, "Democrat"], [rep, "Republican"], [ind, "Independent"]]
-  parties.forEach(party => 
-    {
-      let partyBucket = document.createElement("div")
-      partyBucket.setAttribute("id", party[1]) // creating top level party name divs
-      document.getElementById("senator-container").appendChild(partyBucket)
-      let partyTitle = document.createElement("h1") // appending party names
-      partyTitle.innerText = party[1]
-      document.getElementById(party[1]).appendChild(partyTitle)
-      
-      // append card div with unique id to each grouping
-      // may have to change later unless we are always grouping by party
-      party[0].forEach(s =>
-        {
-          let child = document.createElement("div")
-          child.setAttribute("id", s.person.bioguideid)
-          child.setAttribute("class", "card")
-          child.innerHTML = `
+  });
+  const parties = [
+    [dem, "Democrat"],
+    [rep, "Republican"],
+    [ind, "Independent"],
+  ];
+  parties.forEach((party) => {
+    let partyBucket = document.createElement("div");
+    partyBucket.setAttribute("id", party[1]); // creating top level party name divs
+    document.getElementById("senator-container").appendChild(partyBucket);
+    let partyTitle = document.createElement("h1"); // appending party names
+    partyTitle.innerText = party[1];
+    document.getElementById(party[1]).appendChild(partyTitle);
+
+    // append card div with unique id to each grouping
+    // may have to change later unless we are always grouping by party
+    party[0].forEach((s) => {
+      let child = document.createElement("div");
+      child.setAttribute("id", s.person.bioguideid);
+      child.setAttribute("class", "card");
+      child.innerHTML = `
             <div class="name">${s.person.firstname} ${s.person.lastname}</div>
             <div class="party">${s.party}</div>
             <div class="state">${s.state}</div>
             <div class="gender">${s.person.gender}</div>
             <div clalss="rank">${s.senator_rank_label}</div>
 
-          `
-          document.getElementById(party[1]).appendChild(child)
-        }
-      )
-    }
-  )
+          `;
+      document.getElementById(party[1]).appendChild(child);
+    });
+  });
 }
 
-function appendProfileImage (imgSources)
-{
+/**
+ * TODO
+ * @param {*} imgSources
+ */
+function appendProfileImage(imgSources) {
   Object.keys(imgSources).forEach((key) => {
-    console.log(key)
-    let image = document.createElement("img")
-    image.setAttribute("src", imgSources[key])
-    console.log(imgSources[key])
+    console.log(key);
+    let image = document.createElement("img");
+    image.setAttribute("src", imgSources[key]);
+    console.log(imgSources[key]);
     // console.log(imgSources[key])
-    document.getElementById([key]).appendChild(image)
-  })
-  
+    document.getElementById([key]).appendChild(image);
+  });
 }
-
-// Pseudo code
-// 1. Load JSON data
-// 2. Draw all html on the page
-//    a. Filter selectors
-//    b. List of senators
-//    c. "Summary" info of congress
-// 3. Add filter event listeners
-//    a. when a filter is selected or unselected, show/hide senators
-//    b. when reset button is clicked, remove all filters
-// 4. Add senator card event listeners
-//    a. when a senator is clicked, open a pop-up window with senator info
-
-// Methods:
-// async loadData()
-// drawHtml()
-//   - drawSummary()
-//   - drawSenators()
-//   - drawFilters()
-// handleFilterSelected() <- event listener
-// handleResetClicked() <- event listener, button
-// handleSenatorClicked() <- event listener, senator element
-//   - drawSenatorPopUp()
-// filter(senators: obj)
-// filterSenatorElements()
-
-// Constants:
-// ALL_JSON_DATA <- constant, list of JSON data unmanipulated
-// ALL_FILTER_OPTIONS <- constant, obj containing options for each filter (eg: party: [Democrat, Republican])
-
-// Variables:
-// currentFilters <- obj containing the currently selected filters
