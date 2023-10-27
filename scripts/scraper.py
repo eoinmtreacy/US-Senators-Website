@@ -14,7 +14,6 @@ for s in sen["objects"]:
   id = s["person"]["bioguideid"]
   ids.append(id)
 
-
 imgSource = []
 
 for url in urls:
@@ -29,9 +28,7 @@ for url in urls:
 res = {}
 
 for id in ids:
-    for img in imgSource:
-        res[id] = img
-        break
+  res[id] = imgSource[ids.index(id)]
 
 out_file = open("./data/imgSources.json", "w") 
    
