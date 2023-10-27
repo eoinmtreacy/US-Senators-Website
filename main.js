@@ -69,6 +69,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       let filteredList = filter(currentFilter, senators);
       // filtererdList called by function to hide/show the html right?
       drawHtml(senators)
+      drawSummary(senators)
     })
 
     fetch("./data/imgSources.json")
@@ -246,7 +247,7 @@ function drawSummary(senators)
   let rep = [0,[], "republican"]
   let ind = [0,[], "independent"]
 
-  senators.objects.forEach(s =>
+  senators.forEach(s =>
     {
       if (s.party == "Republican")
       {
