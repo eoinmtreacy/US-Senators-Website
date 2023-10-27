@@ -1,4 +1,4 @@
-import senators from "./data/senators.js";
+// import senators from "./data/senators.js";
 
 // GLOBAL VARIABLES
 const PARTY = "party";
@@ -58,17 +58,30 @@ class FilterOptions {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const FILTER_OPTIONS = loadFilterOptions();
-  drawFilters(FILTER_OPTIONS);
+  await fetch("./data/senators.json")
+    .then((response) => response.json())
+    .then((data) => {
+      const senators = data.objects
+      const FILTER_OPTIONS = loadFilterOptions(senators);
+      drawFilters(FILTER_OPTIONS);
+      const currentFilter = new FilterOptions();
+    
+      let filteredList = filter(currentFilter, senators);
+      // filtererdList called by function to hide/show the html right?
+      drawHtml(senators)
+    })
 
+    fetch("./data/imgSources.json")
+      .then((response) => response.json())
+        .then((data) => {
+          const imgSources = data
+          appendProfileImage(imgSources)
+        })
+    
   // TODO: this variable is not actually being used anywhere;
   // When we do start adding/removing filters, we can call
   // currentFilter.addFilter()/removeFilter()
-  const currentFilter = new FilterOptions();
-
-  /** DEMO PURPOSE ONLY BELOW **/
-  let filteredList = filter(currentFilter);
-  drawHtml(filteredList)
+  
   // console.log(filteredList); // filter is empty, should return all senators
   // currentFilter.addFilter("gender", "Female");
   // filteredList = filter(currentFilter);
@@ -76,7 +89,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // /** END DEMO SECTION */
 });
 
-function loadFilterOptions() {
+function loadFilterOptions(senators) {
   var filterOptions = {
     [PARTY]: new Set(),
     [STATE]: new Set(),
@@ -84,7 +97,7 @@ function loadFilterOptions() {
     [GENDER]: new Set(),
   };
 
-  senators.objects.forEach((senator) => {
+  senators.forEach((senator) => {
     filterOptions[PARTY].add(senator.party);
     filterOptions[STATE].add(senator.state);
     filterOptions[RANK].add(senator.senator_rank);
@@ -96,9 +109,9 @@ function loadFilterOptions() {
 
 // Function which takes in a FilterOptions object and returns a filtered
 // array of senators filtered down based on the filters passed.
-function filter(filterOptionsObj) {
+function filter(filterOptionsObj, senators) {
   let output = [];
-  senators.objects.forEach((senator) => {
+  senators.forEach((senator) => {
     if (
       (filterOptionsObj.rank.has(senator.senator_rank) ||
         !filterOptionsObj.rank.size) &&
@@ -164,9 +177,8 @@ function capitalizeFirstLetter(str) {
 
 // draw HTML elements
 
-function drawHtml (senators)
+function drawHtml(senators)
 {
-
   const dem = []
   const rep = []
   const ind = []
@@ -197,14 +209,14 @@ function drawHtml (senators)
       party[0].forEach(s =>
         {
           let child = document.createElement("div")
-          child.setAttribute("id", s.id)
+          child.setAttribute("id", s.person.bioguideid)
           child.setAttribute("class", "card")
           child.innerHTML = `
-            <div class="name">${s.firstname} ${s.secondname}</div>
+            <div class="name">${s.person.firstname} ${s.person.lastname}</div>
             <div class="party">${s.party}</div>
             <div class="state">${s.state}</div>
-            <div class="gender">${s.gender}</div>
-            <div clalss="rank">${s.rank}</div>
+            <div class="gender">${s.person.gender}</div>
+            <div clalss="rank">${s.senator_rank_label}</div>
 
           `
           document.getElementById(party[1]).appendChild(child)
@@ -212,7 +224,18 @@ function drawHtml (senators)
       )
     }
   )
+}
 
+function appendProfileImage (imgSources)
+{
+  Object.keys(imgSources).forEach((key) => {
+    console.log(key)
+    let image = document.createElement("img")
+    image.setAttribute("src", imgSources[key])
+    console.log(imgSources[key])
+    // console.log(imgSources[key])
+    document.getElementById([key]).appendChild(image)
+  })
   
 }
 
