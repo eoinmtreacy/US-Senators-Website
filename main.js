@@ -71,8 +71,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       drawHtml(senators)
     })
 
-  
-
+    fetch("./data/imgSources.json")
+      .then((response) => response.json())
+        .then((data) => {
+          const imgSources = data
+          appendProfileImage(imgSources)
+        })
+    
   // TODO: this variable is not actually being used anywhere;
   // When we do start adding/removing filters, we can call
   // currentFilter.addFilter()/removeFilter()
@@ -174,7 +179,6 @@ function capitalizeFirstLetter(str) {
 
 function drawHtml(senators)
 {
-
   const dem = []
   const rep = []
   const ind = []
@@ -220,7 +224,18 @@ function drawHtml(senators)
       )
     }
   )
+}
 
+function appendProfileImage (imgSources)
+{
+  Object.keys(imgSources).forEach((key) => {
+    console.log(key)
+    let image = document.createElement("img")
+    image.setAttribute("src", imgSources[key])
+    console.log(imgSources[key])
+    // console.log(imgSources[key])
+    document.getElementById([key]).appendChild(image)
+  })
   
 }
 
