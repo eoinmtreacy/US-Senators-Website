@@ -211,13 +211,13 @@ function drawHtml(senators)
           let child = document.createElement("div")
           child.setAttribute("id", s.person.bioguideid)
           child.setAttribute("class", "card")
-          child.onclick = () => renderPopUp(s.person.bioguideid)
+          child.onclick = () => renderPopUp(s.person.bioguideid, senators)
           child.innerHTML = `
             <div class="name">${s.person.firstname} ${s.person.lastname}</div>
             <div class="party">${s.party}</div>
             <div class="state">${s.state}</div>
             <div class="gender">${s.person.gender}</div>
-            <div clalss="rank">${s.senator_rank_label}</div>
+            <div class="rank">${s.senator_rank_label}</div>
 
           `
           document.getElementById(party[1]).appendChild(child)
@@ -240,9 +240,25 @@ function appendProfileImage (imgSources)
 function renderPopUp(id, senators)
 {
     let popUp = document.getElementById("pop-up")
+    popUp.innerHTML = ""
     popUp.style.display = "block"
-    const close = document.createElement("div")
-    popUp.appendChild(close)
-    close.innerText = "X"
-    close.onclick = () => popUp.style.display = "none"
+    // const close = document.createElement("div")
+    // popUp.appendChild(close)
+    // close.innerText = "X"
+    popUp.onclick = () => popUp.style.display = "none"
+
+    senators.forEach((senator) => {
+      if (id == senator.person.bioguideid) {
+        popUp.innerHTML = `
+          <div class="pop-up-name">${senator.person.firstname} ${senator.person.lastname}</div>
+          <div class="pop-up-party">${senator.party}</div>
+          <div class="pop-up-office">Office: ${senator.extra.office}</div>
+          <div class="pop-up-dob">Date of dirth: ${senator.person.birthday}</div>
+          <div class="pop-up-startDate"> Start date: ${senator.startdate}</div>
+          ${senator.person.twitterid != null && `<div class="pop-up-twitter">Twitter: <a href="https://www.twitter.com/${senator.person.twitterid}">${senator.person.twitterid}</a></div>`}
+          ${senator.person.youtubeid != null && `<div class="pop-up-youtube">YouTube: <a href="https://www.youtube.com/${senator.person.youtubeid}">${senator.person.youtubeid}</a></div>`}
+          ${senator.website != null && `<div class="pop-up-youtube">Website: <a href="${senator.website}">${senator.website}</a></div>`}
+        `
+      }
+    })
 }
