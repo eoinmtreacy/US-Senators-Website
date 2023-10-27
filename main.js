@@ -5,65 +5,26 @@
  */
 class FilterOptions {
   constructor() {
-    this.rank = new Set();
-    this.gender = new Set();
-    this.state = new Set();
-    this.party = new Set();
+    this.state = {
+      rank: new Set(),
+      gender: new Set(),
+      state: new Set(),
+      party: new Set()
+    }
   }
 
   hasFilter(type, value) {
-    switch (type) {
-      case "rank":
-        return this.rank.has(value);
-      case "gender":
-        return this.gender.has(value);
-      case "party":
-        return this.party.has(value);
-      case "state":
-        return this.state.has(value);
-      default:
-        return;
-    }
+    return this.state[type].has(value);
   }
 
   // When a user selects a new filter, we call this to update our stored filter values
   addFilter(type, value) {
-    switch (type) {
-      case "rank":
-        this.rank.add(value);
-        break;
-      case "gender":
-        this.gender.add(value);
-        break;
-      case "party":
-        this.party.add(value);
-        break;
-      case "state":
-        this.state.add(value);
-        break;
-      default:
-        break;
-    }
+    return this.state[type].add(value);
   }
 
   // When a user unselects a filter, we call this to update our stored filter values
   removeFilter(type, value) {
-    switch (type) {
-      case "rank":
-        this.rank.delete(value);
-        break;
-      case "gender":
-        this.gender.delete(value);
-        break;
-      case "party":
-        this.party.delete(value);
-        break;
-      case "state":
-        this.state.delete(value);
-        break;
-      default:
-        break;
-    }
+    return this.state[type].delete(value);
   }
 }
 
@@ -148,6 +109,13 @@ function handleFilterSelected(e, filterId) {
     removeFilterTag(filterId, value);
   }
   applyFilterToSenatorElements(CURRENT_FILTER);
+}
+
+/**
+ * Function which removes all filters
+ */
+function handleResetClicked() {
+
 }
 
 /**
