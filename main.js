@@ -68,11 +68,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   /** DEMO PURPOSE ONLY BELOW **/
   let filteredList = filter(currentFilter);
-  console.log(filteredList); // filter is empty, should return all senators
-  currentFilter.addFilter("gender", "Female");
-  filteredList = filter(currentFilter);
-  console.log(filteredList); // Should only contain female senators
-  /** END DEMO SECTION */
+  drawHtml(filteredList)
+  // console.log(filteredList); // filter is empty, should return all senators
+  // currentFilter.addFilter("gender", "Female");
+  // filteredList = filter(currentFilter);
+  // console.log(filteredList); // Should only contain female senators
+  // /** END DEMO SECTION */
 });
 
 function loadFilterOptions() {
@@ -116,6 +117,12 @@ function filter(filterOptionsObj) {
       item.state = senator.state;
       item.rank = senator.senator_rank;
       item.gender = senator.person.gender_label;
+      item.office = senator.extra.office
+      item.dob = senator.person.birthday
+      item.startdate = senator.startdate
+      item.twitter = senator.person.twitterid
+      item.youtube = senator.person.youtubeid
+      item.website = senator.website
       output.push(item);
     }
   });
@@ -154,3 +161,58 @@ function drawFilters(filterOptions) {
 function capitalizeFirstLetter(str) {
   return str[0].toUpperCase() + str.slice(1);
 }
+
+// draw HTML elements
+
+function drawHtml (senators)
+{
+
+  const dem = []
+  const rep = []
+  const ind = []
+
+  senators.forEach(s => {
+    if (s.party == "Democrat") {
+      dem.push(s)
+    } else if (s.party == "Republican") {
+      rep.push(s)
+    } else {
+      ind.push(s)
+    }
+  }
+  )
+
+  const parties = [[dem, "Democrat"], [rep, "Republican"], [ind, "Independent"]]
+  parties.forEach(party => 
+    {
+      let partyBucket = document.createElement("div")
+      partyBucket.setAttribute("id", party[1]) // creating top level party name divs
+      document.getElementById("senator-container").appendChild(partyBucket)
+      let partyTitle = document.createElement("h1") // appending party names
+      partyTitle.innerText = party[1]
+      document.getElementById(party[1]).appendChild(partyTitle)
+      
+      // append card div with unique id to each grouping
+      // may have to change later unless we are always grouping by party
+      party[0].forEach(s =>
+        {
+          let child = document.createElement("div")
+          child.setAttribute("id", s.id)
+          child.setAttribute("class", "card")
+          child.innerHTML = `
+            <div class="name">${s.firstname} ${s.secondname}</div>
+            <div class="party">${s.party}</div>
+            <div class="state">${s.state}</div>
+            <div class="gender">${s.gender}</div>
+            <div clalss="rank">${s.rank}</div>
+
+          `
+          document.getElementById(party[1]).appendChild(child)
+        }
+      )
+    }
+  )
+
+  
+}
+
