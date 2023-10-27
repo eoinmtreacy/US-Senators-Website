@@ -192,10 +192,12 @@ function removeFilterTag(filterType, value, el, shouldRemoveFilter) {
 
   // TODO
   // Update the filtered options
-  const dropdownEl = document.getElementsByClassName(`dropdown-container ${filterType}`)[0];
+  const dropdownEl = document.getElementsByClassName(
+    `dropdown-container ${filterType}`
+  )[0];
   const optionEls = dropdownEl.getElementsByClassName(value);
-  console.log(optionEls)
-  filterOptionElements("", optionEls)
+  console.log(optionEls);
+  filterOptionElements("", optionEls);
 
   applyFilterToSenatorElements(currentFilter);
 }
@@ -235,7 +237,7 @@ function createDropdown(filterId, options) {
         handleFilterSelected(e, filterId);
         // If the input has text, clear it
         textInputEl.value = "";
-        filterOptionElements("", optionEls)
+        filterOptionElements("", optionEls);
       };
 
       optionEl.appendChild(inputEl);
@@ -267,7 +269,7 @@ function createDropdown(filterId, options) {
   // Handle input
   textInputEl.oninput = (e) => {
     const { value } = e.target;
-    filterOptionElements(value, optionEls)
+    filterOptionElements(value, optionEls);
   };
 
   return dropdownContainerEl;
@@ -336,7 +338,7 @@ function drawFilters(filterOptions) {
 }
 
 function filterOptionElements(value, els) {
-  console.log(els)
+  console.log(els);
   const optionsToUpdate = {
     hide: [],
     show: [],
@@ -367,21 +369,50 @@ function createFontAwesomeIcon(iconName, handleClick) {
   return icon;
 }
 
-// draw HTML elements
 function drawHtml(senators) {
-  senators.forEach((s) => {
-    let child = document.createElement("div");
-    child.setAttribute("id", s.id);
-    child.innerHTML = `
-      <span>${s.firstname}</span>
-      <span>${s.secondname}</span>
-      <span>${s.party}</span>
-      <span>${s.state}</span>
-      <span>${s.gender}</span>
-      <span>${s.rank}</span>
-      `;
+  const dem = [];
+  const rep = [];
+  const ind = [];
 
-    document.getElementById("senator-container").appendChild(child);
+  senators.forEach((s) => {
+    if (s.party == "Democrat") {
+      dem.push(s);
+    } else if (s.party == "Republican") {
+      rep.push(s);
+    } else {
+      ind.push(s);
+    }
+  });
+
+  const parties = [
+    [dem, "Democrat"],
+    [rep, "Republican"],
+    [ind, "Independent"],
+  ];
+  parties.forEach((party) => {
+    let partyBucket = document.createElement("div");
+    partyBucket.setAttribute("id", party[1]); // creating top level party name divs
+    document.getElementById("senator-container").appendChild(partyBucket);
+    let partyTitle = document.createElement("h1"); // appending party names
+    partyTitle.innerText = party[1];
+    document.getElementById(party[1]).appendChild(partyTitle);
+
+    // append card div with unique id to each grouping
+    // may have to change later unless we are always grouping by party
+    party[0].forEach((s) => {
+      let child = document.createElement("div");
+      child.setAttribute("id", s.id);
+      child.setAttribute("class", "card");
+      child.innerHTML = `
+            <div class="name">${s.firstname} ${s.secondname}</div>
+            <div class="party">${s.party}</div>
+            <div class="state">${s.state}</div>
+            <div class="gender">${s.gender}</div>
+            <div clalss="rank">${s.rank}</div>
+
+          `;
+      document.getElementById(party[1]).appendChild(child);
+    });
   });
 }
 
