@@ -13,10 +13,16 @@ button {
 }
 
 h1 {
+  font-family: "League Spartan", sans-serif;
+  font-weight: 800;
+  font-size: 4.5rem;
 }
 h2 {
 }
 h3 {
+  font-family: "Montserrat", sans-serif;
+  font-family: "Sanchez", serif;
+  text-transform: uppercase;
 }
 h4 {
 }
@@ -27,7 +33,41 @@ a {
 
 #page-container {
   /* Your styles for #page-container here */
-  border: 1px solid green;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#page-container .section {
+  border: 1px solid blue;
+  min-height: 90vh;
+}
+
+#landing.section {
+  background: radial-gradient(
+      circle at 0% 0%,
+      rgb(81, 112, 255) 0%,
+      rgb(255, 102, 196) 100%
+    )
+    0px 0px / 256px 256px;
+  background-size: contain;
+  color: #fff;
+}
+
+#landing.section .header {
+  margin: 2rem;
+}
+
+#landing.section h1, #landing.section h3 {
+  margin: 0;
+}
+
+/* TODO: replace with real div elemets */
+#senate-floor-graphic-container img {
+  position: relative;
+  top: -10rem;
+  left: -3rem;
+  height: 28rem;
 }
 
 /* START SUMMARY CONTAINER */

@@ -14,32 +14,91 @@
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400;500;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700;800&family=Montserrat:wght@100;300;400;500;700&family=Sanchez:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
     <title>Senators</title>
   </head>
   <body>
     <div id="page-container">
-      <div id="summary-container">
-        <div id="democrat-summary">
-          <div>Democrats:<span>10</span></div>
-          <div>Senate Minority Leader: Chuck Schumer (Democrat)</div>
-          <div>Senate Minority Leader: Chuck Schumer (Democrat)</div>
-          <div>Senate Minority Leader: Chuck Schumer (Democrat)</div>
+      <!-- LANDING HERO -->
+      <div class="section" id="landing">
+        <div class="header">
+          <h3>meet the</h3>
+          <h1>senators</h1>
+          <h1>of the</h1>
+          <h1>united</h1>
+          <h1>states.</h1>
         </div>
-        <div id="republican-summary">
-          <div>Republicans:<span>14</span></div>
-          <div>Senate Minority Leader: Mitch McConnell (Republican)</div>
-          <div>Senate Minority Leader: Mitch McConnell (Republican)</div>
-          <div>Senate Minority Leader: Mitch McConnell (Republican)</div>
+        <div id="senate-floor-graphic-container">
+          <img src="images/dummy-floor-graphic.png" />
         </div>
-      </div>
-      <div id="filter-container">
-        <h3>Filters</h3>
-        <div id="filter-tag-container">
-          <!-- TODO: lots of styling decisions to be made here -->
+        <div class="cta text">
+          <p>view all</p>
+          <i class="fa fa-chevron-down"></i>
         </div>
       </div>
+      <!-- OVERVIEW -->
+      <div class="section" id="party-counts">
+        <div class="header">
+          <h1>50 states.</h1>
+          <h1>100 senators.</h1>
+          <h1>1 nation.</h1>
+        </div>
+        <!-- TODO: the size of the bubble should be relative to size of the party - do in JS -->
+        <div class="count-bubble" id="democrat-count">
+          <div class="count">66</div>
+          <div class="party">democrats</div>
+        </div>
+        <div class="count-bubble" id="republican-count">
+          <div class="count">34</div>
+          <div class="party">republicans</div>
+        </div>
+        <div class="count-bubble" id="independent-count">
+          <div class="count">3</div>
+          <div class="party">independents</div>
+        </div>
+        <button class="cta button">view all</button>
+      </div>
+      <!-- LEADERS -->
+      <div class="section" id="leader-list">
+        <h1>leading cast.</h1>
+        <h3>Democrats</h3>
+        <!-- TODO: insert democrats and titles here -->
+        <div class="leadership-title">Assistant Senate Majority Leader</div>
+        <div class="name">Patty Murray</div>
 
-      <div id="senator-container"></div>
+        <!-- TODO: insert republicans and titles here -->
+        <h3>Republicans</h3>
+        <div class="leadership-title">Assistant Senate Majority Leader</div>
+        <div class="name">Patty Murray</div>
+        <button class="cta button">view all</button>
+      </div>
+      <!-- STATS -->
+      <div class="section" id="stats">
+        <h1>the stats.</h1>
+        <div id="gender-stats-container"></div>
+        <div id="average-age-container"></div>
+        <div id="years-in-office-container"></div>
+      </div>
+      <!-- FULL LIST -->
+      <div class="section" id="senators-list">
+        <h1>meet the team.</h1>
+        <div id="search-container"></div>
+        <i class="fa fa-filter"></i>
+        <div id="senators-container">
+          <div class="senator-card"></div>
+          <div class="senator-card"></div>
+          <div class="senator-card"></div>
+          <div class="senator-card"></div>
+          <div class="senator-card"></div>
+        </div>
+      </div>
     </div>
   </body>
   <script src="./main.js" type="module"></script>
