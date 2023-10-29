@@ -1,8 +1,9 @@
 /* START GLOBAL STYLES */
 body,
-html {
+html,
+p {
   margin: 0;
-  font-family: "Montserrat", sans-serif;
+  font-family: "League Spartan", sans-serif;
 }
 
 button {
@@ -13,6 +14,7 @@ button {
 }
 
 h1 {
+  margin: 0;
   font-family: "League Spartan", sans-serif;
   font-weight: 800;
   font-size: 4.5rem;
@@ -29,6 +31,14 @@ h4 {
 
 a {
 }
+
+.dark {
+  color: #041a91;
+}
+
+.light {
+  color: #fff;
+}
 /* END GLOBAL STYLES */
 
 #page-container {
@@ -36,11 +46,20 @@ a {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  overflow: hidden;
 }
 
 #page-container .section {
-  border: 1px solid blue;
-  min-height: 90vh;
+  min-height: 85vh;
+  overflow: hidden;
+  padding: 2rem;
+}
+
+.section .content {
+  position: relative;
+  width: 800px;
+  margin: 0 auto;
+  min-height: 85vh;
 }
 
 #landing.section {
@@ -54,20 +73,94 @@ a {
   color: #fff;
 }
 
-#landing.section .header {
-  margin: 2rem;
+img#usa-map {
+  height: 90vh;
+  position: absolute;
+  opacity: 15%;
 }
 
-#landing.section h1, #landing.section h3 {
+.header {
+  position: relative;
+  z-index: 1;
+}
+
+.header.right {
+  text-align: right;
+}
+.header.left {
+  text-align: left;
+}
+
+#landing.section h1,
+#landing.section h3 {
   margin: 0;
 }
 
 /* TODO: replace with real div elemets */
 #senate-floor-graphic-container img {
-  position: relative;
-  top: -10rem;
-  left: -3rem;
-  height: 28rem;
+  position: absolute;
+  top: 62%;
+  left: 56%;
+  transform: translate(-50%, -50%);
+  height: 65%;
+}
+
+.cta {
+  position: absolute;
+  bottom: 0;
+  left: 325px;
+  width: 150px;
+  color: white;
+  text-transform: uppercase;
+  font-size: 1rem;
+  font-family: "League Spartan", sans-serif;
+  cursor: pointer;
+}
+
+.cta.button {
+  background-color: #041A91;
+  border-radius: 5px;
+  height: 50px;
+  bottom: -25px;
+}
+
+.cta.text {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cta.text:hover {
+  color: #041a91;
+}
+
+.count-bubble {
+  color: #fff;
+  border-radius: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: absolute;
+}
+
+.count-bubble:nth-of-type(1) {
+  top: 50px;
+}
+
+.independent {
+  background-color: #767676;
+}
+.republican {
+  background-color: #911304;
+}
+.democrat {
+  background-color: #041a91;
+}
+
+.count-bubble .party {
+  margin: -10px 0 0 0;
 }
 
 /* START SUMMARY CONTAINER */
@@ -106,11 +199,6 @@ a {
 
 .filter-section-header:first-of-type {
   border-top: 1px solid #dadce0;
-}
-
-.fa.fa-chevron-down {
-  color: #9e9ea0;
-  font-size: 10px;
 }
 
 .filter-section-header h5 {

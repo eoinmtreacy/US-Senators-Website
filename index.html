@@ -28,75 +28,95 @@
     <div id="page-container">
       <!-- LANDING HERO -->
       <div class="section" id="landing">
-        <div class="header">
-          <h3>meet the</h3>
-          <h1>senators</h1>
-          <h1>of the</h1>
-          <h1>united</h1>
-          <h1>states.</h1>
-        </div>
-        <div id="senate-floor-graphic-container">
-          <img src="images/dummy-floor-graphic.png" />
-        </div>
-        <div class="cta text">
-          <p>view all</p>
-          <i class="fa fa-chevron-down"></i>
+        <div class="content">
+          <img src="images/usa-map.png" id="usa-map">
+          <div class="header left light">
+            <h3>meet the</h3>
+            <h1>senators</h1>
+            <h1>of the</h1>
+            <h1>united</h1>
+            <h1>states.</h1>
+          </div>
+          <div id="senate-floor-graphic-container">
+            <img src="images/dummy-floor-graphic.png" />
+          </div>
+          <div class="cta text">
+            <p>view all</p>
+            <i class="fa fa-chevron-down"></i>
+          </div>
         </div>
       </div>
       <!-- OVERVIEW -->
       <div class="section" id="party-counts">
-        <div class="header">
-          <h1>50 states.</h1>
-          <h1>100 senators.</h1>
-          <h1>1 nation.</h1>
+        <div class="content">
+          <div class="header right dark">
+            <h1>50 states.</h1>
+            <h1>100 senators.</h1>
+            <h1>1 nation.</h1>
+          </div>
+          <!-- TODO: the size of the bubble should be relative to size of the party - do in JS -->
+          <div
+            class="count-bubble democrat"
+            style="width: 350px; height: 350px; top: 100px"
+          >
+            <h1 class="count" style="font-size: 10rem;">66</h1>
+            <h3 class="party">democrats</h3>
+          </div>
+          <div
+            class="count-bubble republican"
+            style="width: 300px; height: 300px; top: 240px; right: 0"
+          >
+            <h1 class="count" style="font-size: 8rem;">34</h1>
+            <h3 class="party">republicans</h3>
+          </div>
+          <div
+            class="count-bubble independent"
+            style="width: 200px; height: 200px; left: 300px; top: 350px;"
+          >
+            <h1 class="count">3</h1>
+            <h3 class="party">independents</h3>
+          </div>
+          <button class="cta button">view all</button>
         </div>
-        <!-- TODO: the size of the bubble should be relative to size of the party - do in JS -->
-        <div class="count-bubble" id="democrat-count">
-          <div class="count">66</div>
-          <div class="party">democrats</div>
-        </div>
-        <div class="count-bubble" id="republican-count">
-          <div class="count">34</div>
-          <div class="party">republicans</div>
-        </div>
-        <div class="count-bubble" id="independent-count">
-          <div class="count">3</div>
-          <div class="party">independents</div>
-        </div>
-        <button class="cta button">view all</button>
       </div>
       <!-- LEADERS -->
       <div class="section" id="leader-list">
-        <h1>leading cast.</h1>
-        <h3>Democrats</h3>
-        <!-- TODO: insert democrats and titles here -->
-        <div class="leadership-title">Assistant Senate Majority Leader</div>
-        <div class="name">Patty Murray</div>
+        <div class="content">
+          <h1>leading cast.</h1>
+          <h3>Democrats</h3>
+          <!-- TODO: insert democrats and titles here -->
+          <div class="leadership-title">Assistant Senate Majority Leader</div>
+          <div class="name">Patty Murray</div>
 
-        <!-- TODO: insert republicans and titles here -->
-        <h3>Republicans</h3>
-        <div class="leadership-title">Assistant Senate Majority Leader</div>
-        <div class="name">Patty Murray</div>
-        <button class="cta button">view all</button>
+          <!-- TODO: insert republicans and titles here -->
+          <h3>Republicans</h3>
+          <div class="leadership-title">Assistant Senate Majority Leader</div>
+          <div class="name">Patty Murray</div>
+          <button class="cta button">view all</button>
+        </div>
       </div>
       <!-- STATS -->
       <div class="section" id="stats">
-        <h1>the stats.</h1>
-        <div id="gender-stats-container"></div>
-        <div id="average-age-container"></div>
-        <div id="years-in-office-container"></div>
+        <div class="content">
+          <h1>the stats.</h1>
+          <div id="gender-stats-container"></div>
+          <div id="average-age-container"></div>
+          <div id="years-in-office-container"></div>
+        </div>
       </div>
       <!-- FULL LIST -->
       <div class="section" id="senators-list">
-        <h1>meet the team.</h1>
-        <div id="search-container"></div>
-        <i class="fa fa-filter"></i>
-        <div id="senators-container">
-          <div class="senator-card"></div>
-          <div class="senator-card"></div>
-          <div class="senator-card"></div>
-          <div class="senator-card"></div>
-          <div class="senator-card"></div>
+        <div class="content">
+          <h1>meet the team.</h1>
+          <div id="search-container"></div>
+          <i class="fa fa-filter"></i>
+          <div id="senators-container">
+            <div class="senator-card"></div>
+            <div class="senator-card"></div>
+            <div class="senator-card"></div>
+            <div class="senator-card"></div>
+            <div class="senator-card"></div>
+          </div>
         </div>
       </div>
     </div>
