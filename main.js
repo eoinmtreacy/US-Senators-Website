@@ -92,7 +92,7 @@ if (isSenatorsLoaded) {
   var CURRENT_FILTER = new FilterOptions();
 
   // 2. Fetch all our images
-  const imgSources = fetch("./data/imgSources.json")
+  const imgSources = await fetch("./data/imgSources.json")
     .then((response) => response.json())
     .then((data) => {
       return data
@@ -491,6 +491,6 @@ function appendProfileImage(imgSources) {
   Object.keys(imgSources).forEach((key) => {
     let image = document.createElement("img");
     image.setAttribute("src", imgSources[key]);
-    document.getElementById([key]).appendChild(image);
+    document.getElementById([key]).insertBefore(image, document.getElementById([key]).firstChild);
   });
 }

@@ -244,6 +244,7 @@ a {
 
 .card div {
   display: block;
+  width: 50%;
   margin: 0;
 }
 
