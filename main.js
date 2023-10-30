@@ -584,30 +584,41 @@ function circles (senators)
 
   let target = document.getElementById("senate-floor-graphic-container")
 
-  function drawDots(bucket, rad, startX, startY, dist)
+  function drawDots(bucket, rad, startX, startY, dist, imgSources)
   {
     let x = startX
     let y = startY
     let inc = 10
     bucket.forEach(b => 
       {
-      x = calcX(x, inc, rad, dist)
-      y = calcY(y, inc, rad, dist)
-      inc ++
-      let dot = document.createElement("a")
-      target.appendChild(dot)
-      dot.setAttribute("class", "dot")
-      dot.setAttribute("href", `#${b.id}`)
-      dot.style.left = `${x}px`
-      dot.style.bottom = `${y}px`
-      if (b.party == "democrat")
-      {
-        dot.style.backgroundColor = "blue"
-      }
-      else if (b.party == "republican") 
-      {
-        dot.style.backgroundColor = "red"
-      }
+
+        //draw each dot link
+        let dot = document.createElement("div")
+        target.appendChild(dot)
+        dot.setAttribute("class", "dot")
+        let link = document.createElement("a")
+        link.setAttribute("href", `#${b.id}`)
+        dot.appendChild(link)
+        let image = document.createElement("img")
+        image.setAttribute("src", `${b.imageUrl}`)
+        dot.appendChild(image)
+
+        //find coorindates for each dot based on previous
+        x = calcX(x, inc, rad, dist)
+        y = calcY(y, inc, rad, dist)
+        inc ++
+        dot.style.left = `${x}px`
+        dot.style.bottom = `${y}px`
+
+        //change color depending on party
+        if (b.party == "democrat")
+        {
+          dot.style.backgroundColor = "blue"
+        }
+        else if (b.party == "republican") 
+        {
+          dot.style.backgroundColor = "red"
+        }
 
       }
     )
@@ -632,7 +643,7 @@ function circles (senators)
 
   buckets.forEach((bucket) =>
   {
-    drawDots(bucket, 0.1571, startX, 20, dist)
+    drawDots(bucket, 0.1571, startX, 20, dist, fetchImages)
     startX -= 27.5
     dist -= 4
   })

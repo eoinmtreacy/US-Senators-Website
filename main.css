@@ -151,6 +151,27 @@ img#usa-map {
   bottom: 0;
 }
 
+.dot a {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+}
+
+.dot img {
+  display: none;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+}
+
+.dot img:hover {
+  display: block;
+}
+
 .cta {
   color: white;
   text-transform: uppercase;
