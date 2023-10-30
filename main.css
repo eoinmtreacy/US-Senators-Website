@@ -136,6 +136,20 @@ img#usa-map {
   height: 65%;
 }
 
+#senate-floor-graphic-container {
+  position: relative;
+}
+
+.dot {
+  height: 20px;
+  width: 20px;
+  background-color: red;
+  border-radius: 50%;
+  position: absolute;
+  float: left;
+  bottom: 0;
+}
+
 .cta {
   color: white;
   text-transform: uppercase;
