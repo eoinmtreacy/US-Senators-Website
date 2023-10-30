@@ -599,8 +599,19 @@ function circles (senators)
       dot.setAttribute("class", "dot")
       dot.style.left = `${x}px`
       dot.style.bottom = `${y}px`
+      if (b.party == "democrat")
+      {
+        dot.style.backgroundColor = "blue"
+      }
+      else if (b.party == "republican") 
+      {
+        dot.style.backgroundColor = "red"
+      }
+
       }
     )
+
+    
   }
 
   function calcX(x, inc, rad, dist) 
