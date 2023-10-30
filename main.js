@@ -594,9 +594,10 @@ function circles (senators)
       x = calcX(x, inc, rad, dist)
       y = calcY(y, inc, rad, dist)
       inc ++
-      let dot = document.createElement("div")
+      let dot = document.createElement("a")
       target.appendChild(dot)
       dot.setAttribute("class", "dot")
+      dot.setAttribute("href", `#${b.id}`)
       dot.style.left = `${x}px`
       dot.style.bottom = `${y}px`
       if (b.party == "democrat")
