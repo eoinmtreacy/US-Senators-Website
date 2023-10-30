@@ -25,9 +25,41 @@ a {
 }
 /* END GLOBAL STYLES */
 
+#pop-up {
+  display: none;
+  position: fixed;
+  background: white;
+  border: 1px solid black;
+  border-radius: 5%;
+  height: 300px;
+  width: 300px;
+  margin: auto;
+  z-index: 3;
+}
+
+#pop-up img {
+  width: 25%;
+}
+
 #page-container {
   /* Your styles for #page-container here */
   border: 1px solid green;
+}
+
+#curtain {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: black;
+  opacity: 30%;
+  z-index: 1;
+}
+
+#close {
+  
 }
 
 /* START SUMMARY CONTAINER */
