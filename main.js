@@ -88,7 +88,7 @@ if (isSenatorsLoaded) {
   var CURRENT_FILTER = new FilterOptions();
 
   // 3. Draw our page
-  // drawFilters(FILTER_OPTIONS);
+  drawFilters(FILTER_OPTIONS);
   drawHtml(ALL_SENATORS);
 }
 
@@ -157,33 +157,30 @@ function filter(filterOptionsObj) {
   let output = [];
   ALL_SENATORS.forEach((senator) => {
     if (
-      (filterOptionsObj.rank.has(senator.senator_rank) ||
-        !filterOptionsObj.rank.size) &&
-      (filterOptionsObj.gender.has(senator.person.gender) ||
-        !filterOptionsObj.gender.size) &&
-      (filterOptionsObj.state.has(senator.state) ||
-        !filterOptionsObj.state.size) &&
-      (filterOptionsObj.party.has(senator.party) ||
-        !filterOptionsObj.party.size)
+      isIncluded(filterOptionsObj, "rank", senator.rank) &&
+      isIncluded(filterOptionsObj, "gender", senator.gender) &&
+      isIncluded(filterOptionsObj, "state", senator.state) &&
+      isIncluded(filterOptionsObj, "party", senator.party)
     ) {
-      let item = new Object();
-      item.id = senator.person.bioguideid;
-      item.firstname = senator.person.firstname;
-      item.secondname = senator.person.lastname;
-      item.party = senator.party;
-      item.state = senator.state;
-      item.rank = senator.senator_rank;
-      item.gender = senator.person.gender;
-      item.office = senator.extra.office;
-      item.dob = senator.person.birthday;
-      item.startdate = senator.startdate;
-      item.twitter = senator.person.twitterid;
-      item.youtube = senator.person.youtubeid;
-      item.website = senator.website;
-      output.push(item);
+      output.push(senator);
     }
   });
   return output;
+}
+
+function isIncluded(filterOptionsObj, filterType, value) {
+  return (
+    filterOptionsObj.state[filterType].has(value) ||
+    !filterOptionsObj.state[filterType].size
+  );
+}
+
+function handleFilterIconClicked() {
+  // show filter popup
+  const filterContainer = document.getElementById("filter-container");
+  const isHidden = filterContainer.style.visibility === "hidden";
+  filterContainer.style.visibility = isHidden ? "visible" : "hidden";
+  filterContainer.style.right = isHidden ? "-225px" : "-500px";
 }
 
 /**
@@ -194,8 +191,8 @@ function applyFilterToSenatorElements(filterOptions) {
   let senatorsToShow = filter(filterOptions);
   let senatorIds = senatorsToShow.map((s) => s.id);
   for (let senator of ALL_SENATORS) {
-    let senatorEl = document.getElementById(senator.person.bioguideid);
-    senatorEl.hidden = !senatorIds.includes(senator.person.bioguideid);
+    let senatorEl = document.getElementById(senator.id);
+    senatorEl.hidden = !senatorIds.includes(senator.id);
   }
 }
 
@@ -204,7 +201,7 @@ function drawFilterTag(filterType, value) {
 
   var tagEl = document.createElement("div");
   tagEl.classList = `tag ${value}`;
-  tagEl.innerText = value;
+  tagEl.innerText = capitalizeFirstLetter(value);
 
   var deleteEl = createFontAwesomeIcon("close", () =>
     removeFilterTag(filterType, value, tagEl, true)
@@ -250,14 +247,10 @@ function createDropdown(filterId, options) {
   dropdownContainerEl.classList.add("dropdown-container");
   dropdownContainerEl.classList.add(filterId);
 
-  let textInputContainer = document.createElement("div");
-  textInputContainer.className = "text-input-container";
-  let textInputEl = document.createElement("input");
-  textInputEl.type = "text";
-
-  let searchIcon = createFontAwesomeIcon("search");
-  textInputContainer.append(searchIcon, textInputEl);
+  let textInputContainer = createTextSearchBox();
   dropdownContainerEl.appendChild(textInputContainer);
+
+  let textInputEl = textInputContainer.getElementsByTagName("input")[0];
 
   let dropdownEl = document.createElement("div");
   dropdownEl.className = "dropdown";
@@ -318,24 +311,15 @@ function createDropdown(filterId, options) {
   return dropdownContainerEl;
 }
 
-// TODO: use this for sorts
-function createButtonGroup(options) {
-  let filterInputEl = document.createElement("div");
-  filterInputEl.classList.add("button-group");
+function createTextSearchBox() {
+  let textInputContainer = document.createElement("div");
+  textInputContainer.className = "text-input-container";
+  let textInputEl = document.createElement("input");
+  textInputEl.type = "text";
 
-  Array.from(options)
-    .sort()
-    .forEach((option) => {
-      let optionEl = document.createElement("div");
-      optionEl.classList.add(option);
-
-      let buttonEl = document.createElement("button");
-      buttonEl.innerText = capitalizeFirstLetter(option);
-      // TODO
-      buttonEl.onchange = (e) => handleFilterSelected(e, filterId);
-      filterInputEl.appendChild(buttonEl);
-    });
-  return filterInputEl;
+  let searchIcon = createFontAwesomeIcon("search");
+  textInputContainer.append(searchIcon, textInputEl);
+  return textInputContainer;
 }
 
 /**
@@ -352,7 +336,35 @@ function createButtonGroup(options) {
  *
  */
 function drawFilters(filterOptions) {
-  let filterContainer = document.getElementById("filter-container");
+  // Create the "filter header" at the top of our senator list (search box + filter icon)
+  let filterHeaderEl = document.getElementById("filter-header");
+
+  // Create container for the tags
+  let filterTagContainer = document.createElement("div");
+  filterTagContainer.id = "filter-tag-container";
+  filterHeaderEl.appendChild(filterTagContainer);
+
+  // Create text input for searching by name
+  let textInputContainerEl = createTextSearchBox();
+  filterHeaderEl.appendChild(textInputContainerEl);
+
+  // Create filter icon which opens filter menu when clicked
+  let filterIconEl = createFontAwesomeIcon(
+    "filter",
+    handleFilterIconClicked,
+    "dark"
+  );
+  filterHeaderEl.appendChild(filterIconEl);
+
+  // Create filter pop-up container
+  let filterContainer = document.createElement("div");
+  filterContainer.id = "filter-container";
+  filterContainer.style.visibility = "hidden";
+  filterHeaderEl.appendChild(filterContainer);
+
+  let filterContainerHeader = document.createElement("h2");
+  filterContainerHeader.innerText = "Filters";
+  filterContainer.appendChild(filterContainerHeader);
 
   Object.entries(filterOptions).forEach(([key, val]) => {
     let filterId = key;
@@ -432,25 +444,6 @@ function createFontAwesomeIcon(iconName, handleClick, className) {
  *
  */
 function drawHtml(senators) {
-  const dem = [];
-  const rep = [];
-  const ind = [];
-
-  senators.forEach((s) => {
-    if (s.party == "Democrat") {
-      dem.push(s);
-    } else if (s.party == "Republican") {
-      rep.push(s);
-    } else {
-      ind.push(s);
-    }
-  });
-  const parties = [
-    [dem, "Democrat"],
-    [rep, "Republican"],
-    [ind, "Independent"],
-  ];
-
   let container = document.getElementById("senators-container");
   senators.forEach((senator) => {
     let card = document.createElement("div");
@@ -469,8 +462,10 @@ function drawHtml(senators) {
     cardLine1.innerHTML = `
       <div class="name">${senator.firstname} ${senator.secondname}</div>
       <div class="state">${senator.state}</div>`;
-  
-    cardLine1.appendChild(createFontAwesomeIcon(senator.gender, null, "gender"));
+
+    cardLine1.appendChild(
+      createFontAwesomeIcon(senator.gender, null, "gender")
+    );
     card.appendChild(cardLine1);
 
     let cardLine2 = document.createElement("div");
