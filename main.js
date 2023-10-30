@@ -9,8 +9,8 @@ class FilterOptions {
       rank: new Set(),
       gender: new Set(),
       state: new Set(),
-      party: new Set()
-    }
+      party: new Set(),
+    };
   }
 
   hasFilter(type, value) {
@@ -32,10 +32,9 @@ class FilterOptions {
       rank: new Set(),
       gender: new Set(),
       state: new Set(),
-      party: new Set()
-    }
+      party: new Set(),
+    };
   }
-
 }
 
 var isSenatorsLoaded = false;
@@ -46,33 +45,52 @@ const STATE = "state";
 const RANK = "rank";
 const GENDER = "gender";
 
+const fetchSenators = fetch("./data/senators.json").then((response) =>
+  response.json()
+);
+const fetchImages = fetch("./data/imgSources.json").then((response) =>
+  response.json()
+);
+
 // 1. Fetch our senator data
-const ALL_SENATORS = await fetch("./data/senators.json")
-  .then((response) => response.json())
-  .then((data) => {
+var ALL_SENATORS = await Promise.all([fetchSenators, fetchImages])
+  .then(([senators, images]) => {
+    console.log(senators, images);
     isSenatorsLoaded = true;
-    return data.objects;
+    return senators.objects.map((o) => ({
+      id: o.person.bioguideid,
+      firstname: o.person.firstname,
+      secondname: o.person.lastname,
+      nickname: o.person.nickname,
+      party: o.party.toLowerCase(),
+      state: o.state,
+      rank: o.senator_rank,
+      gender: o.person.gender,
+      office: o.extra.office,
+      dob: o.person.birthday,
+      age: new Date().getFullYear() - new Date(o.person.birthday).getFullYear(),
+      startdate: o.startdate,
+      twitter: o.person.twitterid,
+      youtube: o.person.youtubeid,
+      website: o.website,
+      leadership_title: o.leadership_title,
+      imageUrl: images[o.person.bioguideid],
+    }));
   })
-  .catch(() => {
+  .catch((e) => {
     // TODO: render some error element
+    console.error(e);
   });
 
 if (isSenatorsLoaded) {
+  console.log(ALL_SENATORS);
   const FILTER_OPTIONS = loadFilterOptions(ALL_SENATORS);
-
   var CURRENT_FILTER = new FilterOptions();
-
-  // 2. Fetch all our images
-  fetch("./data/imgSources.json")
-    .then((response) => response.json())
-    .then((data) => {
-      const imgSources = data;
-      appendProfileImage(imgSources);
-    });
 
   // 3. Draw our page
   drawFilters(FILTER_OPTIONS);
-  drawHtml(ALL_SENATORS);
+  drawSenators(ALL_SENATORS);
+  drawSenatorPopup();
 }
 
 /**
@@ -92,8 +110,8 @@ function loadFilterOptions(senators) {
   senators.forEach((senator) => {
     filterOptions[PARTY].add(senator.party);
     filterOptions[STATE].add(senator.state);
-    filterOptions[RANK].add(senator.senator_rank);
-    filterOptions[GENDER].add(senator.person.gender);
+    filterOptions[RANK].add(senator.rank);
+    filterOptions[GENDER].add(senator.gender);
   });
 
   return filterOptions;
@@ -140,33 +158,30 @@ function filter(filterOptionsObj) {
   let output = [];
   ALL_SENATORS.forEach((senator) => {
     if (
-      (filterOptionsObj.rank.has(senator.senator_rank) ||
-        !filterOptionsObj.rank.size) &&
-      (filterOptionsObj.gender.has(senator.person.gender_label) ||
-        !filterOptionsObj.gender.size) &&
-      (filterOptionsObj.state.has(senator.state) ||
-        !filterOptionsObj.state.size) &&
-      (filterOptionsObj.party.has(senator.party) ||
-        !filterOptionsObj.party.size)
+      isIncluded(filterOptionsObj, "rank", senator.rank) &&
+      isIncluded(filterOptionsObj, "gender", senator.gender) &&
+      isIncluded(filterOptionsObj, "state", senator.state) &&
+      isIncluded(filterOptionsObj, "party", senator.party)
     ) {
-      let item = new Object();
-      item.id = senator.person.bioguideid;
-      item.firstname = senator.person.firstname;
-      item.secondname = senator.person.lastname;
-      item.party = senator.party;
-      item.state = senator.state;
-      item.rank = senator.senator_rank;
-      item.gender = senator.person.gender_label;
-      item.office = senator.extra.office;
-      item.dob = senator.person.birthday;
-      item.startdate = senator.startdate;
-      item.twitter = senator.person.twitterid;
-      item.youtube = senator.person.youtubeid;
-      item.website = senator.website;
-      output.push(item);
+      output.push(senator);
     }
   });
   return output;
+}
+
+function isIncluded(filterOptionsObj, filterType, value) {
+  return (
+    filterOptionsObj.state[filterType].has(value) ||
+    !filterOptionsObj.state[filterType].size
+  );
+}
+
+function handleFilterIconClicked() {
+  // show filter popup
+  const filterContainer = document.getElementById("filter-container");
+  const isHidden = filterContainer.style.visibility === "hidden";
+  filterContainer.style.visibility = isHidden ? "visible" : "hidden";
+  filterContainer.style.right = isHidden ? "-225px" : "-500px";
 }
 
 /**
@@ -177,8 +192,8 @@ function applyFilterToSenatorElements(filterOptions) {
   let senatorsToShow = filter(filterOptions);
   let senatorIds = senatorsToShow.map((s) => s.id);
   for (let senator of ALL_SENATORS) {
-    let senatorEl = document.getElementById(senator.person.bioguideid);
-    senatorEl.hidden = !senatorIds.includes(senator.person.bioguideid);
+    let senatorEl = document.getElementById(senator.id);
+    senatorEl.hidden = !senatorIds.includes(senator.id);
   }
 }
 
@@ -187,7 +202,7 @@ function drawFilterTag(filterType, value) {
 
   var tagEl = document.createElement("div");
   tagEl.classList = `tag ${value}`;
-  tagEl.innerText = value;
+  tagEl.innerText = capitalizeFirstLetter(value);
 
   var deleteEl = createFontAwesomeIcon("close", () =>
     removeFilterTag(filterType, value, tagEl, true)
@@ -233,14 +248,10 @@ function createDropdown(filterId, options) {
   dropdownContainerEl.classList.add("dropdown-container");
   dropdownContainerEl.classList.add(filterId);
 
-  let textInputContainer = document.createElement("div");
-  textInputContainer.className = "text-input-container";
-  let textInputEl = document.createElement("input");
-  textInputEl.type = "text";
-
-  let searchIcon = createFontAwesomeIcon("search");
-  textInputContainer.append(searchIcon, textInputEl);
+  let textInputContainer = createTextSearchBox();
   dropdownContainerEl.appendChild(textInputContainer);
+
+  let textInputEl = textInputContainer.getElementsByTagName("input")[0];
 
   let dropdownEl = document.createElement("div");
   dropdownEl.className = "dropdown";
@@ -301,24 +312,15 @@ function createDropdown(filterId, options) {
   return dropdownContainerEl;
 }
 
-// TODO: use this for sorts
-function createButtonGroup(options) {
-  let filterInputEl = document.createElement("div");
-  filterInputEl.classList.add("button-group");
+function createTextSearchBox() {
+  let textInputContainer = document.createElement("div");
+  textInputContainer.className = "text-input-container";
+  let textInputEl = document.createElement("input");
+  textInputEl.type = "text";
 
-  Array.from(options)
-    .sort()
-    .forEach((option) => {
-      let optionEl = document.createElement("div");
-      optionEl.classList.add(option);
-
-      let buttonEl = document.createElement("button");
-      buttonEl.innerText = capitalizeFirstLetter(option);
-      // TODO
-      buttonEl.onchange = (e) => handleFilterSelected(e, filterId);
-      filterInputEl.appendChild(buttonEl);
-    });
-  return filterInputEl;
+  let searchIcon = createFontAwesomeIcon("search");
+  textInputContainer.append(searchIcon, textInputEl);
+  return textInputContainer;
 }
 
 /**
@@ -335,7 +337,35 @@ function createButtonGroup(options) {
  *
  */
 function drawFilters(filterOptions) {
-  let filterContainer = document.getElementById("filter-container");
+  // Create the "filter header" at the top of our senator list (search box + filter icon)
+  let filterHeaderEl = document.getElementById("filter-header");
+
+  // Create container for the tags
+  let filterTagContainer = document.createElement("div");
+  filterTagContainer.id = "filter-tag-container";
+  filterHeaderEl.appendChild(filterTagContainer);
+
+  // Create text input for searching by name
+  let textInputContainerEl = createTextSearchBox();
+  filterHeaderEl.appendChild(textInputContainerEl);
+
+  // Create filter icon which opens filter menu when clicked
+  let filterIconEl = createFontAwesomeIcon(
+    "filter",
+    handleFilterIconClicked,
+    "dark"
+  );
+  filterHeaderEl.appendChild(filterIconEl);
+
+  // Create filter pop-up container
+  let filterContainer = document.createElement("div");
+  filterContainer.id = "filter-container";
+  filterContainer.style.visibility = "hidden";
+  filterHeaderEl.appendChild(filterContainer);
+
+  let filterContainerHeader = document.createElement("h2");
+  filterContainerHeader.innerText = "Filters";
+  filterContainer.appendChild(filterContainerHeader);
 
   Object.entries(filterOptions).forEach(([key, val]) => {
     let filterId = key;
@@ -390,11 +420,12 @@ function capitalizeFirstLetter(str) {
  *
  * @param {string} iconName name of the icon (eg: 'search')
  * @param {?function} handleClick optional function to bind to the onclick event listener of the icon
+ * @param {?string} className optional class name to add to the element
  * @returns {HTMLElement} the icon element
  */
-function createFontAwesomeIcon(iconName, handleClick) {
+function createFontAwesomeIcon(iconName, handleClick, className) {
   let icon = document.createElement("i");
-  icon.classList = `fa fa-${iconName}`;
+  icon.classList = `fa fa-${iconName} ${className}`;
   if (handleClick) {
     icon.onclick = handleClick;
     return icon;
@@ -413,105 +444,130 @@ function createFontAwesomeIcon(iconName, handleClick) {
  * This function is intended to only be called once on our initial load of the page.
  *
  */
-function drawHtml(senators) {
-  const dem = [];
-  const rep = [];
-  const ind = [];
-
-  senators.forEach((s) => {
-    if (s.party == "Democrat") {
-      dem.push(s);
-    } else if (s.party == "Republican") {
-      rep.push(s);
-    } else {
-      ind.push(s);
-    }
-  });
-  const parties = [
-    [dem, "Democrat"],
-    [rep, "Republican"],
-    [ind, "Independent"],
-  ];
-  parties.forEach((party) => {
-    let partyBucket = document.createElement("div");
-    partyBucket.classList = `party-bucket ${party[1]}`;// creating top level party name divs
-    document.getElementById("senator-container").appendChild(partyBucket);
-    let partyTitle = document.createElement("h1"); // appending party names
-    partyTitle.innerText = party[1];
-    partyBucket.appendChild(partyTitle);
-    // append card div with unique id to each grouping
-    // may have to change later unless we are always grouping by party
-    party[0].forEach((s) => {
-      let child = document.createElement("div");
-      child.setAttribute("id", s.person.bioguideid);
-      child.setAttribute("class", "card");
-      child.onclick = () => {
-        let img = child.getElementsByTagName("img")[0].src
-        console.log(img)
-        renderPopUp(s.person.bioguideid, senators, img)
-      }
-      child.innerHTML = `
-            <div class="name">${s.person.firstname} ${s.person.lastname}</div>
-            <div class="party">${s.party}</div>
-            <div class="state">${s.state}</div>
-            <div class="gender">${s.person.gender}</div>
-            <div class="rank">${s.senator_rank_label}</div>
-
-          `;
-          partyBucket.appendChild(child);
-    });
-  });
-}
-
-/**
- * TODO
- * @param {*} imgSources
- */
-function appendProfileImage(imgSources) {
-  Object.keys(imgSources).forEach((key) => {
-
+function drawSenators(senators) {
+  let container = document.getElementById("senators-container");
+  senators.forEach((senator) => {
+    let card = document.createElement("div");
+    card.id = senator.id;
+    card.classList = "senator-card";
     let image = document.createElement("img");
-    image.setAttribute("src", imgSources[key]);
+    image.setAttribute("src", senator.imageUrl);
+    card.appendChild(image);
 
-    document.getElementById([key]).appendChild(image);
+    let overlay = document.createElement("div");
+    overlay.classList = `overlay ${senator.party.toLowerCase()}`;
+    card.appendChild(overlay);
+
+    let cardLine1 = document.createElement("div");
+    cardLine1.classList = "top";
+    cardLine1.innerHTML = `
+      <div class="name">${senator.firstname} ${senator.secondname}</div>
+      <div class="state">${senator.state}</div>`;
+
+    cardLine1.appendChild(
+      createFontAwesomeIcon(senator.gender, null, "gender")
+    );
+    card.appendChild(cardLine1);
+
+    let cardLine2 = document.createElement("div");
+    cardLine2.classList = "bottom";
+    cardLine2.innerHTML = `
+      <div class="rank">${capitalizeFirstLetter(senator.rank)}</div>
+      <div class="party">${capitalizeFirstLetter(senator.party)}</div>`;
+    card.appendChild(cardLine2);
+
+    card.onclick = () => renderPopUp(senator);
+
+    container.appendChild(card);
   });
 }
 
-function renderPopUp(id, senators, img)
-{
-    let popUp = document.getElementById("pop-up")
-    popUp.innerHTML = ""
-    popUp.style.display = "block"
+function drawSenatorPopup() {
+  let popUp = document.getElementById("pop-up");
+  popUp.style.visibility = "hidden"; // Hidden by default
 
-    const curtain = document.getElementById("curtain")
-    curtain.style.display = "block"
-    
-    document.getElementsByTagName("body")[0].appendChild(curtain)
-    senators.forEach((senator) => {
-      if (id == senator.person.bioguideid) {
-        popUp.innerHTML = `
-          <img src=${img} alt="pop up image for Senator ${senator.person.firstname} ${senator.person.lastname}/>
-          <div class="pop-up-name">${senator.person.firstname} ${senator.person.lastname}</div>
-          <div class="pop-up-party">${senator.party}</div>
-          <div class="pop-up-office">Office: ${senator.extra.office}</div>
-          <div class="pop-up-dob">Date of dirth: ${senator.person.birthday}</div>
-          <div class="pop-up-startDate"> Start date: ${senator.startdate}</div>
-          ${senator.person.twitterid != null && `<div class="pop-up-twitter">Twitter: <a href="https://www.twitter.com/${senator.person.twitterid}">${senator.person.twitterid}</a></div>`}
-          ${senator.person.youtubeid != null && `<div class="pop-up-youtube">YouTube: <a href="https://www.youtube.com/${senator.person.youtubeid}">${senator.person.youtubeid}</a></div>`}
-          ${senator.website != null && `<div class="pop-up-youtube">Website: <a href="${senator.website}">${senator.website}</a></div>`}
-        `
-    let close = document.createElement("div")
-    close.setAttribute("id", "close")
-    close.innerText = "X"
-    popUp.appendChild(close)
-    curtain.onclick = () => {
-      popUp.style.display = "none"
-      curtain.style.display = "none"
-    }
-    close.onclick = () => {
-      popUp.style.display = "none"
-      curtain.style.display = "none"
-    }
-      }
-    })
+  const curtain = document.getElementById("curtain");
+  curtain.style.visibility = "hidden";
+
+  const closeEl = createFontAwesomeIcon("close", () => {
+    popUp.style.visibility = "hidden";
+    curtain.style.visibility = "hidden";
+  });
+
+  let popupImage = document.createElement("img");
+  popupImage.id = "pop-up-image";
+
+  let nameEl = createPopUpField("name", "");
+  let partyEl = createPopUpField("party", "");
+  let officeEl = createPopUpField("office", "");
+  let dobEl = createPopUpField("dob", "");
+  let startDateEl = createPopUpField("startDate", "");
+
+  let twitterEl = createPopUpUrlField("twitter", "Twitter");
+  let websiteEl = createPopUpUrlField("website", "Website");
+  let youtubeEl = createPopUpUrlField("youtube", "Youtube");
+
+  popUp.append(closeEl, popupImage, nameEl, partyEl, officeEl, dobEl, startDateEl, twitterEl, websiteEl, youtubeEl);
+
+  curtain.onclick = () => {
+    popUp.style.visibility = "hidden";
+    curtain.style.visibility = "hidden";
+  };
 }
+
+function createPopUpField(id) {
+  let el = document.createElement("div");
+  el.id = `pop-up-${id}`;
+  return el;
+}
+function createPopUpUrlField(id, label) {
+  let el = document.createElement("div");
+  el.id = `pop-up-${id}`;
+  el.innerHTML = `${capitalizeFirstLetter(label)}: <a></a>`
+  return el;
+}
+
+function updatePopUpTextField(id, value) {
+  let el = document.getElementById(`pop-up-${id}`);
+  el.innerText = value;
+  return el;
+}
+
+function updatePopUpUrlField(id, href, text) {
+  let el = document.getElementById(`pop-up-${id}`);
+  let aEl = el.getElementsByTagName("a")[0];
+  aEl.href = href;
+  aEl.text = text;
+  return el;
+}
+
+function renderPopUp(senator) {
+  // Show the popup and curtain
+  let popUp = document.getElementById("pop-up");
+  popUp.style.visibility = "visible";
+
+  const curtain = document.getElementById("curtain");
+  curtain.style.visibility = "visible";
+
+  let popupImage = document.getElementById("pop-up-image");
+  popupImage.src = senator.imageUrl;
+  popupImage.alt = `Pop up image for Senator ${senator.firstname} ${senator.secondname}`;
+
+  updatePopUpTextField(
+    "name",
+    `${senator.firstname} ${senator.nickname ? `(${senator.nickname})` : ""} ${
+      senator.secondname
+    }`
+  );
+  updatePopUpTextField("party", `${senator.party}`);
+  updatePopUpTextField("office", `Office: ${senator.office}`);
+  updatePopUpTextField("dob", `Date of dirth: ${senator.birthday}`);
+  updatePopUpTextField("startDate", `Start date: ${senator.startdate}`);
+
+  // TODO:
+  updatePopUpUrlField("twitter", `https://www.twitter.com/${senator.twitter}`, senator.twitter);
+  updatePopUpUrlField("youtube", `https://www.youtube.com/${senator.youtube}`, senator.youtube);
+  updatePopUpUrlField("website", senator.website, senator.website);
+}
+
+function handleCloseClicked() {}
