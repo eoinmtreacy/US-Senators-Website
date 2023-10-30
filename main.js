@@ -89,7 +89,8 @@ if (isSenatorsLoaded) {
 
   // 3. Draw our page
   drawFilters(FILTER_OPTIONS);
-  drawHtml(ALL_SENATORS);
+  drawSenators(ALL_SENATORS);
+  drawSenatorPopup();
 }
 
 /**
@@ -443,7 +444,7 @@ function createFontAwesomeIcon(iconName, handleClick, className) {
  * This function is intended to only be called once on our initial load of the page.
  *
  */
-function drawHtml(senators) {
+function drawSenators(senators) {
   let container = document.getElementById("senators-container");
   senators.forEach((senator) => {
     let card = document.createElement("div");
@@ -475,45 +476,98 @@ function drawHtml(senators) {
       <div class="party">${capitalizeFirstLetter(senator.party)}</div>`;
     card.appendChild(cardLine2);
 
+    card.onclick = () => renderPopUp(senator);
+
     container.appendChild(card);
   });
 }
 
-function renderPopUp(id, senators, img)
-{
-    let popUp = document.getElementById("pop-up")
-    popUp.innerHTML = ""
-    popUp.style.display = "block"
+function drawSenatorPopup() {
+  let popUp = document.getElementById("pop-up");
+  popUp.style.visibility = "hidden"; // Hidden by default
 
-    const curtain = document.getElementById("curtain")
-    curtain.style.display = "block"
-    
-    document.getElementsByTagName("body")[0].appendChild(curtain)
-    senators.forEach((senator) => {
-      if (id == senator.person.bioguideid) {
-        popUp.innerHTML = `
-          <img src=${img} alt="pop up image for Senator ${senator.person.firstname} ${senator.person.lastname}/>
-          <div class="pop-up-name">${senator.person.firstname} ${senator.person.lastname}</div>
-          <div class="pop-up-party">${senator.party}</div>
-          <div class="pop-up-office">Office: ${senator.extra.office}</div>
-          <div class="pop-up-dob">Date of dirth: ${senator.person.birthday}</div>
-          <div class="pop-up-startDate"> Start date: ${senator.startdate}</div>
-          ${senator.person.twitterid != null && `<div class="pop-up-twitter">Twitter: <a href="https://www.twitter.com/${senator.person.twitterid}">${senator.person.twitterid}</a></div>`}
-          ${senator.person.youtubeid != null && `<div class="pop-up-youtube">YouTube: <a href="https://www.youtube.com/${senator.person.youtubeid}">${senator.person.youtubeid}</a></div>`}
-          ${senator.website != null && `<div class="pop-up-youtube">Website: <a href="${senator.website}">${senator.website}</a></div>`}
-        `
-    let close = document.createElement("div")
-    close.setAttribute("id", "close")
-    close.innerText = "X"
-    popUp.appendChild(close)
-    curtain.onclick = () => {
-      popUp.style.display = "none"
-      curtain.style.display = "none"
-    }
-    close.onclick = () => {
-      popUp.style.display = "none"
-      curtain.style.display = "none"
-    }
-      }
-    })
+  const curtain = document.getElementById("curtain");
+  curtain.style.visibility = "hidden";
+
+  const closeEl = createFontAwesomeIcon("close", () => {
+    popUp.style.visibility = "hidden";
+    curtain.style.visibility = "hidden";
+  });
+
+  let popupImage = document.createElement("img");
+  popupImage.id = "pop-up-image";
+
+  let nameEl = createPopUpField("name", "");
+  let partyEl = createPopUpField("party", "");
+  let officeEl = createPopUpField("office", "");
+  let dobEl = createPopUpField("dob", "");
+  let startDateEl = createPopUpField("startDate", "");
+
+  let twitterEl = createPopUpUrlField("twitter", "Twitter");
+  let websiteEl = createPopUpUrlField("website", "Website");
+  let youtubeEl = createPopUpUrlField("youtube", "Youtube");
+
+  popUp.append(closeEl, popupImage, nameEl, partyEl, officeEl, dobEl, startDateEl, twitterEl, websiteEl, youtubeEl);
+
+  curtain.onclick = () => {
+    popUp.style.visibility = "hidden";
+    curtain.style.visibility = "hidden";
+  };
 }
+
+function createPopUpField(id) {
+  let el = document.createElement("div");
+  el.id = `pop-up-${id}`;
+  return el;
+}
+function createPopUpUrlField(id, label) {
+  let el = document.createElement("div");
+  el.id = `pop-up-${id}`;
+  el.innerHTML = `${capitalizeFirstLetter(label)}: <a></a>`
+  return el;
+}
+
+function updatePopUpTextField(id, value) {
+  let el = document.getElementById(`pop-up-${id}`);
+  el.innerText = value;
+  return el;
+}
+
+function updatePopUpUrlField(id, href, text) {
+  let el = document.getElementById(`pop-up-${id}`);
+  let aEl = el.getElementsByTagName("a")[0];
+  aEl.href = href;
+  aEl.text = text;
+  return el;
+}
+
+function renderPopUp(senator) {
+  // Show the popup and curtain
+  let popUp = document.getElementById("pop-up");
+  popUp.style.visibility = "visible";
+
+  const curtain = document.getElementById("curtain");
+  curtain.style.visibility = "visible";
+
+  let popupImage = document.getElementById("pop-up-image");
+  popupImage.src = senator.imageUrl;
+  popupImage.alt = `Pop up image for Senator ${senator.firstname} ${senator.secondname}`;
+
+  updatePopUpTextField(
+    "name",
+    `${senator.firstname} ${senator.nickname ? `(${senator.nickname})` : ""} ${
+      senator.secondname
+    }`
+  );
+  updatePopUpTextField("party", `${senator.party}`);
+  updatePopUpTextField("office", `Office: ${senator.office}`);
+  updatePopUpTextField("dob", `Date of dirth: ${senator.birthday}`);
+  updatePopUpTextField("startDate", `Start date: ${senator.startdate}`);
+
+  // TODO:
+  updatePopUpUrlField("twitter", `https://www.twitter.com/${senator.twitter}`, senator.twitter);
+  updatePopUpUrlField("youtube", `https://www.youtube.com/${senator.youtube}`, senator.youtube);
+  updatePopUpUrlField("website", senator.website, senator.website);
+}
+
+function handleCloseClicked() {}

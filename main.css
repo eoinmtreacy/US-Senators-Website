@@ -47,7 +47,7 @@ a {
 /* END GLOBAL STYLES */
 
 #pop-up {
-  display: none;
+  visibility: hidden;
   position: fixed;
   background: white;
   border: 1px solid black;
@@ -229,7 +229,7 @@ img#usa-map {
 }
 
 #curtain {
-  display: none;
+  visibility: hidden;
   position: fixed;
   top: 0;
   left: 0;
