@@ -445,6 +445,9 @@ function drawHtml(senators) {
       let child = document.createElement("div");
       child.setAttribute("id", s.person.bioguideid);
       child.setAttribute("class", "card");
+      child.onclick = () => {
+        renderPopUp(s.person.bioguideid, senators)
+      }
       child.innerHTML = `
             <div class="name">${s.person.firstname} ${s.person.lastname}</div>
             <div class="party">${s.party}</div>
