@@ -439,14 +439,12 @@ function drawHtml(senators) {
     let partyTitle = document.createElement("h1"); // appending party names
     partyTitle.innerText = party[1];
     partyBucket.appendChild(partyTitle);
-
     // append card div with unique id to each grouping
     // may have to change later unless we are always grouping by party
     party[0].forEach((s) => {
       let child = document.createElement("div");
       child.setAttribute("id", s.person.bioguideid);
       child.setAttribute("class", "card");
-      child.
       child.innerHTML = `
             <div class="name">${s.person.firstname} ${s.person.lastname}</div>
             <div class="party">${s.party}</div>
