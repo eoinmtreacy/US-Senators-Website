@@ -3,7 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="./main.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
     <title>Senators</title>
   </head>
   <body>
@@ -11,12 +21,10 @@
       <div id="summary-container">
       </div>
       <div id="filter-container">
-        <button>Reset</button>
-      </div>
-      <div id="filter-preview-container">
-        <!-- TODO: lots of styling decisions to be made here -->
-        <div class="filter">Democrat</div>
-        <div class="filter">Alabama</div>
+        <h3>Filters</h3>
+        <div id="filter-tag-container">
+          <!-- TODO: lots of styling decisions to be made here -->
+        </div>
       </div>
 
       <div id="senator-container"></div>
