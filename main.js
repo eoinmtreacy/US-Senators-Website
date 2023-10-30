@@ -40,22 +40,17 @@ class FilterOptions {
 var isSenatorsLoaded = false;
 
 // GLOBAL CONSTANTS
-const PARTY = "party";
-const STATE = "state";
-const RANK = "rank";
-const GENDER = "gender";
+const PARTY = 'party';
+const STATE = 'state';
+const RANK = 'rank';
+const GENDER = 'gender';
 
-const fetchSenators = fetch("./data/senators.json").then((response) =>
-  response.json()
-);
-const fetchImages = fetch("./data/imgSources.json").then((response) =>
-  response.json()
-);
+const fetchSenators = fetch('./data/senators.json').then((response) => response.json());
+const fetchImages = fetch('./data/imgSources.json').then((response) => response.json());
 
 // 1. Fetch our senator data
 var ALL_SENATORS = await Promise.all([fetchSenators, fetchImages])
   .then(([senators, images]) => {
-    console.log(senators, images);
     isSenatorsLoaded = true;
     return senators.objects.map((o) => ({
       id: o.person.bioguideid,
@@ -75,6 +70,7 @@ var ALL_SENATORS = await Promise.all([fetchSenators, fetchImages])
       website: o.website,
       leadership_title: o.leadership_title,
       imageUrl: images[o.person.bioguideid],
+      yearsInOffice: new Date().getFullYear() - new Date(o.startdate).getFullYear(),
     }));
   })
   .catch((e) => {
@@ -90,6 +86,7 @@ if (isSenatorsLoaded) {
   // 3. Draw our page
   drawFilters(FILTER_OPTIONS);
   drawSenators(ALL_SENATORS);
+  drawStats(ALL_SENATORS);
   drawSenatorPopup();
 }
 
@@ -157,12 +154,7 @@ function handleResetClicked() {
 function filter(filterOptionsObj) {
   let output = [];
   ALL_SENATORS.forEach((senator) => {
-    if (
-      isIncluded(filterOptionsObj, "rank", senator.rank) &&
-      isIncluded(filterOptionsObj, "gender", senator.gender) &&
-      isIncluded(filterOptionsObj, "state", senator.state) &&
-      isIncluded(filterOptionsObj, "party", senator.party)
-    ) {
+    if (isIncluded(filterOptionsObj, 'rank', senator.rank) && isIncluded(filterOptionsObj, 'gender', senator.gender) && isIncluded(filterOptionsObj, 'state', senator.state) && isIncluded(filterOptionsObj, 'party', senator.party)) {
       output.push(senator);
     }
   });
@@ -170,18 +162,15 @@ function filter(filterOptionsObj) {
 }
 
 function isIncluded(filterOptionsObj, filterType, value) {
-  return (
-    filterOptionsObj.state[filterType].has(value) ||
-    !filterOptionsObj.state[filterType].size
-  );
+  return filterOptionsObj.state[filterType].has(value) || !filterOptionsObj.state[filterType].size;
 }
 
 function handleFilterIconClicked() {
   // show filter popup
-  const filterContainer = document.getElementById("filter-container");
-  const isHidden = filterContainer.style.visibility === "hidden";
-  filterContainer.style.visibility = isHidden ? "visible" : "hidden";
-  filterContainer.style.right = isHidden ? "-225px" : "-500px";
+  const filterContainer = document.getElementById('filter-container');
+  const isHidden = filterContainer.style.visibility === 'hidden';
+  filterContainer.style.visibility = isHidden ? 'visible' : 'hidden';
+  filterContainer.style.right = isHidden ? '-225px' : '-500px';
 }
 
 /**
@@ -198,15 +187,13 @@ function applyFilterToSenatorElements(filterOptions) {
 }
 
 function drawFilterTag(filterType, value) {
-  var tagContainerEl = document.getElementById("filter-tag-container");
+  var tagContainerEl = document.getElementById('filter-tag-container');
 
-  var tagEl = document.createElement("div");
+  var tagEl = document.createElement('div');
   tagEl.classList = `tag ${value}`;
   tagEl.innerText = capitalizeFirstLetter(value);
 
-  var deleteEl = createFontAwesomeIcon("close", () =>
-    removeFilterTag(filterType, value, tagEl, true)
-  );
+  var deleteEl = createFontAwesomeIcon('close', () => removeFilterTag(filterType, value, tagEl, true));
   tagEl.prepend(deleteEl);
   tagContainerEl.append(tagEl);
   return tagEl;
@@ -225,12 +212,10 @@ function removeFilterTag(filterType, value, el, shouldRemoveFilter) {
 
   // TODO
   // Update the filtered options
-  const dropdownEl = document.getElementsByClassName(
-    `dropdown-container ${filterType}`
-  )[0];
+  const dropdownEl = document.getElementsByClassName(`dropdown-container ${filterType}`)[0];
   const optionEls = dropdownEl.getElementsByClassName(value);
   console.log(optionEls);
-  filterOptionElements("", optionEls);
+  filterOptionElements('', optionEls);
 
   applyFilterToSenatorElements(CURRENT_FILTER);
 }
@@ -244,37 +229,37 @@ function removeFilterTag(filterType, value, el, shouldRemoveFilter) {
  */
 
 function createDropdown(filterId, options) {
-  let dropdownContainerEl = document.createElement("div");
-  dropdownContainerEl.classList.add("dropdown-container");
+  let dropdownContainerEl = document.createElement('div');
+  dropdownContainerEl.classList.add('dropdown-container');
   dropdownContainerEl.classList.add(filterId);
 
   let textInputContainer = createTextSearchBox();
   dropdownContainerEl.appendChild(textInputContainer);
 
-  let textInputEl = textInputContainer.getElementsByTagName("input")[0];
+  let textInputEl = textInputContainer.getElementsByTagName('input')[0];
 
-  let dropdownEl = document.createElement("div");
-  dropdownEl.className = "dropdown";
-  dropdownEl.style.visibility = "hidden"; // Default to hidden
+  let dropdownEl = document.createElement('div');
+  dropdownEl.className = 'dropdown';
+  dropdownEl.style.visibility = 'hidden'; // Default to hidden
 
   // Dictionary containing each option el so we can easily access them later
   const optionEls = {};
   Array.from(options)
     .sort()
     .forEach((option) => {
-      let optionEl = document.createElement("div");
+      let optionEl = document.createElement('div');
       optionEl.classList.add(option);
 
-      let labelEl = document.createElement("label", { for: option });
+      let labelEl = document.createElement('label', { for: option });
       labelEl.innerText = capitalizeFirstLetter(option);
-      let inputEl = document.createElement("input");
-      inputEl.type = "checkbox";
+      let inputEl = document.createElement('input');
+      inputEl.type = 'checkbox';
       inputEl.id = `${option}`;
       inputEl.onchange = (e) => {
         handleFilterSelected(e, filterId);
         // If the input has text, clear it
-        textInputEl.value = "";
-        filterOptionElements("", optionEls);
+        textInputEl.value = '';
+        filterOptionElements('', optionEls);
       };
 
       optionEl.appendChild(inputEl);
@@ -286,21 +271,19 @@ function createDropdown(filterId, options) {
   dropdownContainerEl.appendChild(dropdownEl);
 
   textInputEl.onclick = () => {
-    const isVisible = dropdownEl.style.visibility === "visible";
+    const isVisible = dropdownEl.style.visibility === 'visible';
     // If we are toggling this dropdown on, we need to hide all of the others!
     if (!isVisible) {
-      let allVisibleDropdowns = Array.from(
-        document.getElementsByClassName("dropdown")
-      ).filter((e) => e.style.visibility === "visible");
-      allVisibleDropdowns.forEach((d) => (d.style.visibility = "hidden"));
-      dropdownEl.style.visibility = "visible";
+      let allVisibleDropdowns = Array.from(document.getElementsByClassName('dropdown')).filter((e) => e.style.visibility === 'visible');
+      allVisibleDropdowns.forEach((d) => (d.style.visibility = 'hidden'));
+      dropdownEl.style.visibility = 'visible';
     } else {
-      dropdownEl.style.visibility = "hidden";
+      dropdownEl.style.visibility = 'hidden';
     }
   };
 
   dropdownEl.onmouseleave = () => {
-    dropdownEl.style.visibility = "hidden";
+    dropdownEl.style.visibility = 'hidden';
   };
 
   // Handle input
@@ -313,12 +296,12 @@ function createDropdown(filterId, options) {
 }
 
 function createTextSearchBox() {
-  let textInputContainer = document.createElement("div");
-  textInputContainer.className = "text-input-container";
-  let textInputEl = document.createElement("input");
-  textInputEl.type = "text";
+  let textInputContainer = document.createElement('div');
+  textInputContainer.className = 'text-input-container';
+  let textInputEl = document.createElement('input');
+  textInputEl.type = 'text';
 
-  let searchIcon = createFontAwesomeIcon("search");
+  let searchIcon = createFontAwesomeIcon('search');
   textInputContainer.append(searchIcon, textInputEl);
   return textInputContainer;
 }
@@ -338,11 +321,11 @@ function createTextSearchBox() {
  */
 function drawFilters(filterOptions) {
   // Create the "filter header" at the top of our senator list (search box + filter icon)
-  let filterHeaderEl = document.getElementById("filter-header");
+  let filterHeaderEl = document.getElementById('filter-header');
 
   // Create container for the tags
-  let filterTagContainer = document.createElement("div");
-  filterTagContainer.id = "filter-tag-container";
+  let filterTagContainer = document.createElement('div');
+  filterTagContainer.id = 'filter-tag-container';
   filterHeaderEl.appendChild(filterTagContainer);
 
   // Create text input for searching by name
@@ -350,32 +333,28 @@ function drawFilters(filterOptions) {
   filterHeaderEl.appendChild(textInputContainerEl);
 
   // Create filter icon which opens filter menu when clicked
-  let filterIconEl = createFontAwesomeIcon(
-    "filter",
-    handleFilterIconClicked,
-    "dark"
-  );
+  let filterIconEl = createFontAwesomeIcon('filter', handleFilterIconClicked, 'dark');
   filterHeaderEl.appendChild(filterIconEl);
 
   // Create filter pop-up container
-  let filterContainer = document.createElement("div");
-  filterContainer.id = "filter-container";
-  filterContainer.style.visibility = "hidden";
+  let filterContainer = document.createElement('div');
+  filterContainer.id = 'filter-container';
+  filterContainer.style.visibility = 'hidden';
   filterHeaderEl.appendChild(filterContainer);
 
-  let filterContainerHeader = document.createElement("h2");
-  filterContainerHeader.innerText = "Filters";
+  let filterContainerHeader = document.createElement('h2');
+  filterContainerHeader.innerText = 'Filters';
   filterContainer.appendChild(filterContainerHeader);
 
   Object.entries(filterOptions).forEach(([key, val]) => {
     let filterId = key;
     let filterOptions = val;
-    let filterSectionEl = document.createElement("div");
-    let filterSectionHeaderEl = document.createElement("div");
-    filterSectionHeaderEl.classList.add("filter-section-header", filterId);
+    let filterSectionEl = document.createElement('div');
+    let filterSectionHeaderEl = document.createElement('div');
+    filterSectionHeaderEl.classList.add('filter-section-header', filterId);
 
     // Create a label
-    let filterLabelEl = document.createElement("h5");
+    let filterLabelEl = document.createElement('h5');
     filterLabelEl.innerText = capitalizeFirstLetter(filterId);
     filterSectionHeaderEl.appendChild(filterLabelEl);
     filterSectionEl.appendChild(filterSectionHeaderEl);
@@ -394,14 +373,14 @@ function filterOptionElements(value, els) {
   };
   Object.entries(els).forEach(([key, val]) => {
     if (!key.toLowerCase().startsWith(value.toLowerCase())) {
-      optionsToUpdate["hide"].push(val);
+      optionsToUpdate['hide'].push(val);
     } else {
-      optionsToUpdate["show"].push(val);
+      optionsToUpdate['show'].push(val);
     }
   });
 
-  optionsToUpdate["hide"].forEach((o) => (o.style.display = "none"));
-  optionsToUpdate["show"].forEach((o) => (o.style.display = null));
+  optionsToUpdate['hide'].forEach((o) => (o.style.display = 'none'));
+  optionsToUpdate['show'].forEach((o) => (o.style.display = null));
 }
 
 // Utility functions
@@ -423,8 +402,8 @@ function capitalizeFirstLetter(str) {
  * @param {?string} className optional class name to add to the element
  * @returns {HTMLElement} the icon element
  */
-function createFontAwesomeIcon(iconName, handleClick, className) {
-  let icon = document.createElement("i");
+function createFontAwesomeIcon(iconName, handleClick, className = '') {
+  let icon = document.createElement('i');
   icon.classList = `fa fa-${iconName} ${className}`;
   if (handleClick) {
     icon.onclick = handleClick;
@@ -445,32 +424,30 @@ function createFontAwesomeIcon(iconName, handleClick, className) {
  *
  */
 function drawSenators(senators) {
-  let container = document.getElementById("senators-container");
+  let container = document.getElementById('senators-container');
   senators.forEach((senator) => {
-    let card = document.createElement("div");
+    let card = document.createElement('div');
     card.id = senator.id;
-    card.classList = "senator-card";
-    let image = document.createElement("img");
-    image.setAttribute("src", senator.imageUrl);
+    card.classList = 'senator-card';
+    let image = document.createElement('img');
+    image.setAttribute('src', senator.imageUrl);
     card.appendChild(image);
 
-    let overlay = document.createElement("div");
+    let overlay = document.createElement('div');
     overlay.classList = `overlay ${senator.party.toLowerCase()}`;
     card.appendChild(overlay);
 
-    let cardLine1 = document.createElement("div");
-    cardLine1.classList = "top";
+    let cardLine1 = document.createElement('div');
+    cardLine1.classList = 'top';
     cardLine1.innerHTML = `
       <div class="name">${senator.firstname} ${senator.secondname}</div>
       <div class="state">${senator.state}</div>`;
 
-    cardLine1.appendChild(
-      createFontAwesomeIcon(senator.gender, null, "gender")
-    );
+    cardLine1.appendChild(createFontAwesomeIcon(senator.gender, null, 'gender'));
     card.appendChild(cardLine1);
 
-    let cardLine2 = document.createElement("div");
-    cardLine2.classList = "bottom";
+    let cardLine2 = document.createElement('div');
+    cardLine2.classList = 'bottom';
     cardLine2.innerHTML = `
       <div class="rank">${capitalizeFirstLetter(senator.rank)}</div>
       <div class="party">${capitalizeFirstLetter(senator.party)}</div>`;
@@ -482,48 +459,134 @@ function drawSenators(senators) {
   });
 }
 
+function drawAverageAgeStat(senators) {
+  const avgAge = senators.reduce((acc, sen) => acc + sen.age, 0) / senators.length;
+  let averageAgeContainerEl = document.getElementById('average-age-container');
+  let labelEl = document.createElement('h3');
+  labelEl.innerText = 'average age';
+  let valueEl = document.createElement('h1');
+  valueEl.innerText = parseInt(avgAge);
+  averageAgeContainerEl.append(labelEl, valueEl);
+  return averageAgeContainerEl;
+}
+
+function drawYearsInOfficeStat(senators) {
+  const yearsInOffice = senators.reduce((acc, sen) => {
+    if (acc[sen.yearsInOffice]) {
+      acc[sen.yearsInOffice]++;
+    } else {
+      acc[sen.yearsInOffice] = 1;
+    }
+    return acc;
+  }, {});
+
+  console.log(yearsInOffice);
+
+  const containerEl = document.getElementById('years-in-office-container');
+  containerEl.appendChild(createFontAwesomeIcon('calendar'));
+
+  const title = document.createElement('h3');
+  title.innerText = 'years in\noffice';
+  containerEl.appendChild(title);
+
+  const barsContainer = document.createElement('div');
+  barsContainer.id = 'bars-container';
+
+  const numBars = Object.keys(yearsInOffice).length;
+  const maxCount = Math.max(Object.values(yearsInOffice));
+
+  for (const [key, val] of Object.entries(yearsInOffice)) {
+    let barEl = document.createElement('div');
+    barEl.classList = 'graph-bar';
+    barEl.style.width = `${(val / maxCount) * 100}%`;
+    barsContainer.appendChild(barEl);
+  }
+  containerEl.appendChild(barsContainer);
+}
+
+function drawStats(senators) {
+  drawGenderStats(senators);
+  drawAverageAgeStat(senators);
+  drawYearsInOfficeStat(senators);
+}
+
+function drawGenderStats(senators) {
+  const females = senators.filter((sen) => sen.gender === 'female');
+  const males = senators.filter((sen) => sen.gender === 'male');
+  let container = document.getElementById('gender-stats-container');
+
+  let iconContainer = document.createElement('div');
+  iconContainer.id = 'gender-icons';
+
+  iconContainer.append(...females.map((f) => createFontAwesomeIcon('female')));
+  iconContainer.append(...males.map((f) => createFontAwesomeIcon('male')));
+
+  container.appendChild(iconContainer);
+
+  // Add the percentages
+  let percentagesContainer = document.createElement('div');
+  percentagesContainer.classList = 'percentages-container';
+  let femalePercentageEl = drawPercentStat(parseInt((females.length / senators.length) * 100), 'females');
+  let malePercentageEl = drawPercentStat(parseInt((males.length / senators.length) * 100), 'males');
+
+  percentagesContainer.append(femalePercentageEl, malePercentageEl);
+  container.append(percentagesContainer);
+  return container;
+}
+
+function drawPercentStat(value, label) {
+  let percentageContainerEl = document.createElement('div');
+  percentageContainerEl.classList = 'percentage';
+  let percentageEl = document.createElement('h1');
+  percentageEl.innerText = `${value}%`;
+  let femaleLabelEl = document.createElement('h3');
+  femaleLabelEl.innerText = label;
+  percentageContainerEl.append(percentageEl, femaleLabelEl);
+  return percentageContainerEl;
+}
+
 function drawSenatorPopup() {
-  let popUp = document.getElementById("pop-up");
-  popUp.style.visibility = "hidden"; // Hidden by default
+  let popUp = document.getElementById('pop-up');
+  popUp.style.visibility = 'hidden'; // Hidden by default
 
-  const curtain = document.getElementById("curtain");
-  curtain.style.visibility = "hidden";
+  const curtain = document.getElementById('curtain');
+  curtain.style.visibility = 'hidden';
 
-  const closeEl = createFontAwesomeIcon("close", () => {
-    popUp.style.visibility = "hidden";
-    curtain.style.visibility = "hidden";
+  const closeEl = createFontAwesomeIcon('close', () => {
+    popUp.style.visibility = 'hidden';
+    curtain.style.visibility = 'hidden';
   });
 
-  let popupImage = document.createElement("img");
-  popupImage.id = "pop-up-image";
+  let popupImage = document.createElement('img');
+  popupImage.id = 'pop-up-image';
 
-  let nameEl = createPopUpField("name", "");
-  let partyEl = createPopUpField("party", "");
-  let officeEl = createPopUpField("office", "");
-  let dobEl = createPopUpField("dob", "");
-  let startDateEl = createPopUpField("startDate", "");
+  let nameEl = createPopUpField('name', '');
+  let partyEl = createPopUpField('party', '');
+  let officeEl = createPopUpField('office', '');
+  let dobEl = createPopUpField('dob', '');
+  let startDateEl = createPopUpField('startDate', '');
 
-  let twitterEl = createPopUpUrlField("twitter", "Twitter");
-  let websiteEl = createPopUpUrlField("website", "Website");
-  let youtubeEl = createPopUpUrlField("youtube", "Youtube");
+  let twitterEl = createPopUpUrlField('twitter', 'Twitter');
+  let websiteEl = createPopUpUrlField('website', 'Website');
+  let youtubeEl = createPopUpUrlField('youtube', 'Youtube');
 
   popUp.append(closeEl, popupImage, nameEl, partyEl, officeEl, dobEl, startDateEl, twitterEl, websiteEl, youtubeEl);
 
   curtain.onclick = () => {
-    popUp.style.visibility = "hidden";
-    curtain.style.visibility = "hidden";
+    popUp.style.visibility = 'hidden';
+    curtain.style.visibility = 'hidden';
   };
 }
 
 function createPopUpField(id) {
-  let el = document.createElement("div");
+  let el = document.createElement('div');
   el.id = `pop-up-${id}`;
   return el;
 }
 function createPopUpUrlField(id, label) {
-  let el = document.createElement("div");
+  let el = document.createElement('div');
   el.id = `pop-up-${id}`;
-  el.innerHTML = `${capitalizeFirstLetter(label)}: <a></a>`
+  el.innerHTML = `${capitalizeFirstLetter(label)}: <a></a>`;
   return el;
 }
 
@@ -535,7 +598,7 @@ function updatePopUpTextField(id, value) {
 
 function updatePopUpUrlField(id, href, text) {
   let el = document.getElementById(`pop-up-${id}`);
-  let aEl = el.getElementsByTagName("a")[0];
+  let aEl = el.getElementsByTagName('a')[0];
   aEl.href = href;
   aEl.text = text;
   return el;
@@ -543,31 +606,26 @@ function updatePopUpUrlField(id, href, text) {
 
 function renderPopUp(senator) {
   // Show the popup and curtain
-  let popUp = document.getElementById("pop-up");
-  popUp.style.visibility = "visible";
+  let popUp = document.getElementById('pop-up');
+  popUp.style.visibility = 'visible';
 
-  const curtain = document.getElementById("curtain");
-  curtain.style.visibility = "visible";
+  const curtain = document.getElementById('curtain');
+  curtain.style.visibility = 'visible';
 
-  let popupImage = document.getElementById("pop-up-image");
+  let popupImage = document.getElementById('pop-up-image');
   popupImage.src = senator.imageUrl;
   popupImage.alt = `Pop up image for Senator ${senator.firstname} ${senator.secondname}`;
 
-  updatePopUpTextField(
-    "name",
-    `${senator.firstname} ${senator.nickname ? `(${senator.nickname})` : ""} ${
-      senator.secondname
-    }`
-  );
-  updatePopUpTextField("party", `${senator.party}`);
-  updatePopUpTextField("office", `Office: ${senator.office}`);
-  updatePopUpTextField("dob", `Date of dirth: ${senator.birthday}`);
-  updatePopUpTextField("startDate", `Start date: ${senator.startdate}`);
+  updatePopUpTextField('name', `${senator.firstname} ${senator.nickname ? `(${senator.nickname})` : ''} ${senator.secondname}`);
+  updatePopUpTextField('party', `${senator.party}`);
+  updatePopUpTextField('office', `Office: ${senator.office}`);
+  updatePopUpTextField('dob', `Date of dirth: ${senator.birthday}`);
+  updatePopUpTextField('startDate', `Start date: ${senator.startdate}`);
 
   // TODO:
-  updatePopUpUrlField("twitter", `https://www.twitter.com/${senator.twitter}`, senator.twitter);
-  updatePopUpUrlField("youtube", `https://www.youtube.com/${senator.youtube}`, senator.youtube);
-  updatePopUpUrlField("website", senator.website, senator.website);
+  updatePopUpUrlField('twitter', `https://www.twitter.com/${senator.twitter}`, senator.twitter);
+  updatePopUpUrlField('youtube', `https://www.youtube.com/${senator.youtube}`, senator.youtube);
+  updatePopUpUrlField('website', senator.website, senator.website);
 }
 
 function handleCloseClicked() {}
