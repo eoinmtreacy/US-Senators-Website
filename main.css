@@ -55,8 +55,11 @@ a {
 }
 
 #page-container .section {
-  min-height: 85vh;
+  min-height: 80vh;
   overflow: hidden;
+}
+
+.section {
   padding: 2rem;
 }
 
@@ -64,7 +67,7 @@ a {
   position: relative;
   width: 800px;
   margin: 0 auto;
-  min-height: 85vh;
+  min-height: 80vh;
 }
 
 #landing.section {
@@ -76,6 +79,13 @@ a {
     0px 0px / 256px 256px;
   background-size: contain;
   color: #fff;
+}
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem;
 }
 
 img#usa-map {
@@ -111,10 +121,6 @@ img#usa-map {
 }
 
 .cta {
-  position: absolute;
-  bottom: 0;
-  left: 325px;
-  width: 150px;
   color: white;
   text-transform: uppercase;
   font-size: 1rem;
@@ -124,13 +130,16 @@ img#usa-map {
 
 .cta.button {
   background-color: #041a91;
-  border-radius: 5px;
+  border-radius: 10px;
   height: 50px;
-  bottom: -25px;
+  width: 150px;
 }
 
 .cta.text {
   position: absolute;
+  bottom: 0;
+  left: 325px;
+  width: 150px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -323,20 +332,44 @@ img#usa-map {
   background-color: #e8eaee;
 }
 
-.dropdown-container .fa.fa-search {
-  margin: 4px;
-  font-size: 12px;
-  color: #e8eaee;
-}
-.dropdown-container input {
-  outline: none;
-  border: none;
-}
-.dropdown-container .text-input-container {
-  border: 1px solid black;
+.text-input-container {
+  border: 1px solid #d4dafb;
   display: flex;
   flex-wrap: nowrap;
   margin: 0px 1rem;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.text-input-container .fa.fa-search {
+  margin: 4px;
+  font-size: 12px;
+  color: #86a3de;
+}
+.text-input-container input {
+  outline: none;
+  border: none;
+}
+
+.text-input-container,
+.text-input-container * {
+  background-color: #eaedff;
+}
+
+#senators-list .fa.fa-filter {
+  /* float: right; */
+  cursor: pointer;
+  font-size: 24px;
+  padding: 10px;
+}
+
+#senators-list .fa.fa-filter:hover {
+  color: #86a3de;
+}
+
+.filter-header {
+  display: flex;
+  justify-content: flex-end;
 }
 
 #filter-tag-container {
@@ -379,55 +412,83 @@ img#usa-map {
 
 /* START CARDS */
 
-#cards-container {
-  /* Your styles for #cards-container here */
-  border: 1px solid orange;
+#senators-container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 800px;
+  justify-content: space-between;
 }
 
-#democrat-cards {
-  /* Your styles for #democrat-cards here */
-}
-
-#republican-cards {
-  /* Your styles for #republican-cards here */
-}
-
-#independent-cards {
-  /* Your styles for #independent-cards here */
-}
-
-.card {
+.senator-card {
   /* Your styles for .card here */
-  border: 1px solid pink;
+  height: 300px;
+  width: 200px;
+  margin: 1rem;
+  position: relative;
 }
 
-.card .name {
-  /* Your styles for .name here */
+.senator-card .overlay {
+  cursor: pointer;
 }
 
-.card .party {
+.senator-card .overlay:hover {
+  opacity: 0%;
+}
+.senator-card:hover img {
+  filter: unset;
+}
+
+.overlay {
+  /* background-color: blue; */
+  position: absolute;
+  top: 0;
+  height: 240px;
+  width: 100%;
+  opacity: 20%;
+}
+
+.senator-card img {
+  filter: grayscale(1) brightness(1.2) contrast(1.2);
+}
+
+.senator-card .top,
+.senator-card .bottom {
+  display: flex;
+}
+
+.senator-card .top {
+  margin-top: 5px;
+}
+
+.senator-card .top *,
+.senator-card .bottom * {
+  margin: 0 2px;
+}
+
+.senator-card .name {
+  font-weight: 700;
+}
+
+.senator-card .party {
   /* Your styles for .party here */
 }
 
-.card .state {
-  /* Your styles for .state here */
+.senator-card .state {
+  font-style: italic;
 }
 
-.card .gender {
-  /* Your styles for .gender here */
+.senator-card .gender {
+  flex-grow: 1;
+  text-align: right;
 }
 
-.card .rank {
+.senator-card .rank {
   /* Your styles for .rank here */
 }
 
 /* END CARDS */
 
 /* START SENATOR POPUP */
-
-#senator-container {
-  /* Your styles for #senator-container here */
-}
 
 a#twitter {
   /* Your styles for #twitter here */

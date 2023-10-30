@@ -63,13 +63,15 @@
           </div>
           <div
             class="count-bubble independent"
-            style="width: 200px; height: 200px; left: 300px; top: 350px"
+            style="width: 200px; height: 200px; left: 300px; top: 390px"
           >
             <h1 class="count">3</h1>
             <h3 class="party">independents</h3>
           </div>
-          <button class="cta button">view all</button>
         </div>
+      </div>
+      <div class="section-divider">
+        <button class="cta button">view all</button>
       </div>
       <!-- LEADERS -->
       <div class="section" id="leader-list">
@@ -166,13 +168,17 @@
               </div>
             </div>
           </div>
-          <button class="cta button">view all</button>
         </div>
       </div>
+      <div class="section-divider">
+        <button class="cta button">view all</button>
+      </div>
       <!-- STATS -->
-      <div class="section" id="stats">
+      <div class="section" id="stats" style="border: 1px solid red">
         <div class="content">
-          <h1>the stats.</h1>
+          <div class="header left dark">
+            <h1>the stats.</h1>
+          </div>
           <div id="gender-stats-container"></div>
           <div id="average-age-container"></div>
           <div id="years-in-office-container"></div>
@@ -181,16 +187,17 @@
       <!-- FULL LIST -->
       <div class="section" id="senators-list">
         <div class="content">
-          <h1>meet the team.</h1>
-          <div id="search-container"></div>
-          <i class="fa fa-filter"></i>
-          <div id="senators-container">
-            <div class="senator-card"></div>
-            <div class="senator-card"></div>
-            <div class="senator-card"></div>
-            <div class="senator-card"></div>
-            <div class="senator-card"></div>
+          <div class="header left dark">
+            <h1>meet the team.</h1>
           </div>
+          <div class="filter-header">
+            <div class="text-input-container">
+              <i class="fa fa-search"></i>
+              <input type="text" />
+            </div>
+            <i class="fa fa-filter dark"></i>
+          </div>
+          <div id="senators-container"></div>
         </div>
       </div>
     </div>
