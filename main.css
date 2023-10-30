@@ -1,8 +1,9 @@
 /* START GLOBAL STYLES */
 body,
-html {
+html,
+p {
   margin: 0;
-  font-family: "Montserrat", sans-serif;
+  font-family: "League Spartan", sans-serif;
 }
 
 button {
@@ -13,21 +14,41 @@ button {
 }
 
 h1 {
+  margin: 0;
+  font-family: "League Spartan", sans-serif;
+  font-weight: 800;
+  font-size: 4.5rem;
 }
 h2 {
 }
 h3 {
+  font-family: "Montserrat", sans-serif;
+  font-family: "Sanchez", serif;
+  text-transform: uppercase;
 }
 h4 {
+  margin: 0;
+  font-family: "League Gothic", sans-serif;
+  font-weight: 400;
+  font-size: 23px;
+  letter-spacing: 1px;
 }
 
 a {
 }
+
+.dark {
+  color: #041a91;
+}
+
+.light {
+  color: #fff;
+}
 /* END GLOBAL STYLES */
 
 #pop-up {
-  display: none;
-  position: absolute;
+  visibility: hidden;
+  position: fixed;
   background: white;
   border: 1px solid black;
   border-radius: 5%;
@@ -37,21 +58,190 @@ a {
   z-index: 3;
 }
 
+#pop-up img {
+  width: 25%;
+}
+
 #page-container {
   /* Your styles for #page-container here */
-  border: 1px solid green;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#page-container .section {
+  min-height: 80vh;
+  overflow: hidden;
+}
+
+.section {
+  padding: 2rem;
+}
+
+.section .content {
+  position: relative;
+  width: 800px;
+  margin: 0 auto;
+  min-height: 80vh;
+}
+
+#landing.section {
+  background: radial-gradient(
+      circle at 0% 0%,
+      rgb(81, 112, 255) 0%,
+      rgb(255, 102, 196) 100%
+    )
+    0px 0px / 256px 256px;
+  background-size: contain;
+  color: #fff;
+}
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem;
+}
+
+img#usa-map {
+  height: 90vh;
+  position: absolute;
+  opacity: 15%;
+}
+
+.header {
+  position: relative;
+  z-index: 1;
+}
+
+.header.right {
+  text-align: right;
+}
+.header.left {
+  text-align: left;
+}
+
+#landing.section h1,
+#landing.section h3 {
+  margin: 0;
+}
+
+/* TODO: replace with real div elemets */
+#senate-floor-graphic-container img {
+  position: absolute;
+  top: 62%;
+  left: 56%;
+  transform: translate(-50%, -50%);
+  height: 65%;
+}
+
+.cta {
+  color: white;
+  text-transform: uppercase;
+  font-size: 1rem;
+  font-family: "League Spartan", sans-serif;
+  cursor: pointer;
+}
+
+.cta.button {
+  background-color: #041a91;
+  border-radius: 10px;
+  height: 50px;
+  width: 150px;
+}
+
+.cta.text {
+  position: absolute;
+  bottom: 0;
+  left: 325px;
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cta.text:hover {
+  color: #041a91;
+}
+
+.count-bubble {
+  color: #fff;
+  border-radius: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: absolute;
+}
+
+.count-bubble:nth-of-type(1) {
+  top: 50px;
+}
+
+.independent {
+  background-color: #767676;
+}
+.republican {
+  background-color: #911304;
+}
+.democrat {
+  background-color: #041a91;
+}
+
+.count-bubble .party {
+  margin: -10px 0 0 0;
+}
+
+#leaders-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#leaders-container > * {
+  width: 100%;
+}
+
+#leaders-container .leader-line {
+  display: flex;
+  align-items: center;
+  margin: 1rem;
+}
+
+#leaders-container .leader-line > div {
+  width: 50%;
+}
+
+#leaders-container .leader-line .leadership-title {
+  text-align: right;
+  font-family: "League Gothic";
+  letter-spacing: 2px;
+  font-size: 20px;
+}
+
+#leaders-container .leader-line .name {
+  text-align: left;
+  text-transform: uppercase;
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin-left: 10px;
 }
 
 #curtain {
-  display: none;
-  position: absolute;
+  visibility: hidden;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100vh;
   background-color: black;
-  opacity: 10%;
-  z-index: 2;
+  opacity: 30%;
+  z-index: 1;
+}
+
+#close {
+  
 }
 
 /* START SUMMARY CONTAINER */
@@ -71,34 +261,48 @@ a {
   border: 1px solid blue;
 }
 
+#leader-list.section {
+  background: radial-gradient(
+      circle at 50% 50%,
+      rgb(112, 44, 246) 0%,
+      rgb(255, 87, 87) 100%
+    )
+    0px 0px / 256px 256px;
+  background-size: contain;
+  color: #fff;
+}
+
+#leader-list h4 {
+  text-align: center;
+}
+
 /* END SUMMARY CONTAINER */
 
 /* START FILTER CONTAINER */
 
 #filter-container {
-  border: 1px solid black;
-  width: 200px;
+  border: 1px solid #d4dafb;
+  width: 225px;
   display: flex;
   flex-direction: column;
+  position: absolute;
+  z-index: 1;
+  background-color: #fff;
+  top: 70px;
+  right: -500px;
+  min-height: 85vh;
+  box-shadow: 3px 2px 9px 0px rgba(184,184,184,0.75);
+  -webkit-box-shadow: 3px 2px 9px 0px rgba(184,184,184,0.75);
+  -moz-box-shadow: 3px 2px 9px 0px rgba(184,184,184,0.75);
+  transition: all 0.5s ease-in-out;
 }
 
-.filter-section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-}
-
-.filter-section-header:first-of-type {
-  border-top: 1px solid #dadce0;
-}
-
-.fa.fa-chevron-down {
-  color: #9e9ea0;
-  font-size: 10px;
+#filter-container h2 {
+  text-align: center;
 }
 
 .filter-section-header h5 {
-  margin: 0.5rem;
+  margin: 0.5rem 1rem;
 }
 
 .filter-section .filter-options {
@@ -116,25 +320,6 @@ a {
   padding: 5px 15px;
   font-size: 12px;
   cursor: pointer;
-}
-
-.button-group button:hover {
-  background-color: #dadce0;
-}
-
-.button-group button:last-of-type {
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-}
-
-.button-group button:first-of-type {
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-}
-
-.button-group button.selected {
-  /* TODO: add color */
-  background-color: #e8eaee;
 }
 
 .dropdown-container {
@@ -158,32 +343,62 @@ a {
 .dropdown div {
   font-size: 14px;
   padding: 4px 26px 4px 4px;
+  background-color: #fff;
 }
 
 .dropdown div:hover {
   background-color: #e8eaee;
 }
 
-.dropdown-container .fa.fa-search {
-  margin: 4px;
-  font-size: 12px;
-  color: #e8eaee;
-}
-.dropdown-container input {
-  outline: none;
-  border: none;
-}
-.dropdown-container .text-input-container {
-  border: 1px solid black;
+.text-input-container {
+  border: 1px solid #d4dafb;
   display: flex;
   flex-wrap: nowrap;
   margin: 0px 1rem;
+  padding: 10px;
+  border-radius: 10px;
+  height: 20px;
+}
+
+.text-input-container .fa.fa-search {
+  margin: 4px;
+  font-size: 12px;
+  color: #86a3de;
+}
+.text-input-container input {
+  outline: none;
+  border: none;
+}
+
+.text-input-container,
+.text-input-container * {
+  background-color: #eaedff;
+}
+
+#senators-list .content {
+  width: 840px;
+}
+
+#senators-list .fa.fa-filter {
+  /* float: right; */
+  cursor: pointer;
+  font-size: 24px;
+  padding: 10px;
+}
+
+#senators-list .fa.fa-filter:hover {
+  color: #86a3de;
+}
+
+#filter-header {
+  display: flex;
+  justify-content: flex-end;
 }
 
 #filter-tag-container {
   display: flex;
   flex-wrap: wrap;
-  width: 25vw;
+  flex-grow: 2;
   padding: 0.5rem;
 }
 
@@ -196,6 +411,7 @@ a {
   width: fit-content;
   display: flex;
   margin: 2px;
+  align-items: center;
 }
 
 .tag i {
@@ -220,68 +436,84 @@ a {
 
 /* START CARDS */
 
-#cards-container {
-  /* Your styles for #cards-container here */
-  border: 1px solid orange;
+#senators-container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 840px;
 }
 
-#democrat-cards {
-  /* Your styles for #democrat-cards here */
-}
+/* TODO: make a compact view? */
 
-#republican-cards {
-  /* Your styles for #republican-cards here */
-}
-
-#independent-cards {
-  /* Your styles for #independent-cards here */
-}
-
-.card {
+.senator-card {
   /* Your styles for .card here */
-  border: 1px solid pink;
+  height: 300px;
+  width: 200px;
+  margin: 5px;
+  position: relative;
 }
 
-.card div {
-  display: block;
-  width: 50%;
-  margin: 0;
+.senator-card .overlay {
+  cursor: pointer;
 }
 
-.card img {
-  height: 90px;
-  float: left;
-  display: block;
-  margin: 0;
+.senator-card .overlay:hover {
+  opacity: 0%;
+}
+.senator-card:hover img {
+  filter: unset;
 }
 
-.card .name {
-  /* Your styles for .name here */
+.overlay {
+  /* background-color: blue; */
+  position: absolute;
+  top: 0;
+  height: 240px;
+  width: 100%;
+  opacity: 20%;
 }
 
-.card .party {
+.senator-card img {
+  filter: grayscale(1) brightness(1.2) contrast(1.2);
+}
+
+.senator-card .top,
+.senator-card .bottom {
+  display: flex;
+}
+
+.senator-card .top {
+  margin-top: 5px;
+}
+
+.senator-card .top *,
+.senator-card .bottom * {
+  margin: 0 2px;
+}
+
+.senator-card .name {
+  font-weight: 700;
+}
+
+.senator-card .party {
   /* Your styles for .party here */
 }
 
-.card .state {
-  /* Your styles for .state here */
+.senator-card .state {
+  font-style: italic;
 }
 
-.card .gender {
-  /* Your styles for .gender here */
+.senator-card .gender {
+  flex-grow: 1;
+  text-align: right;
 }
 
-.card .rank {
+.senator-card .rank {
   /* Your styles for .rank here */
 }
 
 /* END CARDS */
 
 /* START SENATOR POPUP */
-
-#senator-container {
-  /* Your styles for #senator-container here */
-}
 
 a#twitter {
   /* Your styles for #twitter here */
