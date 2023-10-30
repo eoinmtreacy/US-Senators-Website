@@ -102,6 +102,7 @@ if (isSenatorsLoaded) {
   drawFilters(FILTER_OPTIONS);
   drawHtml(ALL_SENATORS);
   appendProfileImage(imgSources)
+  drawSummary(ALL_SENATORS)
 }
 
 /**
@@ -493,4 +494,49 @@ function appendProfileImage(imgSources) {
     image.setAttribute("src", imgSources[key]);
     document.getElementById([key]).insertBefore(image, document.getElementById([key]).firstChild);
   });
+}
+
+function drawSummary(senators)
+{
+  let dem = [0,[], "democrat"]
+  let rep = [0,[], "republican"]
+  let ind = [0,[], "independent"]
+
+  senators.forEach(s =>
+    {
+      if (s.party == "Republican")
+      {
+        rep[0]++
+        if (s.leadership_title != null) {
+          rep[1].push({name: s.person.name, role: s.leadership_title})
+        }
+      } else if (s.party == "Democrat")
+      {
+        dem[0]++
+        if (s.leadership_title != null) {
+          dem[1].push({name: s.person.name, role: s.leadership_title})
+        }
+      } else {
+        ind[0]++
+        if (s.leadership_title != null) {
+          ind[1].push({name: s.person.name, role: s.leadership_title})
+        }
+      }
+    })
+
+  let parties = [dem, rep, ind]
+  parties.forEach(party => {
+    let partyBucket = document.createElement("div")
+    partyBucket.setAttribute("id", `${party[2]}-summary`)
+    document.getElementById("summary-container").appendChild(partyBucket)
+    let bucketTitle = document.createElement("div")
+    bucketTitle.innerText = `${capitalizeFirstLetter(party[2])}: ${party[0]}`
+    document.getElementById(`${party[2]}-summary`).appendChild(bucketTitle)
+    party[1].forEach(senator => {
+      let leader = document.createElement("div")
+      leader.innerText = `${senator.role}: ${senator.name.slice(0, -6)}`
+      document.getElementById(`${party[2]}-summary`).appendChild(leader)
+    })
+  }
+  )
 }
