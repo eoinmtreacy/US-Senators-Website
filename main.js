@@ -478,3 +478,42 @@ function drawHtml(senators) {
     container.appendChild(card);
   });
 }
+
+function renderPopUp(id, senators, img)
+{
+    let popUp = document.getElementById("pop-up")
+    popUp.innerHTML = ""
+    popUp.style.display = "block"
+
+    const curtain = document.getElementById("curtain")
+    curtain.style.display = "block"
+    
+    document.getElementsByTagName("body")[0].appendChild(curtain)
+    senators.forEach((senator) => {
+      if (id == senator.person.bioguideid) {
+        popUp.innerHTML = `
+          <img src=${img} alt="pop up image for Senator ${senator.person.firstname} ${senator.person.lastname}/>
+          <div class="pop-up-name">${senator.person.firstname} ${senator.person.lastname}</div>
+          <div class="pop-up-party">${senator.party}</div>
+          <div class="pop-up-office">Office: ${senator.extra.office}</div>
+          <div class="pop-up-dob">Date of dirth: ${senator.person.birthday}</div>
+          <div class="pop-up-startDate"> Start date: ${senator.startdate}</div>
+          ${senator.person.twitterid != null && `<div class="pop-up-twitter">Twitter: <a href="https://www.twitter.com/${senator.person.twitterid}">${senator.person.twitterid}</a></div>`}
+          ${senator.person.youtubeid != null && `<div class="pop-up-youtube">YouTube: <a href="https://www.youtube.com/${senator.person.youtubeid}">${senator.person.youtubeid}</a></div>`}
+          ${senator.website != null && `<div class="pop-up-youtube">Website: <a href="${senator.website}">${senator.website}</a></div>`}
+        `
+    let close = document.createElement("div")
+    close.setAttribute("id", "close")
+    close.innerText = "X"
+    popUp.appendChild(close)
+    curtain.onclick = () => {
+      popUp.style.display = "none"
+      curtain.style.display = "none"
+    }
+    close.onclick = () => {
+      popUp.style.display = "none"
+      curtain.style.display = "none"
+    }
+      }
+    })
+}
