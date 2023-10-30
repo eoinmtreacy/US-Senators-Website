@@ -5,66 +5,37 @@
  */
 class FilterOptions {
   constructor() {
-    this.rank = new Set();
-    this.gender = new Set();
-    this.state = new Set();
-    this.party = new Set();
+    this.state = {
+      rank: new Set(),
+      gender: new Set(),
+      state: new Set(),
+      party: new Set()
+    }
   }
 
   hasFilter(type, value) {
-    switch (type) {
-      case "rank":
-        return this.rank.has(value);
-      case "gender":
-        return this.gender.has(value);
-      case "party":
-        return this.party.has(value);
-      case "state":
-        return this.state.has(value);
-      default:
-        return;
-    }
+    return this.state[type].has(value);
   }
 
   // When a user selects a new filter, we call this to update our stored filter values
   addFilter(type, value) {
-    switch (type) {
-      case "rank":
-        this.rank.add(value);
-        break;
-      case "gender":
-        this.gender.add(value);
-        break;
-      case "party":
-        this.party.add(value);
-        break;
-      case "state":
-        this.state.add(value);
-        break;
-      default:
-        break;
-    }
+    return this.state[type].add(value);
   }
 
   // When a user unselects a filter, we call this to update our stored filter values
   removeFilter(type, value) {
-    switch (type) {
-      case "rank":
-        this.rank.delete(value);
-        break;
-      case "gender":
-        this.gender.delete(value);
-        break;
-      case "party":
-        this.party.delete(value);
-        break;
-      case "state":
-        this.state.delete(value);
-        break;
-      default:
-        break;
+    return this.state[type].delete(value);
+  }
+
+  resetFilters() {
+    this.state = {
+      rank: new Set(),
+      gender: new Set(),
+      state: new Set(),
+      party: new Set()
     }
   }
+
 }
 
 var isSenatorsLoaded = false;
@@ -152,6 +123,13 @@ function handleFilterSelected(e, filterId) {
 }
 
 /**
+ * Function which removes all filters
+ */
+function handleResetClicked() {
+  CURRENT_FILTER.resetFilters();
+}
+
+/**
  * Function which takes in a FilterOptions object and returns a filtered array of senators filtered down based
  * on the filters passed.
  *
@@ -159,9 +137,9 @@ function handleFilterSelected(e, filterId) {
  * @param {array} senators - List of senators directly from our data (TODO: we should abstract out the senator data)
  * @returns
  */
-function filter(filterOptionsObj, senators) {
+function filter(filterOptionsObj) {
   let output = [];
-  senators.forEach((senator) => {
+  ALL_SENATORS.forEach((senator) => {
     if (
       (filterOptionsObj.rank.has(senator.senator_rank) ||
         !filterOptionsObj.rank.size) &&
@@ -199,7 +177,7 @@ function filter(filterOptionsObj, senators) {
 function applyFilterToSenatorElements(filterOptions) {
   let senatorsToShow = filter(filterOptions);
   let senatorIds = senatorsToShow.map((s) => s.id);
-  for (let senator of senators.objects) {
+  for (let senator of ALL_SENATORS) {
     let senatorEl = document.getElementById(senator.person.bioguideid);
     senatorEl.hidden = !senatorIds.includes(senator.person.bioguideid);
   }
@@ -222,8 +200,7 @@ function drawFilterTag(filterType, value) {
 
 function removeFilterTag(filterType, value, el, shouldRemoveFilter) {
   if (shouldRemoveFilter) {
-    // TODO: uncheck the input
-    currentFilter.removeFilter(filterType, value);
+    CURRENT_FILTER.removeFilter(filterType, value);
     let inputEl = document.getElementById(value);
     inputEl.checked = false;
   }
@@ -241,7 +218,7 @@ function removeFilterTag(filterType, value, el, shouldRemoveFilter) {
   console.log(optionEls);
   filterOptionElements("", optionEls);
 
-  applyFilterToSenatorElements(currentFilter);
+  applyFilterToSenatorElements(CURRENT_FILTER);
 }
 
 /**
@@ -459,11 +436,11 @@ function drawHtml(senators) {
   ];
   parties.forEach((party) => {
     let partyBucket = document.createElement("div");
-    partyBucket.setAttribute("id", `${party[1]}-container`); // creating top level party name divs
+    partyBucket.classList = `party-bucket ${party[1]}`;// creating top level party name divs
     document.getElementById("senator-container").appendChild(partyBucket);
     let partyTitle = document.createElement("h1"); // appending party names
     partyTitle.innerText = party[1];
-    document.getElementById(`${party[1]}-container`).appendChild(partyTitle);
+    partyBucket.appendChild(partyTitle);
 
     // append card div with unique id to each grouping
     // may have to change later unless we are always grouping by party
@@ -479,7 +456,7 @@ function drawHtml(senators) {
             <div class="rank">${s.senator_rank_label}</div>
 
           `;
-      document.getElementById(`${party[1]}-container`).appendChild(child);
+          partyBucket.appendChild(child);
     });
   });
 }
