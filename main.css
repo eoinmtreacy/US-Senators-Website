@@ -37,6 +37,10 @@ a {
   z-index: 3;
 }
 
+#pop-up img {
+  width: 25%;
+}
+
 #page-container {
   /* Your styles for #page-container here */
   border: 1px solid green;

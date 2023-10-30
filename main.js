@@ -446,7 +446,9 @@ function drawHtml(senators) {
       child.setAttribute("id", s.person.bioguideid);
       child.setAttribute("class", "card");
       child.onclick = () => {
-        renderPopUp(s.person.bioguideid, senators)
+        let img = child.getElementsByTagName("img")[0].src
+        console.log(img)
+        renderPopUp(s.person.bioguideid, senators, img)
       }
       child.innerHTML = `
             <div class="name">${s.person.firstname} ${s.person.lastname}</div>
@@ -467,16 +469,15 @@ function drawHtml(senators) {
  */
 function appendProfileImage(imgSources) {
   Object.keys(imgSources).forEach((key) => {
-    console.log(key);
+
     let image = document.createElement("img");
     image.setAttribute("src", imgSources[key]);
-    console.log(imgSources[key]);
-    // console.log(imgSources[key])
+
     document.getElementById([key]).appendChild(image);
   });
 }
 
-function renderPopUp(id, senators)
+function renderPopUp(id, senators, img)
 {
     let popUp = document.getElementById("pop-up")
     popUp.innerHTML = ""
@@ -489,6 +490,7 @@ function renderPopUp(id, senators)
     senators.forEach((senator) => {
       if (id == senator.person.bioguideid) {
         popUp.innerHTML = `
+          <img src=${img} alt="pop up image for Senator ${senator.person.firstname} ${senator.person.lastname}/>
           <div class="pop-up-name">${senator.person.firstname} ${senator.person.lastname}</div>
           <div class="pop-up-party">${senator.party}</div>
           <div class="pop-up-office">Office: ${senator.extra.office}</div>
