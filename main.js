@@ -92,16 +92,16 @@ if (isSenatorsLoaded) {
   var CURRENT_FILTER = new FilterOptions();
 
   // 2. Fetch all our images
-  fetch("./data/imgSources.json")
+  const imgSources = fetch("./data/imgSources.json")
     .then((response) => response.json())
     .then((data) => {
-      const imgSources = data;
-      appendProfileImage(imgSources);
+      return data
     });
 
   // 3. Draw our page
   drawFilters(FILTER_OPTIONS);
   drawHtml(ALL_SENATORS);
+  appendProfileImage(imgSources)
 }
 
 /**
@@ -366,6 +366,7 @@ function drawFilters(filterOptions) {
     let filterSectionEl = document.createElement("div");
     let filterSectionHeaderEl = document.createElement("div");
     filterSectionHeaderEl.classList.add("filter-section-header", filterId);
+    console.log
 
     // Create a label
     let filterLabelEl = document.createElement("h5");
@@ -457,11 +458,11 @@ function drawHtml(senators) {
   ];
   parties.forEach((party) => {
     let partyBucket = document.createElement("div");
-    partyBucket.setAttribute("id", party[1]); // creating top level party name divs
+    partyBucket.setAttribute("id", `${party[1]}-container`); // creating top level party name divs
     document.getElementById("senator-container").appendChild(partyBucket);
     let partyTitle = document.createElement("h1"); // appending party names
     partyTitle.innerText = party[1];
-    document.getElementById(party[1]).appendChild(partyTitle);
+    document.getElementById(`${party[1]}-container`).appendChild(partyTitle);
 
     // append card div with unique id to each grouping
     // may have to change later unless we are always grouping by party
@@ -477,7 +478,7 @@ function drawHtml(senators) {
             <div class="rank">${s.senator_rank_label}</div>
 
           `;
-      document.getElementById(party[1]).appendChild(child);
+      document.getElementById(`${party[1]}-container`).appendChild(child);
     });
   });
 }
@@ -488,11 +489,8 @@ function drawHtml(senators) {
  */
 function appendProfileImage(imgSources) {
   Object.keys(imgSources).forEach((key) => {
-    console.log(key);
     let image = document.createElement("img");
     image.setAttribute("src", imgSources[key]);
-    console.log(imgSources[key]);
-    // console.log(imgSources[key])
     document.getElementById([key]).appendChild(image);
   });
 }
