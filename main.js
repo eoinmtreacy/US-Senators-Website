@@ -56,6 +56,7 @@ const fetchImages = fetch("./data/imgSources.json").then((response) =>
 var ALL_SENATORS = await Promise.all([fetchSenators, fetchImages])
   .then(([senators, images]) => {
     // console.log(senators, images);
+    // console.log(senators, images);
     isSenatorsLoaded = true;
     return senators.objects.map((o) => ({
       id: o.person.bioguideid,
@@ -84,12 +85,14 @@ var ALL_SENATORS = await Promise.all([fetchSenators, fetchImages])
 
 if (isSenatorsLoaded) {
   // console.log(ALL_SENATORS);
+  // console.log(ALL_SENATORS);
   const FILTER_OPTIONS = loadFilterOptions(ALL_SENATORS);
   var CURRENT_FILTER = new FilterOptions();
 
   // 3. Draw our page
   drawFilters(FILTER_OPTIONS);
-  drawSenators(ALL_SENATORS);
+  drawSummary(ALL_SENATORS);
+  drawSenators(ALL_SENATORS)
   drawSenatorPopup();
   circles(ALL_SENATORS)
 }
@@ -374,6 +377,7 @@ function drawFilters(filterOptions) {
     let filterSectionEl = document.createElement("div");
     let filterSectionHeaderEl = document.createElement("div");
     filterSectionHeaderEl.classList.add("filter-section-header", filterId);
+    console.log
 
     // Create a label
     let filterLabelEl = document.createElement("h5");
@@ -445,6 +449,60 @@ function createFontAwesomeIcon(iconName, handleClick, className) {
  * This function is intended to only be called once on our initial load of the page.
  *
  */
+
+function drawSummary(senators)
+{
+  let dem = [[], "democrat"]
+  let rep = [[], "republican"]
+  senators.forEach((senator) => 
+  {
+    if (senator.leadership_title)
+    {
+      if (senator.party == "democrat") 
+      {
+        dem[0].push(senator) 
+      }
+      else
+      {
+        rep[0].push(senator)
+      } 
+    }
+  }
+  )
+
+  const parties = [dem, rep]
+
+  parties.forEach((party) =>
+  {
+    let partyTitle = document.createElement("h4")
+    partyTitle.innerText = `${capitalizeFirstLetter(party[1])}s`
+    const leadersContainer = document.getElementById("leaders-container")
+    leadersContainer.appendChild(partyTitle)
+    let partyContainer = document.createElement("div")
+    partyContainer.setAttribute("id", `${party[1]}-leaders-container`)
+    leadersContainer.appendChild(partyContainer)
+
+    party[0].forEach((senator) =>
+    {
+      const leaderLine = document.createElement("div")
+      leaderLine.setAttribute("class", "leader-line")
+      leaderLine.innerHTML = `
+      <div class="leadership-title">${senator.leadership_title}</div>
+      <div class="name">${senator.firstname} ${senator.nickname && `"${senator.nickname}" `} ${senator.secondname}</div>
+        `
+      partyContainer.appendChild(leaderLine)
+    })
+  }
+  )
+}
+
+{/* <div class="leader-line">
+                <div class="leadership-title">
+                  Senate Republican Policy Committee Chair
+                </div>
+                <div class="name">roy blunt</div>
+              </div> */}
+
 function drawSenators(senators, param) {
 
   function compareByA(a,b) {return a.secondname.localeCompare(b.secondname)}
