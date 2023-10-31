@@ -108,7 +108,6 @@ img#usa-map {
 .header {
   position: relative;
   z-index: 1;
-  width: 33%;
 }
 
 .header.right {
