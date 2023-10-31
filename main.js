@@ -816,3 +816,11 @@ function circles(senators) {
     dist -= 4;
   });
 }
+
+document.addEventListener('click', (e) => {
+  if (Array.from(e.target.classList).includes('cta')) {
+    const senatorSectionEl = document.getElementById('senators-list');
+    const rect = senatorSectionEl.getBoundingClientRect();
+    window.scrollTo({ top: rect.top + window.scrollY, behavior: 'smooth' });
+  }
+});
