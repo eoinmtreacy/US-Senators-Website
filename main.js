@@ -56,6 +56,7 @@ const fetchImages = fetch("./data/imgSources.json").then((response) =>
 var ALL_SENATORS = await Promise.all([fetchSenators, fetchImages])
   .then(([senators, images]) => {
     // console.log(senators, images);
+    // console.log(senators, images);
     isSenatorsLoaded = true;
     return senators.objects.map((o) => ({
       id: o.person.bioguideid,
@@ -84,6 +85,7 @@ var ALL_SENATORS = await Promise.all([fetchSenators, fetchImages])
 
 if (isSenatorsLoaded) {
   // console.log(ALL_SENATORS);
+  // console.log(ALL_SENATORS);
   const FILTER_OPTIONS = loadFilterOptions(ALL_SENATORS);
   var CURRENT_FILTER = new FilterOptions();
 
@@ -92,6 +94,7 @@ if (isSenatorsLoaded) {
   drawSummary(ALL_SENATORS);
   drawSenators(ALL_SENATORS)
   drawSenatorPopup();
+  circles(ALL_SENATORS)
 }
 
 /**
@@ -230,7 +233,7 @@ function removeFilterTag(filterType, value, el, shouldRemoveFilter) {
     `dropdown-container ${filterType}`
   )[0];
   const optionEls = dropdownEl.getElementsByClassName(value);
-  console.log(optionEls);
+  // console.log(optionEls);
   filterOptionElements("", optionEls);
 
   applyFilterToSenatorElements(CURRENT_FILTER);
@@ -389,7 +392,7 @@ function drawFilters(filterOptions) {
 }
 
 function filterOptionElements(value, els) {
-  console.log(els);
+  // console.log(els);
   const optionsToUpdate = {
     hide: [],
     show: [],
@@ -627,3 +630,82 @@ function renderPopUp(senator) {
 }
 
 function handleCloseClicked() {}
+
+function circles (senators)
+{
+  const buckets = [];
+  const count = 20;
+  for (let i = 0; i < senators.length; i += count) {
+    const bucket = senators.slice(i, i + count);
+    buckets.push(bucket);
+  }
+
+  let target = document.getElementById("senate-floor-graphic-container")
+
+  function drawDots(bucket, rad, startX, startY, dist)
+  {
+    let x = startX
+    let y = startY
+    let inc = 10
+    bucket.forEach(b => 
+      {
+
+        //draw each dot link
+        let dot = document.createElement("div")
+        target.appendChild(dot)
+        dot.setAttribute("class", "dot")
+        let link = document.createElement("a")
+        link.setAttribute("href", `#${b.id}`)
+        dot.appendChild(link)
+
+        link.onmouseover = () => {
+          let image = document.getElementById("hover-img")
+          image.setAttribute("src", `${b.imageUrl}`)
+        }
+        
+
+        //find coorindates for each dot based on previous
+        x = calcX(x, inc, rad, dist)
+        y = calcY(y, inc, rad, dist)
+        inc ++
+        dot.style.left = `${x}px`
+        dot.style.bottom = `${y}px`
+
+        //change color depending on party
+        if (b.party == "democrat")
+        {
+          dot.style.backgroundColor = "blue"
+        }
+        else if (b.party == "republican") 
+        {
+          dot.style.backgroundColor = "red"
+        }
+
+      }
+    )
+
+    
+  }
+
+  function calcX(x, inc, rad, dist) 
+  {
+    x += dist * Math.cos(rad * inc)
+    return x
+  }
+  
+  function calcY (y, inc, rad, dist) 
+  {
+       y += dist * Math.sin(rad * inc)
+       return y
+  }
+
+  let startX = 800
+  let dist = 40
+
+  buckets.forEach((bucket) =>
+  {
+    drawDots(bucket, 0.1571, startX, 20, dist)
+    startX -= 27.5
+    dist -= 4
+  })
+}
