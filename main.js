@@ -445,7 +445,15 @@ function createFontAwesomeIcon(iconName, handleClick, className) {
  * This function is intended to only be called once on our initial load of the page.
  *
  */
-function drawSenators(senators) {
+function drawSenators(senators, param) {
+
+  function compareByA(a,b) {return a.secondname.localeCompare(b.secondname)}
+  function compareByZ(a,b) {return b.secondname.localeCompare(a.secondname)}
+  function compareByStateA(a,b) {return a.state.localeCompare(b.state)}
+  function compareByStateZ(a,b) {return b.state.localeCompare(a.state)}
+  
+  senators.sort(compareByZ)
+
   let container = document.getElementById("senators-container");
   senators.forEach((senator) => {
     let card = document.createElement("div");
