@@ -89,9 +89,10 @@ if (isSenatorsLoaded) {
   drawFilters(FILTER_OPTIONS);
   drawSenators(ALL_SENATORS);
   drawStats(ALL_SENATORS);
+  drawLeaders(ALL_SENATORS);
   drawSummary(ALL_SENATORS);
   drawSenatorPopup();
-  circles(ALL_SENATORS)
+  circles(ALL_SENATORS);
 }
 
 /**
@@ -418,9 +419,9 @@ function createFontAwesomeIcon(iconName, handleClick, className = '') {
 // draw HTML elements
 
 /**
- * Function which draws a list of senator elements onto our page
+ * Function which draws leaders names and titles.
  *
- * @param {[]} senators senators to draw
+ * @param {[]} senators all senators
  * @return {null}
  *
  * DESIGN NOTES
@@ -428,58 +429,89 @@ function createFontAwesomeIcon(iconName, handleClick, className = '') {
  *
  */
 
-function drawSummary(senators)
-{
-  let dem = [[], "democrat"]
-  let rep = [[], "republican"]
-  senators.forEach((senator) => 
-  {
-    if (senator.leadership_title)
-    {
-      if (senator.party == "democrat") 
-      {
-        dem[0].push(senator) 
-      }
-      else
-      {
-        rep[0].push(senator)
-      } 
+function drawLeaders(senators) {
+  const leadersByParty = { democrat: [], republican: [] };
+  senators.forEach((senator) => {
+    if (senator.leadership_title) {
+      leadersByParty[senator.party].push(senator);
     }
-  }
-  )
+  });
 
-  const parties = [dem, rep]
+  Object.keys(leadersByParty).forEach((party) => {
+    let partyTitle = document.createElement('h4');
+    partyTitle.innerText = `${capitalizeFirstLetter(party)}s`;
+    const leadersContainer = document.getElementById('leaders-container');
+    leadersContainer.appendChild(partyTitle);
+    let partyContainer = document.createElement('div');
+    partyContainer.setAttribute('id', `${party[1]}-leaders-container`);
+    leadersContainer.appendChild(partyContainer);
 
-  parties.forEach((party) =>
-  {
-    let partyTitle = document.createElement("h4")
-    partyTitle.innerText = `${capitalizeFirstLetter(party[1])}s`
-    const leadersContainer = document.getElementById("leaders-container")
-    leadersContainer.appendChild(partyTitle)
-    let partyContainer = document.createElement("div")
-    partyContainer.setAttribute("id", `${party[1]}-leaders-container`)
-    leadersContainer.appendChild(partyContainer)
-
-    party[0].forEach((senator) =>
-    {
-      const leaderLine = document.createElement("div")
-      leaderLine.setAttribute("class", "leader-line")
+    leadersByParty[party].forEach((senator) => {
+      const leaderLine = document.createElement('div');
+      leaderLine.setAttribute('class', 'leader-line');
       leaderLine.innerHTML = `
       <div class="leadership-title">${senator.leadership_title}</div>
       <div class="name">${senator.firstname} ${senator.nickname && `"${senator.nickname}" `} ${senator.secondname}</div>
-        `
-      partyContainer.appendChild(leaderLine)
-    })
-  }
-  )
+        `;
+      partyContainer.appendChild(leaderLine);
+    });
+  });
 }
 
-{/* <div class="leader-line">
-                <div class="leadership-title">
-                  Senate Republican Policy Committee Chair
-                </div>
-                <div class="name">roy blunt</div>
-              </div> */}
+function drawSummary(senators) {
+  const counts = senators.reduce(
+    (acc, val) => {
+      acc[val.party]++;
+      return acc;
+    },
+    { democrat: 0, republican: 0, independent: 0 }
+  );
+
+  const countsSectionContentEl = document.getElementById('party-counts').getElementsByClassName('content')[0];
+  Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .forEach(([key, val], i) => {
+      let bubbleEl = document.createElement('div');
+      bubbleEl.classList = `count-bubble ${key}`;
+      let diameter, top, left, right, h1Size;
+      switch (i) {
+        case 0:
+          diameter = '350px';
+          top = '100px';
+          h1Size = '10rem';
+          break;
+        case 1:
+          diameter = '300px';
+          top = '240px';
+          right = '0';
+          h1Size = '8rem';
+          break;
+        case 2:
+          diameter = '200px';
+          top = '390px';
+          left = '300px';
+          break;
+      }
+      bubbleEl.style.width = diameter;
+      bubbleEl.style.height = diameter;
+      bubbleEl.style.top = top;
+      bubbleEl.style.left = left;
+      bubbleEl.style.right = right;
+
+
+      let countEl = document.createElement('h1');
+      countEl.classList = 'count';
+      countEl.innerText = val;
+      countEl.style.fontSize = h1Size;
+
+      let labelEl = document.createElement('h3');
+      labelEl.classList = key;
+      labelEl.innerText = `${capitalizeFirstLetter(key)}s`;
+
+      bubbleEl.append(countEl, labelEl);
+      countsSectionContentEl.appendChild(bubbleEl);
+    });
+}
 
 function drawSenators(senators) {
   let container = document.getElementById('senators-container');
@@ -700,8 +732,7 @@ function renderPopUp(senator) {
 
 function handleCloseClicked() {}
 
-function circles (senators)
-{
+function circles(senators) {
   const buckets = [];
   const count = 20;
   for (let i = 0; i < senators.length; i += count) {
@@ -709,72 +740,58 @@ function circles (senators)
     buckets.push(bucket);
   }
 
-  let target = document.getElementById("senate-floor-graphic-container")
+  let target = document.getElementById('senate-floor-graphic-container');
 
-  function drawDots(bucket, rad, startX, startY, dist)
-  {
-    let x = startX
-    let y = startY
-    let inc = 10
-    bucket.forEach(b => 
-      {
+  function drawDots(bucket, rad, startX, startY, dist) {
+    let x = startX;
+    let y = startY;
+    let inc = 10;
+    bucket.forEach((b) => {
+      //draw each dot link
+      let dot = document.createElement('div');
+      target.appendChild(dot);
+      dot.setAttribute('class', 'dot');
+      let link = document.createElement('a');
+      link.setAttribute('href', `#${b.id}`);
+      dot.appendChild(link);
 
-        //draw each dot link
-        let dot = document.createElement("div")
-        target.appendChild(dot)
-        dot.setAttribute("class", "dot")
-        let link = document.createElement("a")
-        link.setAttribute("href", `#${b.id}`)
-        dot.appendChild(link)
+      link.onmouseover = () => {
+        let image = document.getElementById('hover-img');
+        image.setAttribute('src', `${b.imageUrl}`);
+      };
 
-        link.onmouseover = () => {
-          let image = document.getElementById("hover-img")
-          image.setAttribute("src", `${b.imageUrl}`)
-        }
-        
+      //find coorindates for each dot based on previous
+      x = calcX(x, inc, rad, dist);
+      y = calcY(y, inc, rad, dist);
+      inc++;
+      dot.style.left = `${x}px`;
+      dot.style.bottom = `${y}px`;
 
-        //find coorindates for each dot based on previous
-        x = calcX(x, inc, rad, dist)
-        y = calcY(y, inc, rad, dist)
-        inc ++
-        dot.style.left = `${x}px`
-        dot.style.bottom = `${y}px`
-
-        //change color depending on party
-        if (b.party == "democrat")
-        {
-          dot.style.backgroundColor = "blue"
-        }
-        else if (b.party == "republican") 
-        {
-          dot.style.backgroundColor = "red"
-        }
-
+      //change color depending on party
+      if (b.party == 'democrat') {
+        dot.style.backgroundColor = 'blue';
+      } else if (b.party == 'republican') {
+        dot.style.backgroundColor = 'red';
       }
-    )
-
-    
+    });
   }
 
-  function calcX(x, inc, rad, dist) 
-  {
-    x += dist * Math.cos(rad * inc)
-    return x
-  }
-  
-  function calcY (y, inc, rad, dist) 
-  {
-       y += dist * Math.sin(rad * inc)
-       return y
+  function calcX(x, inc, rad, dist) {
+    x += dist * Math.cos(rad * inc);
+    return x;
   }
 
-  let startX = 800
-  let dist = 40
+  function calcY(y, inc, rad, dist) {
+    y += dist * Math.sin(rad * inc);
+    return y;
+  }
 
-  buckets.forEach((bucket) =>
-  {
-    drawDots(bucket, 0.1571, startX, 20, dist)
-    startX -= 27.5
-    dist -= 4
-  })
+  let startX = 800;
+  let dist = 40;
+
+  buckets.forEach((bucket) => {
+    drawDots(bucket, 0.1571, startX, 20, dist);
+    startX -= 27.5;
+    dist -= 4;
+  });
 }
