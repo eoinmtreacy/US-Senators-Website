@@ -11,6 +11,7 @@ class FilterOptions {
       gender: new Set(),
       state: new Set(),
       party: new Set(),
+      name: '',
     };
   }
 
@@ -20,7 +21,13 @@ class FilterOptions {
 
   // When a user selects a new filter, we call this to update our stored filter values
   addFilter(type, value) {
-    return this.state[type].add(value);
+    if (typeof this.state[type] === 'object') {
+      return this.state[type].add(value);
+    }
+    if (typeof this.state[type] === 'string') {
+      this.state[type] = value.toLowerCase();
+      return this.state[type];
+    }
   }
 
   // When a user unselects a filter, we call this to update our stored filter values
@@ -45,6 +52,7 @@ const PARTY = 'party';
 const STATE = 'state';
 const RANK = 'rank';
 const GENDER = 'gender';
+const NAME = 'name';
 
 const fetchSenators = fetch('./data/senators.json').then((response) => response.json());
 const fetchImages = fetch('./data/imgSources.json').then((response) => response.json());
@@ -159,7 +167,13 @@ function handleResetClicked() {
 function filter(filterOptionsObj) {
   let output = [];
   ALL_SENATORS.forEach((senator) => {
-    if (isIncluded(filterOptionsObj, 'rank', senator.rank) && isIncluded(filterOptionsObj, 'gender', senator.gender) && isIncluded(filterOptionsObj, 'state', senator.state) && isIncluded(filterOptionsObj, 'party', senator.party)) {
+    if (
+      (filterOptionsObj.hasFilter(RANK, senator.rank) || !filterOptionsObj.state[RANK].size) &&
+      (filterOptionsObj.hasFilter(GENDER, senator.gender) || !filterOptionsObj.state[GENDER].size) &&
+      (filterOptionsObj.hasFilter(STATE, senator.state) || !filterOptionsObj.state[STATE].size) &&
+      (filterOptionsObj.hasFilter(PARTY, senator.party) || !filterOptionsObj.state[PARTY].size) &&
+      (senator.firstname.toLowerCase().startsWith(filterOptionsObj.state.name) || senator.secondname.toLowerCase().startsWith(filterOptionsObj.state.name))
+    ) {
       output.push(senator);
     }
   });
@@ -300,11 +314,15 @@ function createDropdown(filterId, options) {
   return dropdownContainerEl;
 }
 
-function createTextSearchBox() {
+function createTextSearchBox(oninput) {
   let textInputContainer = document.createElement('div');
   textInputContainer.className = 'text-input-container';
   let textInputEl = document.createElement('input');
   textInputEl.type = 'text';
+
+  if (oninput) {
+    textInputEl.oninput = oninput;
+  }
 
   let searchIcon = createFontAwesomeIcon('search');
   textInputContainer.append(searchIcon, textInputEl);
@@ -334,7 +352,11 @@ function drawFilters(filterOptions) {
   filterHeaderEl.appendChild(filterTagContainer);
 
   // Create text input for searching by name
-  let textInputContainerEl = createTextSearchBox();
+  let textInputContainerEl = createTextSearchBox((e) => {
+    const { value } = e.target;
+    CURRENT_FILTER.addFilter('name', value);
+    applyFilterToSenatorElements(CURRENT_FILTER);
+  });
   filterHeaderEl.appendChild(textInputContainerEl);
 
   // Create filter icon which opens filter menu when clicked
@@ -497,7 +519,6 @@ function drawSummary(senators) {
       bubbleEl.style.top = top;
       bubbleEl.style.left = left;
       bubbleEl.style.right = right;
-
 
       let countEl = document.createElement('h1');
       countEl.classList = 'count';
