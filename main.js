@@ -3,6 +3,7 @@
  * @class
  * Represents the selected filters. For each filter type (eg: rank), contains a set of the selected values (eg: "Junior", "Senior")
  */
+
 class FilterOptions {
   constructor() {
     this.state = {
@@ -492,15 +493,27 @@ function drawYearsInOfficeStat(senators) {
   const barsContainer = document.createElement('div');
   barsContainer.id = 'bars-container';
 
-  const numBars = Object.keys(yearsInOffice).length;
-  const maxCount = Math.max(Object.values(yearsInOffice));
+  const maxCount = Math.max(...Object.values(yearsInOffice));
 
   for (const [key, val] of Object.entries(yearsInOffice)) {
     let barEl = document.createElement('div');
     barEl.classList = 'graph-bar';
     barEl.style.width = `${(val / maxCount) * 100}%`;
+    let barLabelEl = document.createElement('h1');
+    barLabelEl.innerText = key;
+    barEl.appendChild(barLabelEl);
     barsContainer.appendChild(barEl);
   }
+
+  let barGraphAxis = document.createElement('div');
+  barGraphAxis.setAttribute('id', 'bar-graph-axis');
+  [0, parseInt(maxCount / 2), maxCount].forEach((num) => {
+    let valueEl = document.createElement('h3');
+    valueEl.innerText = num;
+    barGraphAxis.appendChild(valueEl);
+  });
+  barsContainer.appendChild(barGraphAxis);
+
   containerEl.appendChild(barsContainer);
 }
 
