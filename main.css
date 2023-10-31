@@ -129,13 +129,13 @@ img#usa-map {
 }
 
 /* TODO: replace with real div elemets */
-#senate-floor-graphic-container img {
+/* #senate-floor-graphic-container img {
   position: absolute;
   top: 62%;
   left: 56%;
   transform: translate(-50%, -50%);
   height: 65%;
-}
+} */
 
 #senate-floor-graphic-container {
   position: relative;
@@ -144,7 +144,7 @@ img#usa-map {
 .dot {
   height: 20px;
   width: 20px;
-  background-color: greenyellow;
+  background-color: white;
   border-radius: 50%;
   position: absolute;
   float: left;
@@ -159,17 +159,10 @@ img#usa-map {
   position: absolute;
 }
 
-.dot img {
-  display: none;
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  position: absolute;
-}
-
-.dot img:hover {
-  display: block;
+#hover-img {
+  display: inline-block;
+  z-index: 1;
+  height: 200px;
 }
 
 .cta {

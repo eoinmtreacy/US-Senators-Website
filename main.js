@@ -584,7 +584,7 @@ function circles (senators)
 
   let target = document.getElementById("senate-floor-graphic-container")
 
-  function drawDots(bucket, rad, startX, startY, dist, imgSources)
+  function drawDots(bucket, rad, startX, startY, dist)
   {
     let x = startX
     let y = startY
@@ -599,9 +599,12 @@ function circles (senators)
         let link = document.createElement("a")
         link.setAttribute("href", `#${b.id}`)
         dot.appendChild(link)
-        let image = document.createElement("img")
-        image.setAttribute("src", `${b.imageUrl}`)
-        dot.appendChild(image)
+
+        link.onmouseover = () => {
+          let image = document.getElementById("hover-img")
+          image.setAttribute("src", `${b.imageUrl}`)
+        }
+        
 
         //find coorindates for each dot based on previous
         x = calcX(x, inc, rad, dist)
@@ -643,7 +646,7 @@ function circles (senators)
 
   buckets.forEach((bucket) =>
   {
-    drawDots(bucket, 0.1571, startX, 20, dist, fetchImages)
+    drawDots(bucket, 0.1571, startX, 20, dist)
     startX -= 27.5
     dist -= 4
   })
