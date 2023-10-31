@@ -198,8 +198,8 @@ img#usa-map {
   position: absolute;
 }
 
-.count-bubble:nth-of-type(1) {
-  top: 50px;
+.count-bubble h3 {
+  margin: 0;
 }
 
 .independent {
@@ -593,7 +593,6 @@ a#youtube {
   opacity: 40%;
 }
 
-
 #bars-container {
   flex-grow: 1;
   margin-left: 2rem;
@@ -603,13 +602,13 @@ a#youtube {
   height: 55px;
 }
 .graph-bar:nth-of-type(4) {
-  background-color: #6CE5E8;
+  background-color: #6ce5e8;
 }
 .graph-bar:nth-of-type(3) {
-  background-color: #41B8D5;
+  background-color: #41b8d5;
 }
 .graph-bar:nth-of-type(2) {
-  background-color: #2D8BBA;
+  background-color: #2d8bba;
 }
 .graph-bar:nth-of-type(1) {
   background-color: #227ba8;
