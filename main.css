@@ -3,7 +3,7 @@ body,
 html,
 p {
   margin: 0;
-  font-family: "League Spartan", sans-serif;
+  font-family: 'League Spartan', sans-serif;
 }
 
 button {
@@ -15,20 +15,20 @@ button {
 
 h1 {
   margin: 0;
-  font-family: "League Spartan", sans-serif;
+  font-family: 'League Spartan', sans-serif;
   font-weight: 800;
   font-size: 4.5rem;
 }
 h2 {
 }
 h3 {
-  font-family: "Montserrat", sans-serif;
-  font-family: "Sanchez", serif;
+  font-family: 'Montserrat', sans-serif;
+  font-family: 'Sanchez', serif;
   text-transform: uppercase;
 }
 h4 {
   margin: 0;
-  font-family: "League Gothic", sans-serif;
+  font-family: 'League Gothic', sans-serif;
   font-weight: 400;
   font-size: 23px;
   letter-spacing: 1px;
@@ -87,12 +87,7 @@ a {
 }
 
 #landing.section {
-  background: radial-gradient(
-      circle at 0% 0%,
-      rgb(81, 112, 255) 0%,
-      rgb(255, 102, 196) 100%
-    )
-    0px 0px / 256px 256px;
+  background: radial-gradient(circle at 0% 0%, rgb(81, 112, 255) 0%, rgb(255, 102, 196) 100%) 0px 0px / 256px 256px;
   background-size: contain;
   color: #fff;
 }
@@ -113,7 +108,6 @@ img#usa-map {
 .header {
   position: relative;
   z-index: 1;
-  width: 33%;
 }
 
 .header.right {
@@ -169,7 +163,7 @@ img#usa-map {
   color: white;
   text-transform: uppercase;
   font-size: 1rem;
-  font-family: "League Spartan", sans-serif;
+  font-family: 'League Spartan', sans-serif;
   cursor: pointer;
 }
 
@@ -244,7 +238,7 @@ img#usa-map {
 
 #leaders-container .leader-line .leadership-title {
   text-align: right;
-  font-family: "League Gothic";
+  font-family: 'League Gothic';
   letter-spacing: 2px;
   font-size: 20px;
 }
@@ -270,33 +264,12 @@ img#usa-map {
 }
 
 #close {
-  
 }
 
 /* START SUMMARY CONTAINER */
 
-#summary-container {
-  /* Your styles for #summary-container here */
-  border: 1px solid red;
-}
-
-#democrat-summary {
-  /* Your styles for #democrat-summary here */
-  border: 1px solid blue;
-}
-
-#republican-summary {
-  /* Your styles for #republican-summary here */
-  border: 1px solid blue;
-}
-
 #leader-list.section {
-  background: radial-gradient(
-      circle at 50% 50%,
-      rgb(112, 44, 246) 0%,
-      rgb(255, 87, 87) 100%
-    )
-    0px 0px / 256px 256px;
+  background: radial-gradient(circle at 50% 50%, rgb(112, 44, 246) 0%, rgb(255, 87, 87) 100%) 0px 0px / 256px 256px;
   background-size: contain;
   color: #fff;
 }
@@ -320,9 +293,9 @@ img#usa-map {
   top: 70px;
   right: -500px;
   min-height: 85vh;
-  box-shadow: 3px 2px 9px 0px rgba(184,184,184,0.75);
-  -webkit-box-shadow: 3px 2px 9px 0px rgba(184,184,184,0.75);
-  -moz-box-shadow: 3px 2px 9px 0px rgba(184,184,184,0.75);
+  box-shadow: 3px 2px 9px 0px rgba(184, 184, 184, 0.75);
+  -webkit-box-shadow: 3px 2px 9px 0px rgba(184, 184, 184, 0.75);
+  -moz-box-shadow: 3px 2px 9px 0px rgba(184, 184, 184, 0.75);
   transition: all 0.5s ease-in-out;
 }
 
@@ -450,19 +423,6 @@ img#usa-map {
 
 /* END FILTER CONTAINER */
 
-/* START FILTER PREVIEW CONTAINER */
-
-#filter-preview-container {
-  /* Your styles for #filter-preview-container here */
-  border: 1px solid purple;
-}
-
-#filter-preview-container .filter {
-  /* Your styles for .filter here */
-}
-
-/* END FILTER PREVIEW CONTAINER */
-
 /* START CARDS */
 
 #senators-container {
@@ -553,3 +513,111 @@ a#youtube {
 }
 
 /* END SENATOR POPUP */
+
+/* START STATS SECTION */
+#stats.section {
+  color: #3644a0;
+}
+
+#stats .top {
+  display: flex;
+}
+
+#gender-stats-container {
+  width: 70%;
+  display: flex;
+}
+
+.percentage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem 1rem 1rem 0;
+}
+
+.percentage h1 {
+  font-size: 3rem;
+}
+
+.percentage h3 {
+  margin: 0;
+}
+
+#gender-stats-container .fa {
+  font-size: 2rem;
+  margin: 2px;
+  width: 20px;
+}
+
+#gender-stats-container .fa-female {
+  color: #41b8d5;
+}
+#gender-stats-container .fa-male {
+  color: #6ce5e8;
+}
+
+#average-age-container {
+  background-color: #caeaf1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+#average-age-container h3 {
+  margin: 0;
+}
+#average-age-container h1 {
+  font-size: 9rem;
+}
+
+#years-in-office-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+#years-in-office-container > h3 {
+  position: absolute;
+  top: 32%;
+  text-align: center;
+  left: 7%;
+  font-size: 2rem;
+}
+
+#years-in-office-container .fa {
+  font-size: 18rem;
+  color: #caeaf1;
+  opacity: 40%;
+}
+
+
+#bars-container {
+  flex-grow: 1;
+  margin-left: 2rem;
+  margin-top: 3rem;
+}
+#years-in-office-container .graph-bar {
+  height: 55px;
+}
+.graph-bar:nth-of-type(4) {
+  background-color: #6CE5E8;
+}
+.graph-bar:nth-of-type(3) {
+  background-color: #41B8D5;
+}
+.graph-bar:nth-of-type(2) {
+  background-color: #2D8BBA;
+}
+.graph-bar:nth-of-type(1) {
+  background-color: #227ba8;
+}
+#bar-graph-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -1rem;
+}
+
+/* END STATS SECTION */

@@ -67,6 +67,9 @@ c) 25%: for implementing the functionality described in step 3 above.
 d) 30%: for implementing the functionality described in step 4 above. 
 
 e) 10%: overall impression and quality of the overall design. For example, have you included appropriate and effective error handing? Is the information presented in a clear and uncluttered manner? Does  the website make appropriate use of HTML, CSS, and JavaScript. 
+1. Client side
+2. Server side
+3. Timeout
 
 Submitting 
 
