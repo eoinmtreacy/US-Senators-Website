@@ -194,6 +194,15 @@ img#usa-map {
   color: #041a91;
 }
 
+.sort-button {
+  border: 1px solid black;
+  background: white;
+  padding: 2px;
+  margin: 2px;
+  height: 100%;
+  width: 5%;
+}
+
 .count-bubble {
   color: #fff;
   border-radius: 300px;

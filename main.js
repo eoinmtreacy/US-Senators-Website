@@ -95,6 +95,7 @@ if (isSenatorsLoaded) {
   drawSenators(ALL_SENATORS)
   drawSenatorPopup();
   circles(ALL_SENATORS)
+  addSortToButtons()
 }
 
 /**
@@ -496,22 +497,7 @@ function drawSummary(senators)
   )
 }
 
-{/* <div class="leader-line">
-                <div class="leadership-title">
-                  Senate Republican Policy Committee Chair
-                </div>
-                <div class="name">roy blunt</div>
-              </div> */}
-
-function drawSenators(senators, param) {
-
-  function compareByA(a,b) {return a.secondname.localeCompare(b.secondname)}
-  function compareByZ(a,b) {return b.secondname.localeCompare(a.secondname)}
-  function compareByStateA(a,b) {return a.state.localeCompare(b.state)}
-  function compareByStateZ(a,b) {return b.state.localeCompare(a.state)}
-  
-  senators.sort(compareByZ)
-
+function drawSenators(senators) {
   let container = document.getElementById("senators-container");
   senators.forEach((senator) => {
     let card = document.createElement("div");
@@ -716,4 +702,22 @@ function circles (senators)
     startX -= 27.5
     dist -= 4
   })
+}
+
+function addSortToButtons()
+{
+  let nameButton = document.getElementById("name-sort")
+  nameButton.addEventListener("click", sortSenators)
+  let stateButton = document.getElementById("state-sort")
+  stateButton.addEventListener("click", sortSenators)
+}
+
+function sortSenators()
+{
+  function alphabetical(a,b) {return a.secondname.localeCompare(b.secondname)}
+  function reverseAlphabetical(a,b) {return b.secondname.localeCompare(a.secondname)}
+  function alphabeticalState(a,b) {return a.state.localeCompare(b.state)}
+  function reverseAlphabeticalState(a,b) {return b.state.localeCompare(a.state)}
+
+  console.log("fire")
 }
