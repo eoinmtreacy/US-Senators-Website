@@ -740,7 +740,5 @@ function sortSenators(e)
   }
 
   drawSenators(senators)
-
-  console.log(nameSort, stateSort)
-
+  applyFilterToSenatorElements(CURRENT_FILTER)
 }
