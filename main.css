@@ -182,15 +182,6 @@ img#usa-map {
   margin: 0;
 }
 
-/* TODO: replace with real div elemets */
-/* #senate-floor-graphic-container img {
-  position: absolute;
-  top: 62%;
-  left: 56%;
-  transform: translate(-50%, -50%);
-  height: 65%;
-} */
-
 #senate-floor-graphic-container {
   position: relative;
 }
@@ -249,6 +240,46 @@ img#usa-map {
 }
 
 .cta.text:hover {
+  color: #041a91;
+}
+
+.sort-button {
+  border: 1px solid #041a91;
+  background: white;
+  color: #041a91;
+  padding: 2px;
+  margin: 2px;
+  height: 100%;
+  width: 7%;
+  border-radius: 10px;
+  text-transform: uppercase;
+  font-size: 1rem;
+  font-family: "League Spartan", sans-serif;
+  cursor: pointer;
+}
+
+.sort-button:hover {
+  background: #041a91;
+  color: white;
+}
+
+.sort-button-active {
+  border: 1px solid #041a91;
+  background: #041a91;
+  color: white;
+  padding: 2px;
+  margin: 2px;
+  height: 100%;
+  width: 7%;
+  border-radius: 10px;
+  text-transform: uppercase;
+  font-size: 1rem;
+  font-family: "League Spartan", sans-serif;
+  cursor: pointer;
+}
+
+.sort-button-active:hover {
+  background: white;
   color: #041a91;
 }
 
