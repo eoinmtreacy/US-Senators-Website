@@ -715,9 +715,10 @@ function addSortToButtons()
 function sortSenators(e)
 {
   function alphabetical(a,b) {return a.secondname.localeCompare(b.secondname)}
-  function reverseAlphabetical(a,b) {return b.secondname.localeCompare(a.secondname)}
   function alphabeticalState(a,b) {return a.state.localeCompare(b.state)}
-  function reverseAlphabeticalState(a,b) {return b.state.localeCompare(a.state)}
+    // if I can be arsed to figure this out too it'll sort the other way
+      // function reverseAlphabetical(a,b) {return b.secondname.localeCompare(a.secondname)}
+      // function reverseAlphabeticalState(a,b) {return b.state.localeCompare(a.state)}
 
   const nameButton = document.getElementById("name-sort")
   const stateButton = document.getElementById("state-sort")
