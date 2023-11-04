@@ -1,7 +1,8 @@
 /* START GLOBAL STYLES */
 body,
 html,
-p {
+p,
+a {
   margin: 0;
   font-family: 'League Spartan', sans-serif;
 }
@@ -11,6 +12,12 @@ button {
   background: none;
   padding: 0;
   margin: 0;
+}
+
+a {
+  text-decoration: none;
+  cursor: pointer;
+  color: unset;
 }
 
 h1 {
@@ -50,16 +57,69 @@ a {
   visibility: hidden;
   position: fixed;
   background: white;
-  border: 1px solid black;
   border-radius: 5%;
-  height: 300px;
-  width: 300px;
-  margin: auto;
+  height: 250px;
+  width: 500px;
   z-index: 3;
+  top: calc(50vh - 150px);
+  left: calc(50vw - 200px);
+  display: flex;
 }
 
-#pop-up img {
-  width: 25%;
+#pop-up-image {
+  position: absolute;
+  top: -50px;
+  left: -50px;
+  border-radius: 500px;
+  border: 10px solid #fff;
+  width: 200px;
+  height: 200px;
+}
+
+#pop-up-socials {
+  margin-top: 11rem;
+  display: flex;
+  min-width: 180px;
+  margin-left: 10px;
+}
+
+#pop-up-text {
+  margin-right: 2rem;
+}
+
+#pop-up-text i {
+  margin-right: 5px;
+}
+
+#pop-up-socials a {
+  margin: 5px;
+}
+#pop-up-party {
+  text-transform: capitalize;
+  color: #fff;
+  padding: 5px;
+  width: fit-content;
+  border-radius: 5px;
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+}
+
+#pop-up-description {
+  margin: 0 0 10px 0;
+}
+
+#pop-up .fa.fa-close {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  font-size: 24px;
+  color: #3644a0;
+  cursor: pointer;
+}
+
+#pop-up .fa.fa-close:hover {
+  color: #7b86cc;
 }
 
 #page-container {
@@ -513,12 +573,17 @@ img#usa-map {
 
 /* START SENATOR POPUP */
 
-a#twitter {
-  /* Your styles for #twitter here */
+.pop-up-url.with-icon {
+  font-size: 1.7rem;
+  color: #3644a0;
+  /* cursor: pointer; */
+  height: 1.7rem;
 }
 
-a#youtube {
-  /* Your styles for #youtube here */
+.pop-up-url.with-icon i:hover {
+  color: #7b86cc;
+  cursor: pointer;
+  /* TODO: this doesnt work */
 }
 
 /* END SENATOR POPUP */

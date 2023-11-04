@@ -66,14 +66,17 @@ var ALL_SENATORS = await Promise.all([fetchSenators, fetchImages])
       firstname: o.person.firstname,
       secondname: o.person.lastname,
       nickname: o.person.nickname,
+      description: o.description,
       party: o.party.toLowerCase(),
       state: o.state,
       rank: o.senator_rank,
       gender: o.person.gender,
-      office: o.extra.office,
+      office: o.extra.address,
+      phone: o.phone,
       dob: o.person.birthday,
       age: new Date().getFullYear() - new Date(o.person.birthday).getFullYear(),
       startdate: o.startdate,
+      enddate: o.enddate,
       twitter: o.person.twitterid,
       youtube: o.person.youtubeid,
       website: o.website,
@@ -680,20 +683,30 @@ function drawSenatorPopup() {
     curtain.style.visibility = 'hidden';
   });
 
-  let popupImage = document.createElement('img');
+  let popupImage = document.createElement('div');
   popupImage.id = 'pop-up-image';
 
-  let nameEl = createPopUpField('name', '');
-  let partyEl = createPopUpField('party', '');
-  let officeEl = createPopUpField('office', '');
-  let dobEl = createPopUpField('dob', '');
-  let startDateEl = createPopUpField('startDate', '');
+  let textContainerEl = document.createElement('div');
+  textContainerEl.id = 'pop-up-text';
 
-  let twitterEl = createPopUpUrlField('twitter', 'Twitter');
-  let websiteEl = createPopUpUrlField('website', 'Website');
-  let youtubeEl = createPopUpUrlField('youtube', 'Youtube');
+  let nameEl = createPopUpField({ id: 'name', elType: 'h2' });
+  let descriptionEl = createPopUpField({ id: 'description' });
+  let partyEl = createPopUpField({ id: 'party' });
+  let officeEl = createPopUpField({ id: 'office', icon: 'building' });
+  let phoneEl = createPopUpField({ id: 'phone', icon: 'phone' });
 
-  popUp.append(closeEl, popupImage, nameEl, partyEl, officeEl, dobEl, startDateEl, twitterEl, websiteEl, youtubeEl);
+  textContainerEl.append(nameEl, partyEl, descriptionEl, officeEl, phoneEl);
+
+  let socialsContainerEl = document.createElement('div');
+  socialsContainerEl.id = 'pop-up-socials';
+
+  let websiteEl = createPopUpUrlField('website', null, 'globe');
+  let twitterEl = createPopUpUrlField('twitter', null, 'twitter');
+  let youtubeEl = createPopUpUrlField('youtube', null, 'youtube');
+
+  socialsContainerEl.append(websiteEl, twitterEl, youtubeEl);
+
+  popUp.append(closeEl, popupImage, socialsContainerEl, textContainerEl);
 
   curtain.onclick = () => {
     popUp.style.visibility = 'hidden';
@@ -701,29 +714,60 @@ function drawSenatorPopup() {
   };
 }
 
-function createPopUpField(id) {
-  let el = document.createElement('div');
+function createPopUpField({ id, elType = 'div', icon }) {
+  let el = document.createElement(elType);
   el.id = `pop-up-${id}`;
-  return el;
-}
-function createPopUpUrlField(id, label) {
-  let el = document.createElement('div');
-  el.id = `pop-up-${id}`;
-  el.innerHTML = `${capitalizeFirstLetter(label)}: <a></a>`;
+  if (icon) {
+    el.appendChild(createFontAwesomeIcon(icon));
+    el.classList += ' with-icon';
+  }
   return el;
 }
 
-function updatePopUpTextField(id, value) {
+function createPopUpUrlField(id, label, icon) {
+  let el = document.createElement('div');
+  el.classList = `pop-up-url ${id}`;
+  if (label) {
+    el.innerHTML = `${capitalizeFirstLetter(label)}: `;
+  }
+  let aEl = document.createElement('a');
+
+  if (icon) {
+    aEl.appendChild(createFontAwesomeIcon(icon));
+    el.classList += ' with-icon';
+  }
+
+  el.appendChild(aEl);
+
+  return el;
+}
+
+function updatePopUpTextField({ id, value, classList = '' }) {
   let el = document.getElementById(`pop-up-${id}`);
+  let icon = el.getElementsByTagName('i')[0];
   el.innerText = value;
+  if (icon) {
+    el.prepend(icon);
+  }
+  el.classList = classList;
   return el;
 }
 
-function updatePopUpUrlField(id, href, text) {
-  let el = document.getElementById(`pop-up-${id}`);
+function updatePopUpUrlField({ id, href, text }) {
+  let el = document.getElementsByClassName(`pop-up-url ${id}`)[0];
+  el.style.display = 'unset';
   let aEl = el.getElementsByTagName('a')[0];
   aEl.href = href;
-  aEl.text = text;
+  aEl.target = '_blank';
+  if (text) {
+    aEl.text = text;
+  }
+  return el;
+}
+
+function removePopUpUrlField(id) {
+  let el = document.getElementsByClassName(`pop-up-url ${id}`)[0];
+  el.style.display = 'none';
   return el;
 }
 
@@ -736,19 +780,31 @@ function renderPopUp(senator) {
   curtain.style.visibility = 'visible';
 
   let popupImage = document.getElementById('pop-up-image');
-  popupImage.src = senator.imageUrl;
+  popupImage.style.background = `url(${senator.imageUrl.replace('"')})`;
   popupImage.alt = `Pop up image for Senator ${senator.firstname} ${senator.secondname}`;
 
-  updatePopUpTextField('name', `${senator.firstname} ${senator.nickname ? `(${senator.nickname})` : ''} ${senator.secondname}`);
-  updatePopUpTextField('party', `${senator.party}`);
-  updatePopUpTextField('office', `Office: ${senator.office}`);
-  updatePopUpTextField('dob', `Date of dirth: ${senator.birthday}`);
-  updatePopUpTextField('startDate', `Start date: ${senator.startdate}`);
+  let bioText = `${senator.secondname} is the ${senator.description} and is a ${capitalizeFirstLetter(senator.party)}. ${senator.gender === 'male' ? 'He' : 'She'} has served since ${senator.startdate}. ${senator.secondname} serves until ${
+    senator.enddate
+  }. ${senator.gender === 'male' ? 'He' : 'She'} is ${senator.age} years old.`;
+
+  updatePopUpTextField({ id: 'name', value: `${senator.firstname} ${senator.nickname ? `(${senator.nickname})` : ''} ${senator.secondname}` });
+  updatePopUpTextField({ id: 'description', value: bioText });
+  updatePopUpTextField({ id: 'party', value: `${senator.party}`, classList: senator.party });
+  updatePopUpTextField({ id: 'office', value: `${senator.office}` });
+  updatePopUpTextField({ id: 'phone', value: `${senator.phone}` });
 
   // TODO:
-  updatePopUpUrlField('twitter', `https://www.twitter.com/${senator.twitter}`, senator.twitter);
-  updatePopUpUrlField('youtube', `https://www.youtube.com/${senator.youtube}`, senator.youtube);
-  updatePopUpUrlField('website', senator.website, senator.website);
+  if (senator.twitter) {
+    updatePopUpUrlField({ id: 'twitter', href: `https://www.twitter.com/${senator.twitter}` });
+  } else {
+    removePopUpUrlField('twitter');
+  }
+  if (senator.youtube) {
+    updatePopUpUrlField({ id: 'youtube', href: `https://www.youtube.com/${senator.youtube}` });
+  } else {
+    removePopUpUrlField('youtube');
+  }
+  updatePopUpUrlField({ id: 'website', href: senator.website });
 }
 
 function handleCloseClicked() {}
