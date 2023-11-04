@@ -184,6 +184,10 @@ img#usa-map {
   align-items: center;
 }
 
+.cta.text * {
+  pointer-events: none;
+}
+
 .cta.text:hover {
   color: #041a91;
 }
@@ -375,6 +379,11 @@ img#usa-map {
 .text-input-container,
 .text-input-container * {
   background-color: #eaedff;
+}
+
+#senators-list {
+  overflow-y: scroll;
+  scroll-behavior: smooth;
 }
 
 #senators-list .content {
