@@ -104,7 +104,6 @@ if (isSenatorsLoaded) {
   drawSummary(ALL_SENATORS);
   drawSenatorPopup();
   circles(ALL_SENATORS);
-  addSortToButtons()
 }
 
 /**
@@ -188,12 +187,21 @@ function isIncluded(filterOptionsObj, filterType, value) {
   return filterOptionsObj.state[filterType].has(value) || !filterOptionsObj.state[filterType].size;
 }
 
+// TODO: we can refactor these two functions to be one!
 function handleFilterIconClicked() {
   // show filter popup
   const filterContainer = document.getElementById('filter-container');
   const isHidden = filterContainer.style.visibility === 'hidden';
   filterContainer.style.visibility = isHidden ? 'visible' : 'hidden';
   filterContainer.style.right = isHidden ? '-225px' : '-500px';
+}
+
+function handleSortIconClicked() {
+  // show filter popup
+  const sortContainer = document.getElementById('sort-container');
+  const isHidden = sortContainer.style.visibility === 'hidden';
+  sortContainer.style.visibility = isHidden ? 'visible' : 'hidden';
+  sortContainer.style.height = isHidden ? '200px' : '0';
 }
 
 /**
@@ -377,6 +385,7 @@ function drawFilters(filterOptions) {
   filterContainerHeader.innerText = 'Filters';
   filterContainer.appendChild(filterContainerHeader);
 
+  // Add filter dropdowns to the filter pop-up
   Object.entries(filterOptions).forEach(([key, val]) => {
     let filterId = key;
     let filterOptions = val;
@@ -394,6 +403,40 @@ function drawFilters(filterOptions) {
     filterSectionEl.appendChild(filterInputEl);
     filterContainer.appendChild(filterSectionEl);
   });
+
+  // Create sort icon which opens sort menu when clicked
+  let sortIconEl = createFontAwesomeIcon('sort', handleSortIconClicked, 'dark');
+  filterHeaderEl.appendChild(sortIconEl);
+
+  // Create sort pop-up container
+  let sortContainer = document.createElement('div');
+  sortContainer.id = 'sort-container';
+  sortContainer.style.visibility = 'hidden';
+  filterHeaderEl.appendChild(sortContainer);
+
+  let sortContainerHeader = document.createElement('h2');
+  sortContainerHeader.innerText = 'Sort by';
+  sortContainer.appendChild(sortContainerHeader);
+
+  let nameSortButtonEl = createSortButton('secondname', 'Name')
+  let stateSortButtonEl = createSortButton('state')
+  sortContainer.append(nameSortButtonEl, stateSortButtonEl);
+
+}
+
+function createSortButton(id, value){
+  let buttonEl = document.createElement('button');
+  buttonEl.classList = 'sort-button';
+  buttonEl.id = `${id}-sort`
+  buttonEl.innerText = value || capitalizeFirstLetter(id);
+
+  buttonEl.onclick = () => {
+    // Highlight the button
+    buttonEl.classList.toggle("sort-button-active");
+    // Sort the senators by the id
+    sortSenators(id);
+  }
+  return buttonEl;
 }
 
 function filterOptionElements(value, els) {
@@ -595,8 +638,6 @@ function drawYearsInOfficeStat(senators) {
     }
     return acc;
   }, {});
-
-  console.log(yearsInOffice);
 
   const containerEl = document.getElementById('years-in-office-container');
   containerEl.appendChild(createFontAwesomeIcon('calendar'));
@@ -876,42 +917,25 @@ function circles(senators) {
   })
 }
 
-function addSortToButtons()
+function sortSenators(id)
 {
-  let nameButton = document.getElementById("name-sort")
-  nameButton.addEventListener("click", sortSenators)
-  let stateButton = document.getElementById("state-sort")
-  stateButton.addEventListener("click", sortSenators)
-}
-
-function sortSenators(e)
-{
-  function alphabetical(a,b) {return a.secondname.localeCompare(b.secondname)}
-  function alphabeticalState(a,b) {return a.state.localeCompare(b.state)}
+  function alphabetical(a,b) {return a[id].localeCompare(b[id])}
     // if I can be arsed to figure this out too it'll sort the other way
       // function reverseAlphabetical(a,b) {return b.secondname.localeCompare(a.secondname)}
       // function reverseAlphabeticalState(a,b) {return b.state.localeCompare(a.state)}
 
-  const nameButton = document.getElementById("name-sort")
-  const stateButton = document.getElementById("state-sort")
-
-  e.target.classList.toggle("sort-button-active")
-
-  const nameSort = nameButton.classList[1] != null
-  const stateSort = stateButton.classList[1] != null
-
   let senators = [...ALL_SENATORS]
 
-  if (nameSort)
-  {
-    senators.sort(alphabetical)
-  }
-
-  if (stateSort)
-  {
-    senators.sort(alphabeticalState)
-  }
+  senators.sort(alphabetical)
 
   drawSenators(senators)
   applyFilterToSenatorElements(CURRENT_FILTER)
 }
+
+document.addEventListener('click', (e) => {
+  if (Array.from(e.target.classList).includes('cta')) {
+    const senatorSectionEl = document.getElementById('senators-list');
+    const rect = senatorSectionEl.getBoundingClientRect();
+    window.scrollTo({ top: rect.top + window.scrollY, behavior: 'smooth' });
+  }
+});

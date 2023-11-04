@@ -256,31 +256,18 @@ img#usa-map {
   font-size: 1rem;
   font-family: "League Spartan", sans-serif;
   cursor: pointer;
-}
-
-.sort-button:hover {
-  background: #041a91;
-  color: white;
-}
-
-.sort-button-active {
-  border: 1px solid #041a91;
-  background: #041a91;
-  color: white;
-  padding: 2px;
-  margin: 2px;
-  height: 100%;
-  width: 7%;
   border-radius: 10px;
-  text-transform: uppercase;
-  font-size: 1rem;
-  font-family: "League Spartan", sans-serif;
-  cursor: pointer;
+  height: 50px;
+  width: 150px;
+}
+
+.sort-button:hover, .sort-button-active {
+  background: #041a91;
+  color: white;
 }
 
 .sort-button-active:hover {
-  background: white;
-  color: #041a91;
+  background-color: #3a52d6;
 }
 
 .count-bubble {
@@ -394,7 +381,25 @@ img#usa-map {
   transition: all 0.5s ease-in-out;
 }
 
-#filter-container h2 {
+#sort-container {
+  border: 1px solid #d4dafb;
+  width: 225px;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  z-index: 1;
+  background-color: #fff;
+  top: 90px;
+  height: 0px;
+  box-shadow: 3px 2px 9px 0px rgba(184, 184, 184, 0.75);
+  -webkit-box-shadow: 3px 2px 9px 0px rgba(184, 184, 184, 0.75);
+  -moz-box-shadow: 3px 2px 9px 0px rgba(184, 184, 184, 0.75);
+  transition: all 0.2s ease-in-out;
+  overflow: hidden;
+  align-items: center;
+}
+
+#filter-container h2, #sort-container h2 {
   text-align: center;
 }
 
