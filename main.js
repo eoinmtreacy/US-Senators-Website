@@ -378,7 +378,6 @@ function drawFilters(filterOptions) {
     let filterSectionEl = document.createElement("div");
     let filterSectionHeaderEl = document.createElement("div");
     filterSectionHeaderEl.classList.add("filter-section-header", filterId);
-    console.log
 
     // Create a label
     let filterLabelEl = document.createElement("h5");
@@ -719,7 +718,14 @@ function sortSenators(e)
   function alphabeticalState(a,b) {return a.state.localeCompare(b.state)}
   function reverseAlphabeticalState(a,b) {return b.state.localeCompare(a.state)}
 
-  e.target.classList.toggle("sort-button-active")
-  console.log(e.target.class)
+  const nameButton = document.getElementById("name-sort")
+  const stateButton = document.getElementById("state-sort")
+
+  e.classList.toggle("sort-button-active")
+
+  const nameSort = nameButton.classList[1] != null
+  const stateSort = stateButton.classList[1] != null
+
+  console.log(nameSort, stateSort)
 
 }
