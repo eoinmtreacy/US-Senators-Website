@@ -101,6 +101,7 @@ if (isSenatorsLoaded) {
   drawSummary(ALL_SENATORS);
   drawSenatorPopup();
   circles(ALL_SENATORS);
+  addSortToButtons()
 }
 
 /**
@@ -535,7 +536,8 @@ function drawSummary(senators) {
 }
 
 function drawSenators(senators) {
-  let container = document.getElementById('senators-container');
+  let container = document.getElementById("senators-container");
+  container.innerHTML = ""
   senators.forEach((senator) => {
     let card = document.createElement('div');
     card.id = senator.id;
@@ -810,17 +812,50 @@ function circles(senators) {
   let startX = 800;
   let dist = 40;
 
-  buckets.forEach((bucket) => {
-    drawDots(bucket, 0.1571, startX, 20, dist);
-    startX -= 27.5;
-    dist -= 4;
-  });
+  buckets.forEach((bucket) =>
+  {
+    drawDots(bucket, 0.1571, startX, 20, dist)
+    startX -= 27.5
+    dist -= 4
+  })
 }
 
-document.addEventListener('click', (e) => {
-  if (Array.from(e.target.classList).includes('cta')) {
-    const senatorSectionEl = document.getElementById('senators-list');
-    const rect = senatorSectionEl.getBoundingClientRect();
-    window.scrollTo({ top: rect.top + window.scrollY, behavior: 'smooth' });
+function addSortToButtons()
+{
+  let nameButton = document.getElementById("name-sort")
+  nameButton.addEventListener("click", sortSenators)
+  let stateButton = document.getElementById("state-sort")
+  stateButton.addEventListener("click", sortSenators)
+}
+
+function sortSenators(e)
+{
+  function alphabetical(a,b) {return a.secondname.localeCompare(b.secondname)}
+  function alphabeticalState(a,b) {return a.state.localeCompare(b.state)}
+    // if I can be arsed to figure this out too it'll sort the other way
+      // function reverseAlphabetical(a,b) {return b.secondname.localeCompare(a.secondname)}
+      // function reverseAlphabeticalState(a,b) {return b.state.localeCompare(a.state)}
+
+  const nameButton = document.getElementById("name-sort")
+  const stateButton = document.getElementById("state-sort")
+
+  e.target.classList.toggle("sort-button-active")
+
+  const nameSort = nameButton.classList[1] != null
+  const stateSort = stateButton.classList[1] != null
+
+  let senators = [...ALL_SENATORS]
+
+  if (nameSort)
+  {
+    senators.sort(alphabetical)
   }
-});
+
+  if (stateSort)
+  {
+    senators.sort(alphabeticalState)
+  }
+
+  drawSenators(senators)
+  applyFilterToSenatorElements(CURRENT_FILTER)
+}
