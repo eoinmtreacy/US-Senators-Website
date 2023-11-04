@@ -498,6 +498,7 @@ function drawSummary(senators)
 
 function drawSenators(senators) {
   let container = document.getElementById("senators-container");
+  container.innerHTML = ""
   senators.forEach((senator) => {
     let card = document.createElement("div");
     card.id = senator.id;
@@ -721,10 +722,24 @@ function sortSenators(e)
   const nameButton = document.getElementById("name-sort")
   const stateButton = document.getElementById("state-sort")
 
-  e.classList.toggle("sort-button-active")
+  e.target.classList.toggle("sort-button-active")
 
   const nameSort = nameButton.classList[1] != null
   const stateSort = stateButton.classList[1] != null
+
+  let senators = [...ALL_SENATORS]
+
+  if (nameSort)
+  {
+    senators.sort(alphabetical)
+  }
+
+  if (stateSort)
+  {
+    senators.sort(alphabeticalState)
+  }
+
+  drawSenators(senators)
 
   console.log(nameSort, stateSort)
 
