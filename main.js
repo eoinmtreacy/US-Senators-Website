@@ -712,12 +712,14 @@ function addSortToButtons()
   stateButton.addEventListener("click", sortSenators)
 }
 
-function sortSenators()
+function sortSenators(e)
 {
   function alphabetical(a,b) {return a.secondname.localeCompare(b.secondname)}
   function reverseAlphabetical(a,b) {return b.secondname.localeCompare(a.secondname)}
   function alphabeticalState(a,b) {return a.state.localeCompare(b.state)}
   function reverseAlphabeticalState(a,b) {return b.state.localeCompare(a.state)}
 
-  console.log("fire")
+  e.target.classList.toggle("sort-button-active")
+  console.log(e.target.class)
+
 }
