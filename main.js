@@ -418,24 +418,54 @@ function drawFilters(filterOptions) {
   sortContainerHeader.innerText = 'Sort by';
   sortContainer.appendChild(sortContainerHeader);
 
-  let nameSortButtonEl = createSortButton('secondname', 'Name')
-  let stateSortButtonEl = createSortButton('state')
+  let nameSortButtonEl = createSortButton('secondname', 'Name');
+  let stateSortButtonEl = createSortButton('state');
   sortContainer.append(nameSortButtonEl, stateSortButtonEl);
-
 }
 
-function createSortButton(id, value){
+function createSortButton(id, value) {
   let buttonEl = document.createElement('button');
   buttonEl.classList = 'sort-button';
-  buttonEl.id = `${id}-sort`
+  buttonEl.id = `${id}-sort`;
   buttonEl.innerText = value || capitalizeFirstLetter(id);
 
+  let sortByAscIconEl = createFontAwesomeIcon('sort-alpha-asc');
+  let sortByDescIconEl = createFontAwesomeIcon('sort-alpha-desc');
   buttonEl.onclick = () => {
+    // Remove any of the existing sorts
+    let existingSorts = document.querySelectorAll('.desc,.asc');
+    for (const sortButton of existingSorts) {
+      if(!sortButton.id.includes(id)) {
+        sortButton.className = 'sort-button';
+        let icon = sortButton.getElementsByTagName('i')[0];
+        if (icon) {
+          sortButton.removeChild(icon);
+        }
+      }
+    }
     // Highlight the button
-    buttonEl.classList.toggle("sort-button-active");
+    let sortDirection;
+
+    if (buttonEl.classList.contains('asc')) {
+      // If ascending, toggle to descending
+      sortDirection = 'desc';
+      buttonEl.classList.replace('asc', sortDirection);
+
+      buttonEl.replaceChild(sortByDescIconEl, sortByAscIconEl);
+    } else if (buttonEl.classList.contains('desc')) {
+      // If descending, toggle to unselected
+      sortDirection = '';
+      buttonEl.classList.remove('desc');
+      buttonEl.removeChild(sortByDescIconEl);
+    } else {
+      // If unselected, toggle to ascending
+      sortDirection = 'asc';
+      buttonEl.classList += ' ' + sortDirection;
+      buttonEl.appendChild(sortByAscIconEl);
+    }
     // Sort the senators by the id
-    sortSenators(id);
-  }
+    sortSenators(id, sortDirection);
+  };
   return buttonEl;
 }
 
@@ -582,8 +612,8 @@ function drawSummary(senators) {
 }
 
 function drawSenators(senators) {
-  let container = document.getElementById("senators-container");
-  container.innerHTML = ""
+  let container = document.getElementById('senators-container');
+  container.innerHTML = '';
   senators.forEach((senator) => {
     let card = document.createElement('div');
     card.id = senator.id;
@@ -909,27 +939,29 @@ function circles(senators) {
   let startX = 800;
   let dist = 40;
 
-  buckets.forEach((bucket) =>
-  {
-    drawDots(bucket, 0.1571, startX, 20, dist)
-    startX -= 27.5
-    dist -= 4
-  })
+  buckets.forEach((bucket) => {
+    drawDots(bucket, 0.1571, startX, 20, dist);
+    startX -= 27.5;
+    dist -= 4;
+  });
 }
 
-function sortSenators(id)
-{
-  function alphabetical(a,b) {return a[id].localeCompare(b[id])}
-    // if I can be arsed to figure this out too it'll sort the other way
-      // function reverseAlphabetical(a,b) {return b.secondname.localeCompare(a.secondname)}
-      // function reverseAlphabeticalState(a,b) {return b.state.localeCompare(a.state)}
+function sortSenators(id, direction) {
+  let senators = [...ALL_SENATORS];
 
-  let senators = [...ALL_SENATORS]
+  switch (direction) {
+    case 'asc':
+      senators = senators.sort((a, b) => a[id].localeCompare(b[id]));
+      break;
+    case 'desc':
+      senators = senators.sort((a, b) => b[id].localeCompare(a[id]));
+      break;
+    default:
+      break;
+  }
 
-  senators.sort(alphabetical)
-
-  drawSenators(senators)
-  applyFilterToSenatorElements(CURRENT_FILTER)
+  drawSenators(senators);
+  applyFilterToSenatorElements(CURRENT_FILTER);
 }
 
 document.addEventListener('click', (e) => {

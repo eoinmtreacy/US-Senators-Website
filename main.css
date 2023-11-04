@@ -259,15 +259,21 @@ img#usa-map {
   border-radius: 10px;
   height: 50px;
   width: 150px;
+  position: relative;
 }
 
-.sort-button:hover, .sort-button-active {
+.sort-button:hover, .sort-button.asc, .sort-button.desc {
   background: #041a91;
   color: white;
 }
 
-.sort-button-active:hover {
+.sort-button.desc:hover, .sort-button.asc:hover {
   background-color: #3a52d6;
+}
+
+.sort-button.asc i, .sort-button.desc i {
+  position: absolute;
+  left: 10px;
 }
 
 .count-bubble {
@@ -486,14 +492,14 @@ img#usa-map {
   width: 840px;
 }
 
-#senators-list .fa.fa-filter {
+#filter-header > .fa {
   /* float: right; */
   cursor: pointer;
   font-size: 24px;
   padding: 10px;
 }
 
-#senators-list .fa.fa-filter:hover {
+#filter-header > .fa:hover {
   color: #86a3de;
 }
 
