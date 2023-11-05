@@ -245,7 +245,7 @@ function handleFilterIconClicked() {
   const filterContainer = document.getElementById('filter-container');
   const isHidden = filterContainer.style.visibility === 'hidden';
   filterContainer.style.visibility = isHidden ? 'visible' : 'hidden';
-  filterContainer.style.right = isHidden ? '-225px' : '-500px';
+  filterContainer.style.height = isHidden ? '65vh' : '0';
 }
 
 function handleSortIconClicked() {
@@ -664,8 +664,8 @@ function drawSummary(senators) {
 }
 
 function drawSenators(senators) {
-  let container = document.getElementById('senators-container');
-  container.innerHTML = '';
+  let senatorContainerEl = document.getElementById('senators-container');
+  senatorContainerEl.innerHTML = null;
   senators.forEach((senator) => {
     let card = document.createElement('div');
     card.id = senator.id;
@@ -696,7 +696,14 @@ function drawSenators(senators) {
 
     card.onclick = () => renderPopUp(senator);
 
-    container.appendChild(card);
+    let partyContainerEl = document.getElementById(`senators-list-${senator.party}`);
+    if (!partyContainerEl) {
+      partyContainerEl = document.createElement('div');
+      partyContainerEl.id = `senators-list-${senator.party}`;
+      senatorContainerEl.appendChild(partyContainerEl);
+    }
+
+    partyContainerEl.appendChild(card);
   });
 }
 

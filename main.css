@@ -115,7 +115,7 @@ a {
   margin: 0 0 10px 0;
 }
 
-.fa.fa-close {
+#pop-up .fa.fa-close {
   position: absolute;
   right: 1rem;
   top: 1rem;
@@ -124,7 +124,7 @@ a {
   cursor: pointer;
 }
 
-.fa.fa-close:hover {
+#pop-up .fa.fa-close:hover {
   color: #7b86cc;
 }
 
@@ -134,7 +134,7 @@ a {
   color: #fff;
   width: 100%;
   text-align: center;
-  background-color: #F65656;
+  background-color: #f65656;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
 }
@@ -159,8 +159,8 @@ a {
 }
 
 #error-pop-up button {
-  border: 1px solid #F65656;
-  color: #F65656;
+  border: 1px solid #f65656;
+  color: #f65656;
   padding: 10px;
   min-width: 100px;
   margin: 5px;
@@ -175,7 +175,7 @@ a {
 }
 
 #error-pop-up button.filled {
-  background-color: #F65656;
+  background-color: #f65656;
   color: #fff;
 }
 
@@ -429,7 +429,7 @@ img#usa-map {
 /* END SUMMARY CONTAINER */
 
 /* START FILTER CONTAINER */
-
+/* 
 #filter-container {
   border: 1px solid #d4dafb;
   width: 225px;
@@ -445,9 +445,10 @@ img#usa-map {
   -webkit-box-shadow: 3px 2px 9px 0px rgba(184, 184, 184, 0.75);
   -moz-box-shadow: 3px 2px 9px 0px rgba(184, 184, 184, 0.75);
   transition: all 0.5s ease-in-out;
-}
+} */
 
-#sort-container {
+#sort-container,
+#filter-container {
   border: 1px solid #d4dafb;
   width: 225px;
   display: flex;
@@ -455,7 +456,7 @@ img#usa-map {
   position: absolute;
   z-index: 1;
   background-color: #fff;
-  top: 90px;
+  top: 100px;
   height: 0px;
   box-shadow: 3px 2px 9px 0px rgba(184, 184, 184, 0.75);
   -webkit-box-shadow: 3px 2px 9px 0px rgba(184, 184, 184, 0.75);
@@ -463,6 +464,10 @@ img#usa-map {
   transition: all 0.2s ease-in-out;
   overflow: hidden;
   align-items: center;
+}
+
+#filter-container {
+  right: 3rem;
 }
 
 #filter-container h2,
@@ -599,11 +604,18 @@ img#usa-map {
 
 #senators-container {
   display: flex;
-  flex-wrap: wrap;
-  width: 840px;
+  flex-direction: column;
 }
 
-/* TODO: make a compact view? */
+#senators-container > div {
+  display: flex;
+  flex-wrap: wrap;
+  width: 840px;
+  position: relative;
+}
+#senators-container > div h3 {
+  position: absolute;
+}
 
 .senator-card {
   /* Your styles for .card here */
