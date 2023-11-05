@@ -484,19 +484,6 @@ img#usa-map {
   display: flex;
 }
 
-/* TODO: if screen gets too small, make the filter menu expandable */
-.button-group {
-  display: flex;
-  /* box-shadow: 0 2px 5px 1px rgba(64,60,67,.16); */
-}
-.button-group button {
-  width: 100px;
-  border: 0.5px solid #dadce0;
-  padding: 5px 15px;
-  font-size: 12px;
-  cursor: pointer;
-}
-
 .dropdown-container {
   position: relative;
 }
@@ -699,7 +686,6 @@ img#usa-map {
 .pop-up-url.with-icon i:hover {
   color: #7b86cc;
   cursor: pointer;
-  /* TODO: this doesnt work */
 }
 
 /* END SENATOR POPUP */

@@ -105,7 +105,6 @@ if (isSenatorsLoaded) {
 }
 
 function drawErrorPopup() {
-  // TODO: add a way to te4st and put in rewadme
   let popupEl = document.createElement('div');
   popupEl.id = 'error-pop-up';
   const curtain = document.getElementById('curtain');
@@ -216,7 +215,7 @@ function handleResetClicked() {
  * on the filters passed.
  *
  * @param {FilterOptions} filterOptionsObj - An instance of the FilterOptions class
- * @param {array} senators - List of senators directly from our data (TODO: we should abstract out the senator data)
+ * @param {array} senators - List of senators directly from our data
  * @returns
  */
 function filter(filterOptionsObj) {
@@ -239,7 +238,6 @@ function isIncluded(filterOptionsObj, filterType, value) {
   return filterOptionsObj.state[filterType].has(value) || !filterOptionsObj.state[filterType].size;
 }
 
-// TODO: we can refactor these two functions to be one!
 function handleFilterIconClicked() {
   // show filter popup
   const filterContainer = document.getElementById('filter-container');
@@ -293,7 +291,6 @@ function removeFilterTag(filterType, value, el, shouldRemoveFilter) {
   }
   el.remove();
 
-  // TODO
   // Update the filtered options
   const dropdownEl = document.getElementsByClassName(`dropdown-container ${filterType}`)[0];
   const optionEls = dropdownEl.getElementsByClassName(value);
@@ -925,7 +922,6 @@ function renderPopUp(senator) {
   updatePopUpTextField({ id: 'office', value: `${senator.office}` });
   updatePopUpTextField({ id: 'phone', value: `${senator.phone}` });
 
-  // TODO:
   if (senator.twitter) {
     updatePopUpUrlField({ id: 'twitter', href: `https://www.twitter.com/${senator.twitter}` });
   } else {
