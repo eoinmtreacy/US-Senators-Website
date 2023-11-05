@@ -54,49 +54,47 @@ const RANK = 'rank';
 const GENDER = 'gender';
 const NAME = 'name';
 
-const fetchSenators = fetch('./data/senators.json').then((response) => response.json());
-const fetchImages = fetch('./data/imgSources.json').then((response) => response.json());
+const fetchSenators = fetch('./data/senators.json')
+  .then((response) => response.json())
+  .catch((e) => renderErrorPopup({ title: 'Failed to load senators', errorMessage: e.message }));
+const fetchImages = fetch('./data/imgSources.json')
+  .then((response) => response.json())
+  .catch((e) => renderErrorPopup({ title: 'Failed to load senator images', errorMessage: e.message }));
 
 // 1. Fetch our senator data
-var ALL_SENATORS = await Promise.all([fetchSenators, fetchImages])
-  .then(([senators, images]) => {
-    isSenatorsLoaded = true;
-    return senators.objects.map((o) => ({
-      id: o.person.bioguideid,
-      firstname: o.person.firstname,
-      secondname: o.person.lastname,
-      nickname: o.person.nickname,
-      description: o.description,
-      party: o.party.toLowerCase(),
-      state: o.state,
-      rank: o.senator_rank,
-      gender: o.person.gender,
-      office: o.extra.address,
-      phone: o.phone,
-      dob: o.person.birthday,
-      age: new Date().getFullYear() - new Date(o.person.birthday).getFullYear(),
-      startdate: o.startdate,
-      enddate: o.enddate,
-      twitter: o.person.twitterid,
-      youtube: o.person.youtubeid,
-      website: o.website,
-      leadership_title: o.leadership_title,
-      imageUrl: images[o.person.bioguideid],
-      yearsInOffice: new Date().getFullYear() - new Date(o.startdate).getFullYear(),
-    }));
-  })
-  .catch((e) => {
-    // TODO: render some error element
-    console.error(e);
-  });
+var ALL_SENATORS = await Promise.all([fetchSenators, fetchImages]).then(([senators, images]) => {
+  isSenatorsLoaded = true;
+  return senators.objects.map((o) => ({
+    id: o.person.bioguideid,
+    firstname: o.person.firstname,
+    secondname: o.person.lastname,
+    nickname: o.person.nickname,
+    description: o.description,
+    party: o.party.toLowerCase(),
+    state: o.state,
+    rank: o.senator_rank,
+    gender: o.person.gender,
+    office: o.extra.address,
+    phone: o.phone,
+    dob: o.person.birthday,
+    age: new Date().getFullYear() - new Date(o.person.birthday).getFullYear(),
+    startdate: o.startdate,
+    enddate: o.enddate,
+    twitter: o.person.twitterid,
+    youtube: o.person.youtubeid,
+    website: o.website,
+    leadership_title: o.leadership_title,
+    imageUrl: images[o.person.bioguideid],
+    yearsInOffice: new Date().getFullYear() - new Date(o.startdate).getFullYear(),
+  }));
+});
 
 if (isSenatorsLoaded) {
-  // console.log(ALL_SENATORS);
-  // console.log(ALL_SENATORS);
   const FILTER_OPTIONS = loadFilterOptions(ALL_SENATORS);
   var CURRENT_FILTER = new FilterOptions();
 
   // 3. Draw our page
+  drawErrorPopup();
   drawFilters(FILTER_OPTIONS);
   drawSenators(ALL_SENATORS);
   drawStats(ALL_SENATORS);
@@ -104,6 +102,60 @@ if (isSenatorsLoaded) {
   drawSummary(ALL_SENATORS);
   drawSenatorPopup();
   circles(ALL_SENATORS);
+}
+
+function drawErrorPopup() {
+  // TODO: add a way to te4st and put in rewadme
+  let popupEl = document.createElement('div');
+  popupEl.id = 'error-pop-up';
+  const curtain = document.getElementById('curtain');
+  curtain.style.visibility = 'hidden';
+  popupEl.style.visibility = 'hidden';
+
+  const errorIconEl = createFontAwesomeIcon('exclamation-triangle');
+  const titleEl = document.createElement('h2');
+  titleEl.innerText = 'oh no :(';
+
+  const errorMessageEl = document.createElement('p');
+  errorMessageEl.innerText = 'An unknown error has occurred.';
+
+  const buttonContainerEl = document.createElement('div');
+  buttonContainerEl.classList = 'button-container';
+
+  const dismissButton = document.createElement('button');
+  dismissButton.id = 'dismiss';
+  dismissButton.innerText = 'Dismiss';
+  dismissButton.classList = 'filled';
+  dismissButton.onclick = () => {
+    location.reload();
+  };
+
+  buttonContainerEl.append(dismissButton);
+
+  popupEl.append(errorIconEl, titleEl, errorMessageEl, buttonContainerEl);
+  document.getElementById('page-container').appendChild(popupEl);
+}
+
+function renderErrorPopup({ errorMessage, title, onDismiss }) {
+  if (!document.getElementById('error-pop-up')) {
+    drawErrorPopup();
+  }
+  let popupEl = document.getElementById('error-pop-up');
+  const curtain = document.getElementById('curtain');
+
+  if (errorMessage) {
+    popupEl.getElementsByTagName('p')[0].innerText = errorMessage;
+  }
+  if (title) {
+    popupEl.getElementsByTagName('h2')[0].innerText = title;
+  }
+
+  if (onDismiss) {
+    document.getElementById('dismiss').onclick = onDismiss;
+  }
+
+  curtain.style.visibility = 'visible';
+  popupEl.style.visibility = 'visible';
 }
 
 /**
@@ -435,7 +487,7 @@ function createSortButton(id, value) {
     // Remove any of the existing sorts
     let existingSorts = document.querySelectorAll('.desc,.asc');
     for (const sortButton of existingSorts) {
-      if(!sortButton.id.includes(id)) {
+      if (!sortButton.id.includes(id)) {
         sortButton.className = 'sort-button';
         let icon = sortButton.getElementsByTagName('i')[0];
         if (icon) {
