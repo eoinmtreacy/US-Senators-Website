@@ -606,8 +606,6 @@ img#usa-map {
 }
 
 .senator-card {
-  /* Your styles for .card here */
-  height: 300px;
   width: 200px;
   margin: 5px;
   position: relative;
@@ -796,3 +794,130 @@ img#usa-map {
 }
 
 /* END STATS SECTION */
+
+@media only screen and (max-width: 930px) {
+  .section .content,
+  #senators-container .content {
+    width: 300px !important;
+  }
+  h1 {
+    font-size: 3rem;
+  }
+  .count-bubble h1 {
+    font-size: 3rem !important;
+  }
+  .count-bubble h3 {
+    font-size: 1rem !important;
+  }
+  .count-bubble {
+    height: 180px !important;
+    width: 180px !important;
+  }
+  .count-bubble:nth-child(2) {
+    left: 0px !important;
+    top: unset !important;
+  }
+  .count-bubble:nth-child(3) {
+    left: 150px !important;
+  }
+  .count-bubble:nth-child(4) {
+    left: 0px !important;
+    top: 360px !important;
+  }
+  #leaders-container .leader-line {
+    flex-direction: column;
+    margin: 0;
+  }
+  #leaders-container .leader-line > div {
+    width: 100%;
+    text-align: left !important;
+    margin: 0 !important;
+  }
+  #leaders-container .leader-line .leadership-title {
+    font-size: 15px;
+  }
+  #leaders-container .leader-line .name {
+    font-size: 20px;
+  }
+  #leader-list h4 {
+    font-size: 15px;
+  }
+  #stats .top {
+    flex-direction: column;
+  }
+  #gender-stats-container {
+    width: 100%;
+    align-items: center;
+    margin: 1rem 0;
+  }
+  .percentages-container .percentage {
+    margin: 0rem 0rem 1rem 0 !important;
+  }
+  #gender-stats-container .fa {
+    font-size: 1.5rem;
+    margin: 1px;
+    width: 15px;
+  }
+  #years-in-office-container {
+    flex-direction: column;
+  }
+  #bars-container {
+    width: 100%;
+    margin: 0;
+  }
+  #years-in-office-container > h3 {
+    top: 17%;
+    left: 26%;
+  }
+  #senators-container > div {
+    width: 300px;
+  }
+  .senator-card {
+    /* height: 240px; */
+    width: fit-content;
+    font-size: 10px;
+  }
+  .overlay {
+    height: 160px;
+  }
+  .senator-card img {
+    height: 160px;
+  }
+  #sort-container,
+  #filter-container {
+    top: 130px;
+  }
+  #filter-tag-container {
+    display: none;
+  }
+  #pop-up,
+  #error-pop-up {
+    width: unset;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    left: 0;
+  }
+
+  #pop-up-image {
+    top: -122px;
+    left: 85px;
+  }
+
+  #pop-up * {
+    margin: unset;
+  }
+  #pop-up-text {
+    margin: 6rem 2rem;
+  }
+  #pop-up-socials {
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+  }
+  #senate-floor-graphic-container {
+    display: none;
+  }
+  .cta.text {
+    left: calc(50vw - 75px);
+    width: unset;
+  }
+}

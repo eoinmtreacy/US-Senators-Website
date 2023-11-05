@@ -591,7 +591,7 @@ function drawLeaders(senators) {
     const leadersContainer = document.getElementById('leaders-container');
     leadersContainer.appendChild(partyTitle);
     let partyContainer = document.createElement('div');
-    partyContainer.setAttribute('id', `${party[1]}-leaders-container`);
+    partyContainer.setAttribute('id', `${party}-leaders-container`);
     leadersContainer.appendChild(partyContainer);
 
     leadersByParty[party].forEach((senator) => {
@@ -624,7 +624,7 @@ function drawSummary(senators) {
       let diameter, top, left, right, h1Size;
       switch (i) {
         case 0:
-          diameter = '350px';
+          diameter = `350px`;
           top = '100px';
           h1Size = '10rem';
           break;
