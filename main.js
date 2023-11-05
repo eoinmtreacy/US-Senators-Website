@@ -1,9 +1,9 @@
 // CLASSES
+
 /**
- * @class
+ * @class FilterOptions
  * Represents the selected filters. For each filter type (eg: rank), contains a set of the selected values (eg: "Junior", "Senior")
  */
-
 class FilterOptions {
   constructor() {
     this.state = {
@@ -54,6 +54,7 @@ const RANK = 'rank';
 const GENDER = 'gender';
 const NAME = 'name';
 
+// Create promises for fetching senators and images
 const fetchSenators = fetch('./data/senators.json')
   .then((response) => response.json())
   .catch((e) => renderErrorPopup({ title: 'Failed to load senators', errorMessage: e.message }));
@@ -61,7 +62,7 @@ const fetchImages = fetch('./data/imgSources.json')
   .then((response) => response.json())
   .catch((e) => renderErrorPopup({ title: 'Failed to load senator images', errorMessage: e.message }));
 
-// 1. Fetch our senator data
+// Fetch senators and images
 var ALL_SENATORS = await Promise.all([fetchSenators, fetchImages]).then(([senators, images]) => {
   isSenatorsLoaded = true;
   return senators.objects.map((o) => ({
@@ -90,10 +91,13 @@ var ALL_SENATORS = await Promise.all([fetchSenators, fetchImages]).then(([senato
 });
 
 if (isSenatorsLoaded) {
+  // Using the senators data, pull out all the possible values we can filter by
   const FILTER_OPTIONS = loadFilterOptions(ALL_SENATORS);
+
+  // Create our global filter instance
   var CURRENT_FILTER = new FilterOptions();
 
-  // 3. Draw our page
+  // Draw HTML elements
   drawErrorPopup();
   drawFilters(FILTER_OPTIONS);
   drawSenators(ALL_SENATORS);
@@ -101,9 +105,18 @@ if (isSenatorsLoaded) {
   drawLeaders(ALL_SENATORS);
   drawSummary(ALL_SENATORS);
   drawSenatorPopup();
-  circles(ALL_SENATORS);
+  drawCircles(ALL_SENATORS);
 }
 
+//#region ERROR HANLDING
+
+/**
+ * Inserts the error pop-up HTML component into the DOM with default title, message and dismiss button.
+ * When we want to render the popup, we can call renderErrorPopup and pass in optional customization params.
+ *
+ * @params {}
+ * @return none
+ */
 function drawErrorPopup() {
   let popupEl = document.createElement('div');
   popupEl.id = 'error-pop-up';
@@ -135,6 +148,16 @@ function drawErrorPopup() {
   document.getElementById('page-container').appendChild(popupEl);
 }
 
+/**
+ *
+ * Gets the existing error popup dom component (or creates it if it doesn't exist) and makes it visible. If parameters are passed, customizes the title, message and button behavior.
+ *
+ * @param { errorMessage, title, onDismiss }
+ * errorMessage - optional, message to insert into the text section of the popup. Default is "An unknown error has occurred."
+ * title - optional, customized title. Default is "uh oh :("
+ * onDismiss - optional, function defining behavior to occur when the user clicks "Dismiss" button. Default is to refresh the page.
+ * @returns void
+ */
 function renderErrorPopup({ errorMessage, title, onDismiss }) {
   if (!document.getElementById('error-pop-up')) {
     drawErrorPopup();
@@ -157,11 +180,15 @@ function renderErrorPopup({ errorMessage, title, onDismiss }) {
   popupEl.style.visibility = 'visible';
 }
 
+//#endregion END ERROR HANLDING
+
+//#region FILTERING
+
 /**
  * Given a list of senators, finds all of the possible options for party, state, rank and gender
  *
  * @param {any[]} senators list of senators extracted from json
- * @returns
+ * @returns void
  */
 function loadFilterOptions(senators) {
   var filterOptions = {
@@ -204,13 +231,6 @@ function handleFilterSelected(e, filterId) {
 }
 
 /**
- * Function which removes all filters
- */
-function handleResetClicked() {
-  CURRENT_FILTER.resetFilters();
-}
-
-/**
  * Function which takes in a FilterOptions object and returns a filtered array of senators filtered down based
  * on the filters passed.
  *
@@ -234,10 +254,9 @@ function filter(filterOptionsObj) {
   return output;
 }
 
-function isIncluded(filterOptionsObj, filterType, value) {
-  return filterOptionsObj.state[filterType].has(value) || !filterOptionsObj.state[filterType].size;
-}
-
+/**
+ * Event handler for when the filter icon above the senators list is clicked. Renders a dropdown containing filter options.
+ */
 function handleFilterIconClicked() {
   // show filter popup
   const filterContainer = document.getElementById('filter-container');
@@ -246,6 +265,9 @@ function handleFilterIconClicked() {
   filterContainer.style.height = isHidden ? '65vh' : '0';
 }
 
+/**
+ * Event handler for when the sort icon above the senators list is clicked. Renders a dropdown containing sort options.
+ */
 function handleSortIconClicked() {
   // show filter popup
   const sortContainer = document.getElementById('sort-container');
@@ -267,6 +289,15 @@ function applyFilterToSenatorElements(filterOptions) {
   }
 }
 
+/**
+ *
+ * Given a filter type and value, injects a "tag" component in the DOM at the top of the senators list.
+ * Tags visualize which filter values are currently selected and can be removed by clicking the "x".
+ *
+ * @param {string} filterType what type of filter the tag is for (eg. party)
+ * @param {string} value what the filter value is (eg. democrat)
+ * @returns
+ */
 function drawFilterTag(filterType, value) {
   var tagContainerEl = document.getElementById('filter-tag-container');
 
@@ -280,7 +311,16 @@ function drawFilterTag(filterType, value) {
   return tagEl;
 }
 
-function removeFilterTag(filterType, value, el, shouldRemoveFilter) {
+/**
+ * Given a filter type and value, finds it's tag element and removes it from the dom.
+ *
+ * @param {string} filterType what type of filter the tag is for (eg. party)
+ * @param {string} value what the filter value is (eg. democrat)
+ * @param {HTMLElement} el optional, the tag element to remove. if not provided, the function will find it in the DOM
+ * @param {bool} shouldRemoveFilter optional (default: false) - indicates whether we need to remove the filter from the current filter object as well. This should be true when we
+ * are removing the tag via clicking the "x" and false when we are removing the filter tag due to a filter being deselected from the dropdown.
+ */
+function removeFilterTag(filterType, value, el, shouldRemoveFilter = false) {
   if (shouldRemoveFilter) {
     CURRENT_FILTER.removeFilter(filterType, value);
     let inputEl = document.getElementById(value);
@@ -294,7 +334,6 @@ function removeFilterTag(filterType, value, el, shouldRemoveFilter) {
   // Update the filtered options
   const dropdownEl = document.getElementsByClassName(`dropdown-container ${filterType}`)[0];
   const optionEls = dropdownEl.getElementsByClassName(value);
-  console.log(optionEls);
   filterOptionElements('', optionEls);
 
   applyFilterToSenatorElements(CURRENT_FILTER);
@@ -375,6 +414,12 @@ function createDropdown(filterId, options) {
   return dropdownContainerEl;
 }
 
+/**
+ * Creates a text input to use for searching for values.
+ *
+ * @param {function} oninput optional, function defining the oninput behavior of the text input
+ * @returns {HTMLDivElement} the created text input's container div
+ */
 function createTextSearchBox(oninput) {
   let textInputContainer = document.createElement('div');
   textInputContainer.className = 'text-input-container';
@@ -472,11 +517,19 @@ function drawFilters(filterOptions) {
   sortContainer.append(nameSortButtonEl, stateSortButtonEl);
 }
 
-function createSortButton(id, value) {
+/**
+ * Creates a sort button for the given filter type. A sort button by default is unselected. On first click, it sorts the senators by the filterType
+ * in ascending order. On second click, it sorts in descending. On third click, it goes back to unsorted.
+ *
+ * @param {string} filterType what type of filter the tag is for (eg. party)
+ * @param {string} value optional, text to render on the button. Will default to the 'filterType' value
+ * @returns {HTMLButtonElement} the created button
+ */
+function createSortButton(filterType, value) {
   let buttonEl = document.createElement('button');
   buttonEl.classList = 'sort-button';
-  buttonEl.id = `${id}-sort`;
-  buttonEl.innerText = value || capitalizeFirstLetter(id);
+  buttonEl.id = `${filterType}-sort`;
+  buttonEl.innerText = value || capitalizeFirstLetter(filterType);
 
   let sortByAscIconEl = createFontAwesomeIcon('sort-alpha-asc');
   let sortByDescIconEl = createFontAwesomeIcon('sort-alpha-desc');
@@ -484,7 +537,7 @@ function createSortButton(id, value) {
     // Remove any of the existing sorts
     let existingSorts = document.querySelectorAll('.desc,.asc');
     for (const sortButton of existingSorts) {
-      if (!sortButton.id.includes(id)) {
+      if (!sortButton.id.includes(filterType)) {
         sortButton.className = 'sort-button';
         let icon = sortButton.getElementsByTagName('i')[0];
         if (icon) {
@@ -513,13 +566,42 @@ function createSortButton(id, value) {
       buttonEl.appendChild(sortByAscIconEl);
     }
     // Sort the senators by the id
-    sortSenators(id, sortDirection);
+    sortSenators(filterType, sortDirection);
   };
   return buttonEl;
 }
 
+/**
+ * Sorts senators list by the given key either ascending or descending
+ *
+ * @param {string} id key to sort by (eg: secondname)
+ * @param {"asc" | "desc" | null} direction sort direction
+ */
+function sortSenators(id, direction) {
+  let senators = [...ALL_SENATORS];
+
+  switch (direction) {
+    case 'asc':
+      senators = senators.sort((a, b) => a[id].localeCompare(b[id]));
+      break;
+    case 'desc':
+      senators = senators.sort((a, b) => b[id].localeCompare(a[id]));
+      break;
+    default:
+      break;
+  }
+
+  drawSenators(senators);
+  applyFilterToSenatorElements(CURRENT_FILTER);
+}
+
+/**
+ * Given a value and a list of option elements, hides any options which do not start with the passed value.
+ *
+ * @param {string} value value to search for
+ * @param {HTMLCollectionOf<Element>} els list of option elements
+ */
 function filterOptionElements(value, els) {
-  // console.log(els);
   const optionsToUpdate = {
     hide: [],
     show: [],
@@ -536,35 +618,9 @@ function filterOptionElements(value, els) {
   optionsToUpdate['show'].forEach((o) => (o.style.display = null));
 }
 
-// Utility functions
+//#endregion FILTERING
 
-/**
- * Helped function to capitalize first letter of a string
- * @param {string} str
- * @returns str with first letter capitalized
- */
-function capitalizeFirstLetter(str) {
-  return str[0].toUpperCase() + str.slice(1);
-}
-
-/**
- * Creates an "i" element with the appropriate font awesome icon class. Does not append anywhere to the dom, just returns the element.
- *
- * @param {string} iconName name of the icon (eg: 'search')
- * @param {?function} handleClick optional function to bind to the onclick event listener of the icon
- * @param {?string} className optional class name to add to the element
- * @returns {HTMLElement} the icon element
- */
-function createFontAwesomeIcon(iconName, handleClick, className = '') {
-  let icon = document.createElement('i');
-  icon.classList = `fa fa-${iconName} ${className}`;
-  if (handleClick) {
-    icon.onclick = handleClick;
-    return icon;
-  }
-  return icon;
-}
-// draw HTML elements
+//#region LEADERSHIP SECTION
 
 /**
  * Function which draws leaders names and titles.
@@ -576,7 +632,6 @@ function createFontAwesomeIcon(iconName, handleClick, className = '') {
  * This function is intended to only be called once on our initial load of the page.
  *
  */
-
 function drawLeaders(senators) {
   const leadersByParty = { democrat: [], republican: [] };
   senators.forEach((senator) => {
@@ -606,6 +661,15 @@ function drawLeaders(senators) {
   });
 }
 
+//#region END LEADERSHIP SECTION
+
+//#region SUMMARY SECTION
+
+/**
+ * Renders the count of democrats, republicans and independents
+ *
+ * @param {any[]} senators
+ */
 function drawSummary(senators) {
   const counts = senators.reduce(
     (acc, val) => {
@@ -660,6 +724,15 @@ function drawSummary(senators) {
     });
 }
 
+//#endregion SUMMARY SECTION
+
+//#region SENATORS LIST SECTION
+
+/**
+ * Given a list of senators, creates a card element and injects into the DOM.
+ *
+ * @param {any[]} senators list of senators to draw
+ */
 function drawSenators(senators) {
   let senatorContainerEl = document.getElementById('senators-container');
   senatorContainerEl.innerHTML = null;
@@ -704,6 +777,16 @@ function drawSenators(senators) {
   });
 }
 
+//#endregion SENATORS LIST SECTION
+
+//#region STATS SECTION
+
+/**
+ * Given a list of senators, calculates the average age and creates a stylized element containing the average.
+ *
+ * @param {any[]} senators list of senators
+ * @returns {HTMLElement} created element
+ */
 function drawAverageAgeStat(senators) {
   const avgAge = senators.reduce((acc, sen) => acc + sen.age, 0) / senators.length;
   let averageAgeContainerEl = document.getElementById('average-age-container');
@@ -715,6 +798,11 @@ function drawAverageAgeStat(senators) {
   return averageAgeContainerEl;
 }
 
+/**
+ * Given a list of senators, calculates the number of years in office and generates a histogram element.
+ *
+ * @param {any[]} senators list of senators
+ */
 function drawYearsInOfficeStat(senators) {
   const yearsInOffice = senators.reduce((acc, sen) => {
     if (acc[sen.yearsInOffice]) {
@@ -759,12 +847,24 @@ function drawYearsInOfficeStat(senators) {
   containerEl.appendChild(barsContainer);
 }
 
+/**
+ * Calls all of our stat drawing functions
+ *
+ * @param {any[]} senators
+ */
 function drawStats(senators) {
   drawGenderStats(senators);
   drawAverageAgeStat(senators);
   drawYearsInOfficeStat(senators);
 }
 
+/**
+ * Given a list of senators, counts the number of females and number of males. Renders a visual using male/female
+ * icons representing the count.
+ *
+ * @param {any[]} senators list of senators
+ * @returns {HTMLElement} the gender-stats-container element
+ */
 function drawGenderStats(senators) {
   const females = senators.filter((sen) => sen.gender === 'female');
   const males = senators.filter((sen) => sen.gender === 'male');
@@ -799,6 +899,10 @@ function drawPercentStat(value, label) {
   percentageContainerEl.append(percentageEl, femaleLabelEl);
   return percentageContainerEl;
 }
+
+//#region END STATS SECTION
+
+//#region SENATOR DETAILS
 
 function drawSenatorPopup() {
   let popUp = document.getElementById('pop-up');
@@ -935,9 +1039,11 @@ function renderPopUp(senator) {
   updatePopUpUrlField({ id: 'website', href: senator.website });
 }
 
-function handleCloseClicked() {}
+//#endregion SENATOR DETAILS
 
-function circles(senators) {
+//#region SENATOR SEATS GRAPHIC
+
+function drawCircles(senators) {
   const buckets = [];
   const count = 20;
   for (let i = 0; i < senators.length; i += count) {
@@ -1001,24 +1107,13 @@ function circles(senators) {
   });
 }
 
-function sortSenators(id, direction) {
-  let senators = [...ALL_SENATORS];
+//#endregion SENATOR SEATS GRAPHIC
 
-  switch (direction) {
-    case 'asc':
-      senators = senators.sort((a, b) => a[id].localeCompare(b[id]));
-      break;
-    case 'desc':
-      senators = senators.sort((a, b) => b[id].localeCompare(a[id]));
-      break;
-    default:
-      break;
-  }
+//#region DOM LISTENERS
 
-  drawSenators(senators);
-  applyFilterToSenatorElements(CURRENT_FILTER);
-}
-
+/**
+ * DOM click listener which handles clicks on the CTA buttons and scrolls down the page
+ */
 document.addEventListener('click', (e) => {
   if (Array.from(e.target.classList).includes('cta')) {
     const senatorSectionEl = document.getElementById('senators-list');
@@ -1026,3 +1121,37 @@ document.addEventListener('click', (e) => {
     window.scrollTo({ top: rect.top + window.scrollY, behavior: 'smooth' });
   }
 });
+
+//#endregion DOM LISTENERS
+
+
+//#region UTILITY FUNCTIONS
+
+/**
+ * Helped function to capitalize first letter of a string
+ * @param {string} str
+ * @returns str with first letter capitalized
+ */
+function capitalizeFirstLetter(str) {
+  return str[0].toUpperCase() + str.slice(1);
+}
+
+/**
+ * Creates an "i" element with the appropriate font awesome icon class. Does not append anywhere to the dom, just returns the element.
+ *
+ * @param {string} iconName name of the icon (eg: 'search')
+ * @param {?function} handleClick optional function to bind to the onclick event listener of the icon
+ * @param {?string} className optional class name to add to the element
+ * @returns {HTMLElement} the icon element
+ */
+function createFontAwesomeIcon(iconName, handleClick, className = '') {
+  let icon = document.createElement('i');
+  icon.classList = `fa fa-${iconName} ${className}`;
+  if (handleClick) {
+    icon.onclick = handleClick;
+    return icon;
+  }
+  return icon;
+}
+
+//#endregion UTILITY FUNCTIONS
