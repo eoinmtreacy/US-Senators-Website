@@ -1,9 +1,9 @@
 // CLASSES
+
 /**
- * @class
+ * @class FilterOptions
  * Represents the selected filters. For each filter type (eg: rank), contains a set of the selected values (eg: "Junior", "Senior")
  */
-
 class FilterOptions {
   constructor() {
     this.state = {
@@ -54,61 +54,132 @@ const RANK = 'rank';
 const GENDER = 'gender';
 const NAME = 'name';
 
-const fetchSenators = fetch('./data/senators.json').then((response) => response.json());
-const fetchImages = fetch('./data/imgSources.json').then((response) => response.json());
+// Create promises for fetching senators and images
+const fetchSenators = fetch('./data/senators.json')
+  .then((response) => response.json())
+  .catch((e) => renderErrorPopup({ title: 'Failed to load senators', errorMessage: e.message }));
+const fetchImages = fetch('./data/imgSources.json')
+  .then((response) => response.json())
+  .catch((e) => renderErrorPopup({ title: 'Failed to load senator images', errorMessage: e.message }));
 
-// 1. Fetch our senator data
-var ALL_SENATORS = await Promise.all([fetchSenators, fetchImages])
-  .then(([senators, images]) => {
-    isSenatorsLoaded = true;
-    return senators.objects.map((o) => ({
-      id: o.person.bioguideid,
-      firstname: o.person.firstname,
-      secondname: o.person.lastname,
-      nickname: o.person.nickname,
-      party: o.party.toLowerCase(),
-      state: o.state,
-      rank: o.senator_rank,
-      gender: o.person.gender,
-      office: o.extra.office,
-      dob: o.person.birthday,
-      age: new Date().getFullYear() - new Date(o.person.birthday).getFullYear(),
-      startdate: o.startdate,
-      twitter: o.person.twitterid,
-      youtube: o.person.youtubeid,
-      website: o.website,
-      leadership_title: o.leadership_title,
-      imageUrl: images[o.person.bioguideid],
-      yearsInOffice: new Date().getFullYear() - new Date(o.startdate).getFullYear(),
-    }));
-  })
-  .catch((e) => {
-    // TODO: render some error element
-    console.error(e);
-  });
+// Fetch senators and images
+var ALL_SENATORS = await Promise.all([fetchSenators, fetchImages]).then(([senators, images]) => {
+  isSenatorsLoaded = true;
+  return senators.objects.map((o) => ({
+    id: o.person.bioguideid,
+    firstname: o.person.firstname,
+    secondname: o.person.lastname,
+    nickname: o.person.nickname,
+    description: o.description,
+    party: o.party.toLowerCase(),
+    state: o.state,
+    rank: o.senator_rank,
+    gender: o.person.gender,
+    office: o.extra.address,
+    phone: o.phone,
+    dob: o.person.birthday,
+    age: new Date().getFullYear() - new Date(o.person.birthday).getFullYear(),
+    startdate: o.startdate,
+    enddate: o.enddate,
+    twitter: o.person.twitterid,
+    youtube: o.person.youtubeid,
+    website: o.website,
+    leadership_title: o.leadership_title,
+    imageUrl: images[o.person.bioguideid],
+    yearsInOffice: new Date().getFullYear() - new Date(o.startdate).getFullYear(),
+  }));
+});
 
 if (isSenatorsLoaded) {
-  // console.log(ALL_SENATORS);
-  // console.log(ALL_SENATORS);
+  // Using the senators data, pull out all the possible values we can filter by
   const FILTER_OPTIONS = loadFilterOptions(ALL_SENATORS);
+
+  // Create our global filter instance
   var CURRENT_FILTER = new FilterOptions();
 
-  // 3. Draw our page
+  // Draw HTML elements
+  drawErrorPopup();
   drawFilters(FILTER_OPTIONS);
   drawSenators(ALL_SENATORS);
   drawStats(ALL_SENATORS);
   drawLeaders(ALL_SENATORS);
   drawSummary(ALL_SENATORS);
   drawSenatorPopup();
-  circles(ALL_SENATORS);
-  addSortToButtons()
+  drawCircles(ALL_SENATORS);
 }
+
+//#region ERROR HANLDING
+
+/**
+ * Inserts the error pop-up HTML component into the DOM with default title, message and dismiss button.
+ * When we want to render the popup, we can call renderErrorPopup and pass in optional customization params.
+ *
+ * @params {}
+ * @return none
+ */
+function drawErrorPopup() {
+  let popupEl = createElement({ id: 'error-pop-up', tagName: 'div' });
+
+  const curtain = document.getElementById('curtain');
+  curtain.style.visibility = 'hidden';
+  popupEl.style.visibility = 'hidden';
+
+  const errorIconEl = createFontAwesomeIcon('exclamation-triangle');
+  const titleEl = createElement({ tagName: 'h2', innerText: 'oh no :(' });
+  const errorMessageEl = createElement({ tagName: 'p', innerText: 'An unknown error has occurred.' });
+  const buttonContainerEl = createElement({ tagName: 'div', classList: 'button-container' });
+  const dismissButton = createElement({ tagName: 'button', id: 'dismiss', innerText: 'Dismiss', classList: 'filled' });
+  dismissButton.onclick = () => {
+    location.reload();
+  };
+
+  buttonContainerEl.append(dismissButton);
+
+  popupEl.append(errorIconEl, titleEl, errorMessageEl, buttonContainerEl);
+  document.getElementById('page-container').appendChild(popupEl);
+}
+
+/**
+ *
+ * Gets the existing error popup dom component (or creates it if it doesn't exist) and makes it visible. If parameters are passed, customizes the title, message and button behavior.
+ *
+ * @param { errorMessage, title, onDismiss }
+ * errorMessage - optional, message to insert into the text section of the popup. Default is "An unknown error has occurred."
+ * title - optional, customized title. Default is "uh oh :("
+ * onDismiss - optional, function defining behavior to occur when the user clicks "Dismiss" button. Default is to refresh the page.
+ * @returns void
+ */
+function renderErrorPopup({ errorMessage, title, onDismiss }) {
+  if (!document.getElementById('error-pop-up')) {
+    drawErrorPopup();
+  }
+  let popupEl = document.getElementById('error-pop-up');
+  const curtain = document.getElementById('curtain');
+
+  if (errorMessage) {
+    popupEl.getElementsByTagName('p')[0].innerText = errorMessage;
+  }
+  if (title) {
+    popupEl.getElementsByTagName('h2')[0].innerText = title;
+  }
+
+  if (onDismiss) {
+    document.getElementById('dismiss').onclick = onDismiss;
+  }
+
+  curtain.style.visibility = 'visible';
+  popupEl.style.visibility = 'visible';
+}
+
+//#endregion END ERROR HANLDING
+
+//#region FILTERING
 
 /**
  * Given a list of senators, finds all of the possible options for party, state, rank and gender
  *
  * @param {any[]} senators list of senators extracted from json
- * @returns
+ * @returns void
  */
 function loadFilterOptions(senators) {
   var filterOptions = {
@@ -151,18 +222,11 @@ function handleFilterSelected(e, filterId) {
 }
 
 /**
- * Function which removes all filters
- */
-function handleResetClicked() {
-  CURRENT_FILTER.resetFilters();
-}
-
-/**
  * Function which takes in a FilterOptions object and returns a filtered array of senators filtered down based
  * on the filters passed.
  *
  * @param {FilterOptions} filterOptionsObj - An instance of the FilterOptions class
- * @param {array} senators - List of senators directly from our data (TODO: we should abstract out the senator data)
+ * @param {array} senators - List of senators directly from our data
  * @returns
  */
 function filter(filterOptionsObj) {
@@ -181,16 +245,26 @@ function filter(filterOptionsObj) {
   return output;
 }
 
-function isIncluded(filterOptionsObj, filterType, value) {
-  return filterOptionsObj.state[filterType].has(value) || !filterOptionsObj.state[filterType].size;
-}
-
+/**
+ * Event handler for when the filter icon above the senators list is clicked. Renders a dropdown containing filter options.
+ */
 function handleFilterIconClicked() {
   // show filter popup
   const filterContainer = document.getElementById('filter-container');
   const isHidden = filterContainer.style.visibility === 'hidden';
   filterContainer.style.visibility = isHidden ? 'visible' : 'hidden';
-  filterContainer.style.right = isHidden ? '-225px' : '-500px';
+  filterContainer.style.height = isHidden ? '65vh' : '0';
+}
+
+/**
+ * Event handler for when the sort icon above the senators list is clicked. Renders a dropdown containing sort options.
+ */
+function handleSortIconClicked() {
+  // show filter popup
+  const sortContainer = document.getElementById('sort-container');
+  const isHidden = sortContainer.style.visibility === 'hidden';
+  sortContainer.style.visibility = isHidden ? 'visible' : 'hidden';
+  sortContainer.style.height = isHidden ? '200px' : '0';
 }
 
 /**
@@ -206,20 +280,36 @@ function applyFilterToSenatorElements(filterOptions) {
   }
 }
 
+/**
+ *
+ * Given a filter type and value, injects a "tag" component in the DOM at the top of the senators list.
+ * Tags visualize which filter values are currently selected and can be removed by clicking the "x".
+ *
+ * @param {string} filterType what type of filter the tag is for (eg. party)
+ * @param {string} value what the filter value is (eg. democrat)
+ * @returns
+ */
 function drawFilterTag(filterType, value) {
-  var tagContainerEl = document.getElementById('filter-tag-container');
+  let tagContainerEl = document.getElementById('filter-tag-container');
 
-  var tagEl = document.createElement('div');
-  tagEl.classList = `tag ${value}`;
-  tagEl.innerText = capitalizeFirstLetter(value);
+  let tagEl = createElement({ tagName: 'div', classList: `tag ${value}`, innerText: capitalizeFirstLetter(value) });
 
-  var deleteEl = createFontAwesomeIcon('close', () => removeFilterTag(filterType, value, tagEl, true));
+  let deleteEl = createFontAwesomeIcon('close', () => removeFilterTag(filterType, value, tagEl, true));
   tagEl.prepend(deleteEl);
   tagContainerEl.append(tagEl);
   return tagEl;
 }
 
-function removeFilterTag(filterType, value, el, shouldRemoveFilter) {
+/**
+ * Given a filter type and value, finds it's tag element and removes it from the dom.
+ *
+ * @param {string} filterType what type of filter the tag is for (eg. party)
+ * @param {string} value what the filter value is (eg. democrat)
+ * @param {HTMLElement} el optional, the tag element to remove. if not provided, the function will find it in the DOM
+ * @param {bool} shouldRemoveFilter optional (default: false) - indicates whether we need to remove the filter from the current filter object as well. This should be true when we
+ * are removing the tag via clicking the "x" and false when we are removing the filter tag due to a filter being deselected from the dropdown.
+ */
+function removeFilterTag(filterType, value, el, shouldRemoveFilter = false) {
   if (shouldRemoveFilter) {
     CURRENT_FILTER.removeFilter(filterType, value);
     let inputEl = document.getElementById(value);
@@ -230,11 +320,9 @@ function removeFilterTag(filterType, value, el, shouldRemoveFilter) {
   }
   el.remove();
 
-  // TODO
   // Update the filtered options
   const dropdownEl = document.getElementsByClassName(`dropdown-container ${filterType}`)[0];
   const optionEls = dropdownEl.getElementsByClassName(value);
-  console.log(optionEls);
   filterOptionElements('', optionEls);
 
   applyFilterToSenatorElements(CURRENT_FILTER);
@@ -249,17 +337,14 @@ function removeFilterTag(filterType, value, el, shouldRemoveFilter) {
  */
 
 function createDropdown(filterId, options) {
-  let dropdownContainerEl = document.createElement('div');
-  dropdownContainerEl.classList.add('dropdown-container');
-  dropdownContainerEl.classList.add(filterId);
+  let dropdownContainerEl = createElement({ tagName: 'div', classList: `dropdown-container ${filterId}` });
 
   let textInputContainer = createTextSearchBox();
   dropdownContainerEl.appendChild(textInputContainer);
 
   let textInputEl = textInputContainer.getElementsByTagName('input')[0];
 
-  let dropdownEl = document.createElement('div');
-  dropdownEl.className = 'dropdown';
+  let dropdownEl = createElement({ tagName: 'div', classList: 'dropdown' });
   dropdownEl.style.visibility = 'hidden'; // Default to hidden
 
   // Dictionary containing each option el so we can easily access them later
@@ -267,14 +352,13 @@ function createDropdown(filterId, options) {
   Array.from(options)
     .sort()
     .forEach((option) => {
-      let optionEl = document.createElement('div');
-      optionEl.classList.add(option);
+      let optionEl = createElement({ tagName: 'div', classList: option });
 
-      let labelEl = document.createElement('label', { for: option });
-      labelEl.innerText = capitalizeFirstLetter(option);
-      let inputEl = document.createElement('input');
+      let labelEl = createElement({ tagName: 'label', innerText: capitalizeFirstLetter(option) });
+      labelEl.for = option;
+
+      let inputEl = createElement({ tagName: 'input', id: option });
       inputEl.type = 'checkbox';
-      inputEl.id = `${option}`;
       inputEl.onchange = (e) => {
         handleFilterSelected(e, filterId);
         // If the input has text, clear it
@@ -315,10 +399,15 @@ function createDropdown(filterId, options) {
   return dropdownContainerEl;
 }
 
+/**
+ * Creates a text input to use for searching for values.
+ *
+ * @param {function} oninput optional, function defining the oninput behavior of the text input
+ * @returns {HTMLDivElement} the created text input's container div
+ */
 function createTextSearchBox(oninput) {
-  let textInputContainer = document.createElement('div');
-  textInputContainer.className = 'text-input-container';
-  let textInputEl = document.createElement('input');
+  let textInputContainer = createElement({ tagName: 'div', classList: 'text-input-container' });
+  let textInputEl = createElement({ tagName: 'input' });
   textInputEl.type = 'text';
 
   if (oninput) {
@@ -348,8 +437,7 @@ function drawFilters(filterOptions) {
   let filterHeaderEl = document.getElementById('filter-header');
 
   // Create container for the tags
-  let filterTagContainer = document.createElement('div');
-  filterTagContainer.id = 'filter-tag-container';
+  let filterTagContainer = createElement({ tagName: 'div', id: 'filter-tag-container' });
   filterHeaderEl.appendChild(filterTagContainer);
 
   // Create text input for searching by name
@@ -365,25 +453,22 @@ function drawFilters(filterOptions) {
   filterHeaderEl.appendChild(filterIconEl);
 
   // Create filter pop-up container
-  let filterContainer = document.createElement('div');
-  filterContainer.id = 'filter-container';
+  let filterContainer = createElement({ tagName: 'div', id: 'filter-container' });
   filterContainer.style.visibility = 'hidden';
   filterHeaderEl.appendChild(filterContainer);
 
-  let filterContainerHeader = document.createElement('h2');
-  filterContainerHeader.innerText = 'Filters';
+  let filterContainerHeader = createElement({ tagName: 'h2', innerText: 'Filters' });
   filterContainer.appendChild(filterContainerHeader);
 
+  // Add filter dropdowns to the filter pop-up
   Object.entries(filterOptions).forEach(([key, val]) => {
     let filterId = key;
     let filterOptions = val;
-    let filterSectionEl = document.createElement('div');
-    let filterSectionHeaderEl = document.createElement('div');
-    filterSectionHeaderEl.classList.add('filter-section-header', filterId);
+    let filterSectionEl = createElement({ tagName: 'div' });
+    let filterSectionHeaderEl = createElement({ tagName: 'div', classList: `filter-section-header ${filterId}` });
 
     // Create a label
-    let filterLabelEl = document.createElement('h5');
-    filterLabelEl.innerText = capitalizeFirstLetter(filterId);
+    let filterLabelEl = createElement({ tagName: 'h5', innerText: capitalizeFirstLetter(filterId) });
     filterSectionHeaderEl.appendChild(filterLabelEl);
     filterSectionEl.appendChild(filterSectionHeaderEl);
 
@@ -391,10 +476,106 @@ function drawFilters(filterOptions) {
     filterSectionEl.appendChild(filterInputEl);
     filterContainer.appendChild(filterSectionEl);
   });
+
+  // Create sort icon which opens sort menu when clicked
+  let sortIconEl = createFontAwesomeIcon('sort', handleSortIconClicked, 'dark');
+  filterHeaderEl.appendChild(sortIconEl);
+
+  // Create sort pop-up container
+  let sortContainer = createElement({ tagName: 'div', id: 'sort-container' });
+  sortContainer.style.visibility = 'hidden';
+  filterHeaderEl.appendChild(sortContainer);
+
+  let sortContainerHeader = createElement({ tagName: 'h2', innerText: 'Sort by' });
+  sortContainer.appendChild(sortContainerHeader);
+
+  let nameSortButtonEl = createSortButton('secondname', 'Name');
+  let stateSortButtonEl = createSortButton('state');
+  sortContainer.append(nameSortButtonEl, stateSortButtonEl);
 }
 
+/**
+ * Creates a sort button for the given filter type. A sort button by default is unselected. On first click, it sorts the senators by the filterType
+ * in ascending order. On second click, it sorts in descending. On third click, it goes back to unsorted.
+ *
+ * @param {string} filterType what type of filter the tag is for (eg. party)
+ * @param {string} value optional, text to render on the button. Will default to the 'filterType' value
+ * @returns {HTMLButtonElement} the created button
+ */
+function createSortButton(filterType, value) {
+  let buttonEl = createElement({ tagName: 'button', id: `${filterType}-sort`, classList: 'sort-button', innerText: value || capitalizeFirstLetter(filterType) });
+
+  let sortByAscIconEl = createFontAwesomeIcon('sort-alpha-asc');
+  let sortByDescIconEl = createFontAwesomeIcon('sort-alpha-desc');
+  buttonEl.onclick = () => {
+    // Remove any of the existing sorts
+    let existingSorts = document.querySelectorAll('.desc,.asc');
+    for (const sortButton of existingSorts) {
+      if (!sortButton.id.includes(filterType)) {
+        sortButton.className = 'sort-button';
+        let icon = sortButton.getElementsByTagName('i')[0];
+        if (icon) {
+          sortButton.removeChild(icon);
+        }
+      }
+    }
+    // Highlight the button
+    let sortDirection;
+
+    if (buttonEl.classList.contains('asc')) {
+      // If ascending, toggle to descending
+      sortDirection = 'desc';
+      buttonEl.classList.replace('asc', sortDirection);
+
+      buttonEl.replaceChild(sortByDescIconEl, sortByAscIconEl);
+    } else if (buttonEl.classList.contains('desc')) {
+      // If descending, toggle to unselected
+      sortDirection = '';
+      buttonEl.classList.remove('desc');
+      buttonEl.removeChild(sortByDescIconEl);
+    } else {
+      // If unselected, toggle to ascending
+      sortDirection = 'asc';
+      buttonEl.classList += ' ' + sortDirection;
+      buttonEl.appendChild(sortByAscIconEl);
+    }
+    // Sort the senators by the id
+    sortSenators(filterType, sortDirection);
+  };
+  return buttonEl;
+}
+
+/**
+ * Sorts senators list by the given key either ascending or descending
+ *
+ * @param {string} id key to sort by (eg: secondname)
+ * @param {"asc" | "desc" | null} direction sort direction
+ */
+function sortSenators(id, direction) {
+  let senators = [...ALL_SENATORS];
+
+  switch (direction) {
+    case 'asc':
+      senators = senators.sort((a, b) => a[id].localeCompare(b[id]));
+      break;
+    case 'desc':
+      senators = senators.sort((a, b) => b[id].localeCompare(a[id]));
+      break;
+    default:
+      break;
+  }
+
+  drawSenators(senators);
+  applyFilterToSenatorElements(CURRENT_FILTER);
+}
+
+/**
+ * Given a value and a list of option elements, hides any options which do not start with the passed value.
+ *
+ * @param {string} value value to search for
+ * @param {HTMLCollectionOf<Element>} els list of option elements
+ */
 function filterOptionElements(value, els) {
-  // console.log(els);
   const optionsToUpdate = {
     hide: [],
     show: [],
@@ -411,35 +592,9 @@ function filterOptionElements(value, els) {
   optionsToUpdate['show'].forEach((o) => (o.style.display = null));
 }
 
-// Utility functions
+//#endregion FILTERING
 
-/**
- * Helped function to capitalize first letter of a string
- * @param {string} str
- * @returns str with first letter capitalized
- */
-function capitalizeFirstLetter(str) {
-  return str[0].toUpperCase() + str.slice(1);
-}
-
-/**
- * Creates an "i" element with the appropriate font awesome icon class. Does not append anywhere to the dom, just returns the element.
- *
- * @param {string} iconName name of the icon (eg: 'search')
- * @param {?function} handleClick optional function to bind to the onclick event listener of the icon
- * @param {?string} className optional class name to add to the element
- * @returns {HTMLElement} the icon element
- */
-function createFontAwesomeIcon(iconName, handleClick, className = '') {
-  let icon = document.createElement('i');
-  icon.classList = `fa fa-${iconName} ${className}`;
-  if (handleClick) {
-    icon.onclick = handleClick;
-    return icon;
-  }
-  return icon;
-}
-// draw HTML elements
+//#region LEADERSHIP SECTION
 
 /**
  * Function which draws leaders names and titles.
@@ -451,7 +606,6 @@ function createFontAwesomeIcon(iconName, handleClick, className = '') {
  * This function is intended to only be called once on our initial load of the page.
  *
  */
-
 function drawLeaders(senators) {
   const leadersByParty = { democrat: [], republican: [] };
   senators.forEach((senator) => {
@@ -461,17 +615,14 @@ function drawLeaders(senators) {
   });
 
   Object.keys(leadersByParty).forEach((party) => {
-    let partyTitle = document.createElement('h4');
-    partyTitle.innerText = `${capitalizeFirstLetter(party)}s`;
+    let partyTitle = createElement({ tagName: 'h4', innerText: `${capitalizeFirstLetter(party)}s` });
     const leadersContainer = document.getElementById('leaders-container');
     leadersContainer.appendChild(partyTitle);
-    let partyContainer = document.createElement('div');
-    partyContainer.setAttribute('id', `${party[1]}-leaders-container`);
+    let partyContainer = createElement({ tagName: 'div', id: `${party}-leaders-container` });
     leadersContainer.appendChild(partyContainer);
 
     leadersByParty[party].forEach((senator) => {
-      const leaderLine = document.createElement('div');
-      leaderLine.setAttribute('class', 'leader-line');
+      const leaderLine = createElement({ tagName: 'div', classList: 'leader-line' });
       leaderLine.innerHTML = `
       <div class="leadership-title">${senator.leadership_title}</div>
       <div class="name">${senator.firstname} ${senator.nickname && `"${senator.nickname}" `} ${senator.secondname}</div>
@@ -481,6 +632,15 @@ function drawLeaders(senators) {
   });
 }
 
+//#region END LEADERSHIP SECTION
+
+//#region SUMMARY SECTION
+
+/**
+ * Renders the count of democrats, republicans and independents
+ *
+ * @param {any[]} senators
+ */
 function drawSummary(senators) {
   const counts = senators.reduce(
     (acc, val) => {
@@ -494,12 +654,11 @@ function drawSummary(senators) {
   Object.entries(counts)
     .sort((a, b) => b[1] - a[1])
     .forEach(([key, val], i) => {
-      let bubbleEl = document.createElement('div');
-      bubbleEl.classList = `count-bubble ${key}`;
+      let bubbleEl = createElement({ tagName: 'div', classList: `count-bubble ${key}` });
       let diameter, top, left, right, h1Size;
       switch (i) {
         case 0:
-          diameter = '350px';
+          diameter = `350px`;
           top = '100px';
           h1Size = '10rem';
           break;
@@ -521,37 +680,38 @@ function drawSummary(senators) {
       bubbleEl.style.left = left;
       bubbleEl.style.right = right;
 
-      let countEl = document.createElement('h1');
-      countEl.classList = 'count';
-      countEl.innerText = val;
+      let countEl = createElement({ tagName: 'h1', classList: 'count', innerText: val });
       countEl.style.fontSize = h1Size;
 
-      let labelEl = document.createElement('h3');
-      labelEl.classList = key;
-      labelEl.innerText = `${capitalizeFirstLetter(key)}s`;
+      let labelEl = createElement({ tagName: 'h3', classList: key, innerText: `${capitalizeFirstLetter(key)}s` });
 
       bubbleEl.append(countEl, labelEl);
       countsSectionContentEl.appendChild(bubbleEl);
     });
 }
 
+//#endregion SUMMARY SECTION
+
+//#region SENATORS LIST SECTION
+
+/**
+ * Given a list of senators, creates a card element and injects into the DOM.
+ *
+ * @param {any[]} senators list of senators to draw
+ */
 function drawSenators(senators) {
-  let container = document.getElementById("senators-container");
-  container.innerHTML = ""
+  let senatorContainerEl = document.getElementById('senators-container');
+  senatorContainerEl.innerHTML = null;
   senators.forEach((senator) => {
-    let card = document.createElement('div');
-    card.id = senator.id;
-    card.classList = 'senator-card';
-    let image = document.createElement('img');
+    let card = createElement({ tagName: 'div', id: senator.id, classList: 'senator-card' });
+    let image = createElement({ tagName: 'img' });
     image.setAttribute('src', senator.imageUrl);
     card.appendChild(image);
 
-    let overlay = document.createElement('div');
-    overlay.classList = `overlay ${senator.party.toLowerCase()}`;
+    let overlay = createElement({ tagName: 'div', classList: `overlay ${senator.party.toLowerCase()}` });
     card.appendChild(overlay);
 
-    let cardLine1 = document.createElement('div');
-    cardLine1.classList = 'top';
+    let cardLine1 = createElement({ tagName: 'div', classList: 'top' });
     cardLine1.innerHTML = `
       <div class="name">${senator.firstname} ${senator.secondname}</div>
       <div class="state">${senator.state}</div>`;
@@ -559,8 +719,7 @@ function drawSenators(senators) {
     cardLine1.appendChild(createFontAwesomeIcon(senator.gender, null, 'gender'));
     card.appendChild(cardLine1);
 
-    let cardLine2 = document.createElement('div');
-    cardLine2.classList = 'bottom';
+    let cardLine2 = createElement({ tagName: 'div', classList: 'bottom' });
     cardLine2.innerHTML = `
       <div class="rank">${capitalizeFirstLetter(senator.rank)}</div>
       <div class="party">${capitalizeFirstLetter(senator.party)}</div>`;
@@ -568,21 +727,40 @@ function drawSenators(senators) {
 
     card.onclick = () => renderPopUp(senator);
 
-    container.appendChild(card);
+    let partyContainerEl = document.getElementById(`senators-list-${senator.party}`);
+    if (!partyContainerEl) {
+      partyContainerEl = createElement({ tagName: 'div', id: `senators-list-${senator.party}` });
+      senatorContainerEl.appendChild(partyContainerEl);
+    }
+
+    partyContainerEl.appendChild(card);
   });
 }
 
+//#endregion SENATORS LIST SECTION
+
+//#region STATS SECTION
+
+/**
+ * Given a list of senators, calculates the average age and creates a stylized element containing the average.
+ *
+ * @param {any[]} senators list of senators
+ * @returns {HTMLElement} created element
+ */
 function drawAverageAgeStat(senators) {
   const avgAge = senators.reduce((acc, sen) => acc + sen.age, 0) / senators.length;
   let averageAgeContainerEl = document.getElementById('average-age-container');
-  let labelEl = document.createElement('h3');
-  labelEl.innerText = 'average age';
-  let valueEl = document.createElement('h1');
-  valueEl.innerText = parseInt(avgAge);
+  let labelEl = createElement({ tagName: 'h3', innerText: 'average age' });
+  let valueEl = createElement({ tagName: 'h1', innerText: parseInt(avgAge) });
   averageAgeContainerEl.append(labelEl, valueEl);
   return averageAgeContainerEl;
 }
 
+/**
+ * Given a list of senators, calculates the number of years in office and generates a histogram element.
+ *
+ * @param {any[]} senators list of senators
+ */
 function drawYearsInOfficeStat(senators) {
   const yearsInOffice = senators.reduce((acc, sen) => {
     if (acc[sen.yearsInOffice]) {
@@ -593,35 +771,27 @@ function drawYearsInOfficeStat(senators) {
     return acc;
   }, {});
 
-  console.log(yearsInOffice);
-
   const containerEl = document.getElementById('years-in-office-container');
   containerEl.appendChild(createFontAwesomeIcon('calendar'));
 
-  const title = document.createElement('h3');
-  title.innerText = 'years in\noffice';
+  const title = createElement({ tagName: 'h3', innerText: 'years in\noffice' });
   containerEl.appendChild(title);
 
-  const barsContainer = document.createElement('div');
-  barsContainer.id = 'bars-container';
+  const barsContainer = createElement({ tagName: 'div', id: 'bars-container' });
 
   const maxCount = Math.max(...Object.values(yearsInOffice));
 
   for (const [key, val] of Object.entries(yearsInOffice)) {
-    let barEl = document.createElement('div');
-    barEl.classList = 'graph-bar';
+    let barEl = createElement({ tagName: 'div', classList: 'graph-bar' });
     barEl.style.width = `${(val / maxCount) * 100}%`;
-    let barLabelEl = document.createElement('h1');
-    barLabelEl.innerText = key;
+    let barLabelEl = createElement({ tagName: 'h1', innerText: key });
     barEl.appendChild(barLabelEl);
     barsContainer.appendChild(barEl);
   }
 
-  let barGraphAxis = document.createElement('div');
-  barGraphAxis.setAttribute('id', 'bar-graph-axis');
+  let barGraphAxis = createElement({ tagName: 'div', id: 'bar-graph-axis' });
   [0, parseInt(maxCount / 2), maxCount].forEach((num) => {
-    let valueEl = document.createElement('h3');
-    valueEl.innerText = num;
+    let valueEl = createElement({ tagName: 'h3', innerText: num });
     barGraphAxis.appendChild(valueEl);
   });
   barsContainer.appendChild(barGraphAxis);
@@ -629,19 +799,30 @@ function drawYearsInOfficeStat(senators) {
   containerEl.appendChild(barsContainer);
 }
 
+/**
+ * Calls all of our stat drawing functions
+ *
+ * @param {any[]} senators
+ */
 function drawStats(senators) {
   drawGenderStats(senators);
   drawAverageAgeStat(senators);
   drawYearsInOfficeStat(senators);
 }
 
+/**
+ * Given a list of senators, counts the number of females and number of males. Renders a visual using male/female
+ * icons representing the count.
+ *
+ * @param {any[]} senators list of senators
+ * @returns {HTMLElement} the gender-stats-container element
+ */
 function drawGenderStats(senators) {
   const females = senators.filter((sen) => sen.gender === 'female');
   const males = senators.filter((sen) => sen.gender === 'male');
   let container = document.getElementById('gender-stats-container');
 
-  let iconContainer = document.createElement('div');
-  iconContainer.id = 'gender-icons';
+  let iconContainer = createElement({ tagName: 'div', id: 'gender-icons' });
 
   iconContainer.append(...females.map((f) => createFontAwesomeIcon('female')));
   iconContainer.append(...males.map((f) => createFontAwesomeIcon('male')));
@@ -649,8 +830,7 @@ function drawGenderStats(senators) {
   container.appendChild(iconContainer);
 
   // Add the percentages
-  let percentagesContainer = document.createElement('div');
-  percentagesContainer.classList = 'percentages-container';
+  let percentagesContainer = createElement({ tagName: 'div', classList: 'percentages-container' });
   let femalePercentageEl = drawPercentStat(parseInt((females.length / senators.length) * 100), 'females');
   let malePercentageEl = drawPercentStat(parseInt((males.length / senators.length) * 100), 'males');
 
@@ -660,15 +840,16 @@ function drawGenderStats(senators) {
 }
 
 function drawPercentStat(value, label) {
-  let percentageContainerEl = document.createElement('div');
-  percentageContainerEl.classList = 'percentage';
-  let percentageEl = document.createElement('h1');
-  percentageEl.innerText = `${value}%`;
-  let femaleLabelEl = document.createElement('h3');
-  femaleLabelEl.innerText = label;
+  let percentageContainerEl = createElement({ tagName: 'div', classList: 'percentage' });
+  let percentageEl = createElement({ tagName: 'h1', innerText: `${value}%` });
+  let femaleLabelEl = createElement({ tagName: 'h3', innerText: label });
   percentageContainerEl.append(percentageEl, femaleLabelEl);
   return percentageContainerEl;
 }
+
+//#region END STATS SECTION
+
+//#region SENATOR DETAILS
 
 function drawSenatorPopup() {
   let popUp = document.getElementById('pop-up');
@@ -682,20 +863,26 @@ function drawSenatorPopup() {
     curtain.style.visibility = 'hidden';
   });
 
-  let popupImage = document.createElement('img');
-  popupImage.id = 'pop-up-image';
+  let popupImage = createElement({ tagName: 'div', id: 'pop-up-image' });
+  let textContainerEl = createElement({ tagName: 'div', id: 'pop-up-text' });
 
-  let nameEl = createPopUpField('name', '');
-  let partyEl = createPopUpField('party', '');
-  let officeEl = createPopUpField('office', '');
-  let dobEl = createPopUpField('dob', '');
-  let startDateEl = createPopUpField('startDate', '');
+  let nameEl = createPopUpField({ id: 'name', elType: 'h2' });
+  let descriptionEl = createPopUpField({ id: 'description' });
+  let partyEl = createPopUpField({ id: 'party' });
+  let officeEl = createPopUpField({ id: 'office', icon: 'building' });
+  let phoneEl = createPopUpField({ id: 'phone', icon: 'phone' });
 
-  let twitterEl = createPopUpUrlField('twitter', 'Twitter');
-  let websiteEl = createPopUpUrlField('website', 'Website');
-  let youtubeEl = createPopUpUrlField('youtube', 'Youtube');
+  textContainerEl.append(nameEl, partyEl, descriptionEl, officeEl, phoneEl);
 
-  popUp.append(closeEl, popupImage, nameEl, partyEl, officeEl, dobEl, startDateEl, twitterEl, websiteEl, youtubeEl);
+  let socialsContainerEl = createElement({ tagName: 'div', id: 'pop-up-socials' });
+
+  let websiteEl = createPopUpUrlField('website', null, 'globe');
+  let twitterEl = createPopUpUrlField('twitter', null, 'twitter');
+  let youtubeEl = createPopUpUrlField('youtube', null, 'youtube');
+
+  socialsContainerEl.append(websiteEl, twitterEl, youtubeEl);
+
+  popUp.append(closeEl, popupImage, socialsContainerEl, textContainerEl);
 
   curtain.onclick = () => {
     popUp.style.visibility = 'hidden';
@@ -703,29 +890,58 @@ function drawSenatorPopup() {
   };
 }
 
-function createPopUpField(id) {
-  let el = document.createElement('div');
-  el.id = `pop-up-${id}`;
-  return el;
-}
-function createPopUpUrlField(id, label) {
-  let el = document.createElement('div');
-  el.id = `pop-up-${id}`;
-  el.innerHTML = `${capitalizeFirstLetter(label)}: <a></a>`;
+function createPopUpField({ id, elType = 'div', icon }) {
+  let el = createElement({ tagName: elType, id: `pop-up-${id}` });
+  if (icon) {
+    el.appendChild(createFontAwesomeIcon(icon));
+    el.classList += ' with-icon';
+  }
   return el;
 }
 
-function updatePopUpTextField(id, value) {
+function createPopUpUrlField(id, label, icon) {
+  let el = createElement({ tagName: 'div', classList: `pop-up-url ${id}` });
+  if (label) {
+    el.innerHTML = `${capitalizeFirstLetter(label)}: `;
+  }
+  let aEl = createElement({ tagName: 'a' });
+
+  if (icon) {
+    aEl.appendChild(createFontAwesomeIcon(icon));
+    el.classList += ' with-icon';
+  }
+
+  el.appendChild(aEl);
+
+  return el;
+}
+
+function updatePopUpTextField({ id, value, classList = '' }) {
   let el = document.getElementById(`pop-up-${id}`);
+  let icon = el.getElementsByTagName('i')[0];
   el.innerText = value;
+  if (icon) {
+    el.prepend(icon);
+  }
+  el.classList = classList;
   return el;
 }
 
-function updatePopUpUrlField(id, href, text) {
-  let el = document.getElementById(`pop-up-${id}`);
+function updatePopUpUrlField({ id, href, text }) {
+  let el = document.getElementsByClassName(`pop-up-url ${id}`)[0];
+  el.style.display = 'unset';
   let aEl = el.getElementsByTagName('a')[0];
   aEl.href = href;
-  aEl.text = text;
+  aEl.target = '_blank';
+  if (text) {
+    aEl.text = text;
+  }
+  return el;
+}
+
+function removePopUpUrlField(id) {
+  let el = document.getElementsByClassName(`pop-up-url ${id}`)[0];
+  el.style.display = 'none';
   return el;
 }
 
@@ -738,24 +954,37 @@ function renderPopUp(senator) {
   curtain.style.visibility = 'visible';
 
   let popupImage = document.getElementById('pop-up-image');
-  popupImage.src = senator.imageUrl;
+  popupImage.style.background = `url(${senator.imageUrl.replace('"')})`;
   popupImage.alt = `Pop up image for Senator ${senator.firstname} ${senator.secondname}`;
 
-  updatePopUpTextField('name', `${senator.firstname} ${senator.nickname ? `(${senator.nickname})` : ''} ${senator.secondname}`);
-  updatePopUpTextField('party', `${senator.party}`);
-  updatePopUpTextField('office', `Office: ${senator.office}`);
-  updatePopUpTextField('dob', `Date of dirth: ${senator.birthday}`);
-  updatePopUpTextField('startDate', `Start date: ${senator.startdate}`);
+  let bioText = `${senator.secondname} is the ${senator.description} and is a ${capitalizeFirstLetter(senator.party)}. ${senator.gender === 'male' ? 'He' : 'She'} has served since ${senator.startdate}. ${senator.secondname} serves until ${
+    senator.enddate
+  }. ${senator.gender === 'male' ? 'He' : 'She'} is ${senator.age} years old.`;
 
-  // TODO:
-  updatePopUpUrlField('twitter', `https://www.twitter.com/${senator.twitter}`, senator.twitter);
-  updatePopUpUrlField('youtube', `https://www.youtube.com/${senator.youtube}`, senator.youtube);
-  updatePopUpUrlField('website', senator.website, senator.website);
+  updatePopUpTextField({ id: 'name', value: `${senator.firstname} ${senator.nickname ? `(${senator.nickname})` : ''} ${senator.secondname}` });
+  updatePopUpTextField({ id: 'description', value: bioText });
+  updatePopUpTextField({ id: 'party', value: `${senator.party}`, classList: senator.party });
+  updatePopUpTextField({ id: 'office', value: `${senator.office}` });
+  updatePopUpTextField({ id: 'phone', value: `${senator.phone}` });
+
+  if (senator.twitter) {
+    updatePopUpUrlField({ id: 'twitter', href: `https://www.twitter.com/${senator.twitter}` });
+  } else {
+    removePopUpUrlField('twitter');
+  }
+  if (senator.youtube) {
+    updatePopUpUrlField({ id: 'youtube', href: `https://www.youtube.com/${senator.youtube}` });
+  } else {
+    removePopUpUrlField('youtube');
+  }
+  updatePopUpUrlField({ id: 'website', href: senator.website });
 }
 
-function handleCloseClicked() {}
+//#endregion SENATOR DETAILS
 
-function circles(senators) {
+//#region SENATOR SEATS GRAPHIC
+
+function drawCircles(senators) {
   const buckets = [];
   const count = 20;
   for (let i = 0; i < senators.length; i += count) {
@@ -771,10 +1000,9 @@ function circles(senators) {
     let inc = 10;
     bucket.forEach((b) => {
       //draw each dot link
-      let dot = document.createElement('div');
+      let dot = createElement({ tagName: 'div', classList: 'dot' });
       target.appendChild(dot);
-      dot.setAttribute('class', 'dot');
-      let link = document.createElement('a');
+      let link = createElement({ tagName: 'a' });
       link.setAttribute('href', `#${b.id}`);
       dot.appendChild(link);
 
@@ -812,50 +1040,73 @@ function circles(senators) {
   let startX = 800;
   let dist = 40;
 
-  buckets.forEach((bucket) =>
-  {
-    drawDots(bucket, 0.1571, startX, 20, dist)
-    startX -= 27.5
-    dist -= 4
-  })
+  buckets.forEach((bucket) => {
+    drawDots(bucket, 0.1571, startX, 20, dist);
+    startX -= 27.5;
+    dist -= 4;
+  });
 }
 
-function addSortToButtons()
-{
-  let nameButton = document.getElementById("name-sort")
-  nameButton.addEventListener("click", sortSenators)
-  let stateButton = document.getElementById("state-sort")
-  stateButton.addEventListener("click", sortSenators)
-}
+//#endregion SENATOR SEATS GRAPHIC
 
-function sortSenators(e)
-{
-  function alphabetical(a,b) {return a.secondname.localeCompare(b.secondname)}
-  function alphabeticalState(a,b) {return a.state.localeCompare(b.state)}
-    // if I can be arsed to figure this out too it'll sort the other way
-      // function reverseAlphabetical(a,b) {return b.secondname.localeCompare(a.secondname)}
-      // function reverseAlphabeticalState(a,b) {return b.state.localeCompare(a.state)}
+//#region DOM LISTENERS
 
-  const nameButton = document.getElementById("name-sort")
-  const stateButton = document.getElementById("state-sort")
-
-  e.target.classList.toggle("sort-button-active")
-
-  const nameSort = nameButton.classList[1] != null
-  const stateSort = stateButton.classList[1] != null
-
-  let senators = [...ALL_SENATORS]
-
-  if (nameSort)
-  {
-    senators.sort(alphabetical)
+/**
+ * DOM click listener which handles clicks on the CTA buttons and scrolls down the page
+ */
+document.addEventListener('click', (e) => {
+  if (Array.from(e.target.classList).includes('cta')) {
+    const senatorSectionEl = document.getElementById('senators-list');
+    const rect = senatorSectionEl.getBoundingClientRect();
+    window.scrollTo({ top: rect.top + window.scrollY, behavior: 'smooth' });
   }
+});
 
-  if (stateSort)
-  {
-    senators.sort(alphabeticalState)
-  }
+//#endregion DOM LISTENERS
 
-  drawSenators(senators)
-  applyFilterToSenatorElements(CURRENT_FILTER)
+//#region UTILITY FUNCTIONS
+
+/**
+ * Helped function to capitalize first letter of a string
+ * @param {string} str
+ * @returns str with first letter capitalized
+ */
+function capitalizeFirstLetter(str) {
+  return str[0].toUpperCase() + str.slice(1);
 }
+
+/**
+ * Creates an "i" element with the appropriate font awesome icon class. Does not append anywhere to the dom, just returns the element.
+ *
+ * @param {string} iconName name of the icon (eg: 'search')
+ * @param {?function} handleClick optional function to bind to the onclick event listener of the icon
+ * @param {?string} className optional class name to add to the element
+ * @returns {HTMLElement} the icon element
+ */
+function createFontAwesomeIcon(iconName, handleClick, className = '') {
+  let icon = createElement({ tagName: 'i', classList: `fa fa-${iconName} ${className}` });
+  if (handleClick) {
+    icon.onclick = handleClick;
+    return icon;
+  }
+  return icon;
+}
+
+function createElement({ id, tagName, classList, innerText }) {
+  let el = document.createElement(tagName);
+  if (id) {
+    if (document.getElementById(id)) {
+      console.warn(`WARNING: creating element with a duplicate id: ${id}`);
+    }
+    el.id = id;
+  }
+  if (innerText) {
+    el.innerText = innerText;
+  }
+  if (classList) {
+    el.classList = classList;
+  }
+  return el;
+}
+
+//#endregion UTILITY FUNCTIONS

@@ -1,7 +1,8 @@
 /* START GLOBAL STYLES */
 body,
 html,
-p {
+p,
+a {
   margin: 0;
   font-family: 'League Spartan', sans-serif;
 }
@@ -11,6 +12,13 @@ button {
   background: none;
   padding: 0;
   margin: 0;
+  font-family: 'League Spartan', sans-serif;
+}
+
+a {
+  text-decoration: none;
+  cursor: pointer;
+  color: unset;
 }
 
 h1 {
@@ -46,20 +54,129 @@ a {
 }
 /* END GLOBAL STYLES */
 
-#pop-up {
+#pop-up,
+#error-pop-up {
   visibility: hidden;
   position: fixed;
   background: white;
-  border: 1px solid black;
   border-radius: 5%;
-  height: 300px;
-  width: 300px;
-  margin: auto;
+  min-height: 250px;
+  width: 500px;
   z-index: 3;
+  top: calc(50vh - 150px);
+  left: calc(50vw - 200px);
+  display: flex;
 }
 
-#pop-up img {
-  width: 25%;
+#error-pop-up {
+  flex-direction: column;
+}
+
+#pop-up-image {
+  position: absolute;
+  top: -50px;
+  left: -50px;
+  border-radius: 500px;
+  border: 10px solid #fff;
+  width: 200px;
+  height: 200px;
+}
+
+#pop-up-socials {
+  margin-top: 11rem;
+  display: flex;
+  min-width: 180px;
+  margin-left: 10px;
+}
+
+#pop-up-text {
+  margin-right: 2rem;
+}
+
+#pop-up-text i {
+  margin-right: 5px;
+}
+
+#pop-up-socials a {
+  margin: 5px;
+}
+#pop-up-party {
+  text-transform: capitalize;
+  color: #fff;
+  padding: 5px;
+  width: fit-content;
+  border-radius: 5px;
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+}
+
+#pop-up-description {
+  margin: 0 0 10px 0;
+}
+
+#pop-up .fa.fa-close {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  font-size: 24px;
+  color: #3644a0;
+  cursor: pointer;
+}
+
+#pop-up .fa.fa-close:hover {
+  color: #7b86cc;
+}
+
+#error-pop-up .fa.fa-exclamation-triangle {
+  padding: 1rem 0 1rem 0;
+  font-size: 4rem;
+  color: #fff;
+  width: 100%;
+  text-align: center;
+  background-color: #f65656;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+#error-pop-up h2 {
+  width: 100%;
+  text-align: center;
+  font-size: 2rem;
+  margin: 1rem 0;
+}
+
+#error-pop-up p {
+  margin: 0 2rem 0 2rem;
+  text-align: center;
+}
+
+#error-pop-up .button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+#error-pop-up button {
+  border: 1px solid #f65656;
+  color: #f65656;
+  padding: 10px;
+  min-width: 100px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+#error-pop-up button.filled:hover {
+  background-color: #c94848;
+}
+#error-pop-up button:hover {
+  background-color: #f6565667;
+}
+
+#error-pop-up button.filled {
+  background-color: #f65656;
+  color: #fff;
 }
 
 #page-container {
@@ -142,6 +259,7 @@ img#usa-map {
   margin: 0;
   padding: 0;
   position: absolute;
+  z-index: 3;
 }
 
 #hover-img {
@@ -154,7 +272,6 @@ img#usa-map {
   color: white;
   text-transform: uppercase;
   font-size: 1rem;
-  font-family: 'League Spartan', sans-serif;
   cursor: pointer;
 }
 
@@ -194,33 +311,30 @@ img#usa-map {
   border-radius: 10px;
   text-transform: uppercase;
   font-size: 1rem;
-  font-family: "League Spartan", sans-serif;
+  font-family: 'League Spartan', sans-serif;
   cursor: pointer;
-}
-
-.sort-button:hover {
-  background: #041a91;
-  color: white;
-}
-
-.sort-button-active {
-  border: 1px solid #041a91;
-  background: #041a91;
-  color: white;
-  padding: 2px;
-  margin: 2px;
-  height: 100%;
-  width: 7%;
   border-radius: 10px;
-  text-transform: uppercase;
-  font-size: 1rem;
-  font-family: "League Spartan", sans-serif;
-  cursor: pointer;
+  height: 50px;
+  width: 150px;
+  position: relative;
 }
 
-.sort-button-active:hover {
-  background: white;
-  color: #041a91;
+.sort-button:hover,
+.sort-button.asc,
+.sort-button.desc {
+  background: #041a91;
+  color: white;
+}
+
+.sort-button.desc:hover,
+.sort-button.asc:hover {
+  background-color: #3a52d6;
+}
+
+.sort-button.asc i,
+.sort-button.desc i {
+  position: absolute;
+  left: 10px;
 }
 
 .count-bubble {
@@ -316,7 +430,7 @@ img#usa-map {
 /* END SUMMARY CONTAINER */
 
 /* START FILTER CONTAINER */
-
+/* 
 #filter-container {
   border: 1px solid #d4dafb;
   width: 225px;
@@ -332,9 +446,33 @@ img#usa-map {
   -webkit-box-shadow: 3px 2px 9px 0px rgba(184, 184, 184, 0.75);
   -moz-box-shadow: 3px 2px 9px 0px rgba(184, 184, 184, 0.75);
   transition: all 0.5s ease-in-out;
+} */
+
+#sort-container,
+#filter-container {
+  border: 1px solid #d4dafb;
+  width: 225px;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  z-index: 1;
+  background-color: #fff;
+  top: 100px;
+  height: 0px;
+  box-shadow: 3px 2px 9px 0px rgba(184, 184, 184, 0.75);
+  -webkit-box-shadow: 3px 2px 9px 0px rgba(184, 184, 184, 0.75);
+  -moz-box-shadow: 3px 2px 9px 0px rgba(184, 184, 184, 0.75);
+  transition: all 0.2s ease-in-out;
+  overflow: hidden;
+  align-items: center;
 }
 
-#filter-container h2 {
+#filter-container {
+  right: 3rem;
+}
+
+#filter-container h2,
+#sort-container h2 {
   text-align: center;
 }
 
@@ -344,19 +482,6 @@ img#usa-map {
 
 .filter-section .filter-options {
   display: flex;
-}
-
-/* TODO: if screen gets too small, make the filter menu expandable */
-.button-group {
-  display: flex;
-  /* box-shadow: 0 2px 5px 1px rgba(64,60,67,.16); */
-}
-.button-group button {
-  width: 100px;
-  border: 0.5px solid #dadce0;
-  padding: 5px 15px;
-  font-size: 12px;
-  cursor: pointer;
 }
 
 .dropdown-container {
@@ -421,14 +546,14 @@ img#usa-map {
   width: 840px;
 }
 
-#senators-list .fa.fa-filter {
+#filter-header > .fa {
   /* float: right; */
   cursor: pointer;
   font-size: 24px;
   padding: 10px;
 }
 
-#senators-list .fa.fa-filter:hover {
+#filter-header > .fa:hover {
   color: #86a3de;
 }
 
@@ -467,15 +592,20 @@ img#usa-map {
 
 #senators-container {
   display: flex;
-  flex-wrap: wrap;
-  width: 840px;
+  flex-direction: column;
 }
 
-/* TODO: make a compact view? */
+#senators-container > div {
+  display: flex;
+  flex-wrap: wrap;
+  width: 840px;
+  position: relative;
+}
+#senators-container > div h3 {
+  position: absolute;
+}
 
 .senator-card {
-  /* Your styles for .card here */
-  height: 300px;
   width: 200px;
   margin: 5px;
   position: relative;
@@ -544,12 +674,16 @@ img#usa-map {
 
 /* START SENATOR POPUP */
 
-a#twitter {
-  /* Your styles for #twitter here */
+.pop-up-url.with-icon {
+  font-size: 1.7rem;
+  color: #3644a0;
+  /* cursor: pointer; */
+  height: 1.7rem;
 }
 
-a#youtube {
-  /* Your styles for #youtube here */
+.pop-up-url.with-icon i:hover {
+  color: #7b86cc;
+  cursor: pointer;
 }
 
 /* END SENATOR POPUP */
@@ -660,3 +794,130 @@ a#youtube {
 }
 
 /* END STATS SECTION */
+
+@media only screen and (max-width: 930px) {
+  .section .content,
+  #senators-container .content {
+    width: 300px !important;
+  }
+  h1 {
+    font-size: 3rem;
+  }
+  .count-bubble h1 {
+    font-size: 3rem !important;
+  }
+  .count-bubble h3 {
+    font-size: 1rem !important;
+  }
+  .count-bubble {
+    height: 180px !important;
+    width: 180px !important;
+  }
+  .count-bubble:nth-child(2) {
+    left: 0px !important;
+    top: unset !important;
+  }
+  .count-bubble:nth-child(3) {
+    left: 150px !important;
+  }
+  .count-bubble:nth-child(4) {
+    left: 0px !important;
+    top: 360px !important;
+  }
+  #leaders-container .leader-line {
+    flex-direction: column;
+    margin: 0;
+  }
+  #leaders-container .leader-line > div {
+    width: 100%;
+    text-align: left !important;
+    margin: 0 !important;
+  }
+  #leaders-container .leader-line .leadership-title {
+    font-size: 15px;
+  }
+  #leaders-container .leader-line .name {
+    font-size: 20px;
+  }
+  #leader-list h4 {
+    font-size: 15px;
+  }
+  #stats .top {
+    flex-direction: column;
+  }
+  #gender-stats-container {
+    width: 100%;
+    align-items: center;
+    margin: 1rem 0;
+  }
+  .percentages-container .percentage {
+    margin: 0rem 0rem 1rem 0 !important;
+  }
+  #gender-stats-container .fa {
+    font-size: 1.5rem;
+    margin: 1px;
+    width: 15px;
+  }
+  #years-in-office-container {
+    flex-direction: column;
+  }
+  #bars-container {
+    width: 100%;
+    margin: 0;
+  }
+  #years-in-office-container > h3 {
+    top: 17%;
+    left: 26%;
+  }
+  #senators-container > div {
+    width: 300px;
+  }
+  .senator-card {
+    /* height: 240px; */
+    width: fit-content;
+    font-size: 10px;
+  }
+  .overlay {
+    height: 160px;
+  }
+  .senator-card img {
+    height: 160px;
+  }
+  #sort-container,
+  #filter-container {
+    top: 130px;
+  }
+  #filter-tag-container {
+    display: none;
+  }
+  #pop-up,
+  #error-pop-up {
+    width: unset;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    left: 0;
+  }
+
+  #pop-up-image {
+    top: -122px;
+    left: 85px;
+  }
+
+  #pop-up * {
+    margin: unset;
+  }
+  #pop-up-text {
+    margin: 6rem 2rem;
+  }
+  #pop-up-socials {
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+  }
+  #senate-floor-graphic-container {
+    display: none;
+  }
+  .cta.text {
+    left: calc(50vw - 75px);
+    width: unset;
+  }
+}
