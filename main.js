@@ -707,6 +707,7 @@ function drawSenators(senators) {
     let image = createElement({ tagName: 'img' });
     image.setAttribute('src', senator.imageUrl);
     card.appendChild(image);
+    card.style.scrollBehavior = "smooth"
 
     let overlay = createElement({ tagName: 'div', classList: `overlay ${senator.party.toLowerCase()}` });
     card.appendChild(overlay);
@@ -1043,7 +1044,7 @@ function drawCircles(senators) {
   buckets.forEach((bucket) => {
     drawDots(bucket, 0.1571, startX, 20, dist);
     startX -= 27.5;
-    dist -= 4;
+    dist -= 4.4;
   });
 }
 
