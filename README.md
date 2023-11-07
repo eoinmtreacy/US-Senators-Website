@@ -69,6 +69,7 @@ In addition to the requirements of this project, we explored other web applicati
 - Advanced async techniques, such as using `Promise.all`
 - Using the `reduce` array method
 - Rendering html elements using dynamic position calculations
+- Using git for project management and collaboration
 
 
 # Assignment
