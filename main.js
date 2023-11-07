@@ -447,7 +447,7 @@ function drawFilters(filterOptions) {
   // Create text input for searching by name
   let textInputContainerEl = createTextSearchBox((e) => {
     const { value } = e.target;
-    CURRENT_FILTER.addFilter('name', value);
+    CURRENT_FILTER.addFilter(NAME, value);
     applyFilterToSenatorElements(CURRENT_FILTER);
   });
   filterHeaderEl.appendChild(textInputContainerEl);
