@@ -1043,7 +1043,7 @@ function drawCircles(senators) {
   buckets.forEach((bucket) => {
     drawDots(bucket, 0.1571, startX, 20, dist);
     startX -= 27.5;
-    dist -= 4;
+    dist -= 4.4;
   });
 }
 
