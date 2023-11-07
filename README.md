@@ -1,5 +1,15 @@
 # COMP30680 Assignment 2
 
+## Contents
+- `data/`
+  - `imgSources.json` - json containing image sources for each senator
+  - `senators.json` - senator json
+- `images/` - image files used in the web app
+- `scripts/` - scripts which were used to aid in the development of the web app; not essential to run the app, just stored here for documentation
+- `index.html`
+- `main.css`
+- `main.js`
+
 ## Fulfilled Requirements
 When this page is opened it should show the following:
 
