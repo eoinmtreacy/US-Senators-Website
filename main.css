@@ -1,4 +1,21 @@
-/* START GLOBAL STYLES */
+:root {
+  --primary-btn-color: #041a91;
+  --primary-btn-hover-color: #3a52d6;
+  --democrat-color: #041a91;
+  --republican-color: #911304;
+  --independent-color: #767676;
+  --main-error-color: #f65656;
+  --dark-error-color: #c94848;
+  --light-grey: #e8eaee;
+  --primary-dark-icon: #041a91;
+  --primary-light-icon: #86a3de;
+  --secondary-dark-icon: #41b8d5;
+  --secondary-light-icon: #6ce5e8;
+  --tag-bg-color: hsl(205, 46%, 92%);
+  --tag-font-color: hsl(205, 47%, 42%);
+}
+
+/* || GENERAL STYLES */
 body,
 html,
 p,
@@ -9,11 +26,32 @@ a {
 }
 
 button {
-  border: none;
   background: none;
   padding: 0;
   margin: 0;
   font-family: 'League Spartan', sans-serif;
+  height: 50px;
+  width: 150px;
+  cursor: pointer;
+  background-color: var(--primary-btn-color);
+  border-radius: 10px;
+  border: 1px solid var(--primary-btn-color);
+  text-transform: uppercase;
+  font-size: 1rem;
+}
+
+button:hover {
+  background-color: var(--primary-btn-hover-color);
+}
+
+button.error {
+  background-color: var(--main-error-color);
+  border: 1px solid var(--main-error-color);
+  color: #fff;
+}
+
+button.error:hover {
+  background-color: var(--dark-error-color);
 }
 
 a {
@@ -28,13 +66,14 @@ h1 {
   font-weight: 800;
   font-size: 4.5rem;
 }
-h2 {
-}
+
 h3 {
   font-family: 'Montserrat', sans-serif;
   font-family: 'Sanchez', serif;
   text-transform: uppercase;
+  margin: 0;
 }
+
 h4 {
   margin: 0;
   font-family: 'League Gothic', sans-serif;
@@ -43,17 +82,128 @@ h4 {
   letter-spacing: 1px;
 }
 
-a {
-}
+/* || END GENERAL STYLES */
+
+/* || UTILITIES */
 
 .dark {
-  color: #041a91;
+  color: var(--primary-btn-color);
 }
 
 .light {
   color: #fff;
 }
-/* END GLOBAL STYLES */
+
+button.light {
+  background-color: #fff;
+  color: var(--primary-btn-color);
+}
+
+button.dark {
+  background-color: var(--primary-btn-color);
+  color: #fff;
+}
+
+button.dark:hover {
+  background-color: var(--primary-btn-hover-color);
+}
+
+.independent {
+  background-color: var(--independent-color);
+}
+.republican {
+  background-color: var(--republican-color);
+}
+.democrat {
+  background-color: var(--democrat-color);
+}
+
+.right {
+  text-align: right;
+}
+
+.left {
+  text-align: left;
+}
+
+/* || END UTILITIES */
+
+/* || SITEWIDE */
+#page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#page-container .section {
+  min-height: 80vh;
+  overflow: hidden;
+}
+
+.section {
+  padding: 2rem;
+}
+
+.section .content {
+  position: relative;
+  width: 800px;
+  margin: 0 auto;
+  min-height: 80vh;
+}
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem;
+}
+
+.header {
+  position: relative;
+  z-index: 1;
+}
+
+.cta {
+  color: white;
+  /* text-transform: uppercase; */
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.cta.text {
+  position: absolute;
+  bottom: 0;
+  left: 325px;
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cta.text * {
+  pointer-events: none; /* so we can capture click events properly */
+}
+
+.cta.text:hover {
+  color: var(--primary-btn-color);
+}
+
+/* || END SITEWIDE */
+
+
+/* || POP UPS */
+#curtain {
+  visibility: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: black;
+  opacity: 30%;
+  z-index: 1;
+}
 
 #pop-up,
 #error-pop-up {
@@ -69,9 +219,7 @@ a {
   display: flex;
 }
 
-#error-pop-up {
-  flex-direction: column;
-}
+/* Senator Popup */
 
 #pop-up-image {
   position: absolute;
@@ -121,12 +269,28 @@ a {
   right: 1rem;
   top: 1rem;
   font-size: 24px;
-  color: #3644a0;
+  color: var(--primary-dark-icon);
   cursor: pointer;
 }
 
 #pop-up .fa.fa-close:hover {
-  color: #7b86cc;
+  color: var(--primary-btn-hover-color);
+}
+
+.pop-up-url.with-icon {
+  font-size: 1.7rem;
+  color: var(--primary-dark-icon);
+  height: 1.7rem;
+}
+
+.pop-up-url.with-icon i:hover {
+  color: var(--primary-btn-hover-color);
+  cursor: pointer;
+}
+
+/* Error Popup */
+#error-pop-up {
+  flex-direction: column;
 }
 
 #error-pop-up .fa.fa-exclamation-triangle {
@@ -135,7 +299,7 @@ a {
   color: #fff;
   width: 100%;
   text-align: center;
-  background-color: #f65656;
+  background-color: var(--main-error-color);
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
 }
@@ -159,62 +323,14 @@ a {
   flex-grow: 1;
 }
 
-#error-pop-up button {
-  border: 1px solid #f65656;
-  color: #f65656;
-  padding: 10px;
-  min-width: 100px;
-  margin: 5px;
-  cursor: pointer;
-}
+/* || END POP UPS */
 
-#error-pop-up button.filled:hover {
-  background-color: #c94848;
-}
-#error-pop-up button:hover {
-  background-color: #f6565667;
-}
-
-#error-pop-up button.filled {
-  background-color: #f65656;
-  color: #fff;
-}
-
-#page-container {
-  /* Your styles for #page-container here */
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  overflow: hidden;
-}
-
-#page-container .section {
-  min-height: 80vh;
-  overflow: hidden;
-}
-
-.section {
-  padding: 2rem;
-}
-
-.section .content {
-  position: relative;
-  width: 800px;
-  margin: 0 auto;
-  min-height: 80vh;
-}
+/* || LANDING SECTION */
 
 #landing.section {
   background: radial-gradient(circle at 0% 0%, rgb(81, 112, 255) 0%, rgb(255, 102, 196) 100%) 0px 0px / 256px 256px;
   background-size: contain;
   color: #fff;
-}
-
-.section-divider {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 1rem;
 }
 
 img#usa-map {
@@ -223,25 +339,17 @@ img#usa-map {
   opacity: 15%;
 }
 
-.header {
-  position: relative;
+#hover-img {
+  display: inline-block;
   z-index: 1;
+  height: 200px;
 }
 
-.header.right {
-  text-align: right;
-}
-.header.left {
-  text-align: left;
-}
-
-#landing.section h1,
-#landing.section h3 {
-  margin: 0;
-}
+/* Senate Floor Graphic */
 
 #senate-floor-graphic-container {
   position: relative;
+  height: 200px;
 }
 
 .dot {
@@ -263,81 +371,9 @@ img#usa-map {
   z-index: 3;
 }
 
-#hover-img {
-  display: inline-block;
-  z-index: 1;
-  height: 200px;
-}
+/* || END LANDING SECTION */
 
-.cta {
-  color: white;
-  text-transform: uppercase;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.cta.button {
-  background-color: #041a91;
-  border-radius: 10px;
-  height: 50px;
-  width: 150px;
-}
-
-.cta.text {
-  position: absolute;
-  bottom: 0;
-  left: 325px;
-  width: 150px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.cta.text * {
-  pointer-events: none;
-}
-
-.cta.text:hover {
-  color: #041a91;
-}
-
-.sort-button {
-  border: 1px solid #041a91;
-  background: white;
-  color: #041a91;
-  padding: 2px;
-  margin: 2px;
-  height: 100%;
-  width: 7%;
-  border-radius: 10px;
-  text-transform: uppercase;
-  font-size: 1rem;
-  font-family: 'League Spartan', sans-serif;
-  cursor: pointer;
-  border-radius: 10px;
-  height: 50px;
-  width: 150px;
-  position: relative;
-}
-
-.sort-button:hover,
-.sort-button.asc,
-.sort-button.desc {
-  background: #041a91;
-  color: white;
-}
-
-.sort-button.desc:hover,
-.sort-button.asc:hover {
-  background-color: #3a52d6;
-}
-
-.sort-button.asc i,
-.sort-button.desc i {
-  position: absolute;
-  left: 10px;
-}
-
+/* || SUMMARY SECTION */
 .count-bubble {
   color: #fff;
   border-radius: 300px;
@@ -352,103 +388,12 @@ img#usa-map {
   margin: 0;
 }
 
-.independent {
-  background-color: #767676;
-}
-.republican {
-  background-color: #911304;
-}
-.democrat {
-  background-color: #041a91;
-}
-
 .count-bubble .party {
   margin: -10px 0 0 0;
 }
+/* || END SUMMARY SECTION */
 
-#leaders-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-#leaders-container > * {
-  width: 100%;
-}
-
-#leaders-container .leader-line {
-  display: flex;
-  align-items: center;
-  margin: 1rem;
-}
-
-#leaders-container .leader-line > div {
-  width: 50%;
-}
-
-#leaders-container .leader-line .leadership-title {
-  text-align: right;
-  font-family: 'League Gothic';
-  letter-spacing: 2px;
-  font-size: 20px;
-}
-
-#leaders-container .leader-line .name {
-  text-align: left;
-  text-transform: uppercase;
-  font-size: 1.8rem;
-  font-weight: 900;
-  margin-left: 10px;
-}
-
-#curtain {
-  visibility: hidden;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background-color: black;
-  opacity: 30%;
-  z-index: 1;
-}
-
-#close {
-}
-
-/* START SUMMARY CONTAINER */
-
-#leader-list.section {
-  background: radial-gradient(circle at 50% 50%, rgb(112, 44, 246) 0%, rgb(255, 87, 87) 100%) 0px 0px / 256px 256px;
-  background-size: contain;
-  color: #fff;
-}
-
-#leader-list h4 {
-  text-align: center;
-}
-
-/* END SUMMARY CONTAINER */
-
-/* START FILTER CONTAINER */
-/* 
-#filter-container {
-  border: 1px solid #d4dafb;
-  width: 225px;
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  z-index: 1;
-  background-color: #fff;
-  top: 70px;
-  right: -500px;
-  min-height: 85vh;
-  box-shadow: 3px 2px 9px 0px rgba(184, 184, 184, 0.75);
-  -webkit-box-shadow: 3px 2px 9px 0px rgba(184, 184, 184, 0.75);
-  -moz-box-shadow: 3px 2px 9px 0px rgba(184, 184, 184, 0.75);
-  transition: all 0.5s ease-in-out;
-} */
-
+/* || FILTERING & SORTING */
 #sort-container,
 #filter-container {
   border: 1px solid #d4dafb;
@@ -485,6 +430,23 @@ img#usa-map {
   display: flex;
 }
 
+/* Header */
+#filter-header > .fa {
+  cursor: pointer;
+  font-size: 24px;
+  padding: 10px;
+}
+
+#filter-header > .fa:hover {
+  color: var(--primary-light-icon);
+}
+
+#filter-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Dropdown menu */
 .dropdown-container {
   position: relative;
 }
@@ -510,9 +472,10 @@ img#usa-map {
 }
 
 .dropdown div:hover {
-  background-color: #e8eaee;
+  background-color: var(--light-grey);
 }
 
+/* Text search */
 .text-input-container {
   border: 1px solid #d4dafb;
   display: flex;
@@ -526,7 +489,7 @@ img#usa-map {
 .text-input-container .fa.fa-search {
   margin: 4px;
   font-size: 12px;
-  color: #86a3de;
+  color: var(--primary-light-icon);
 }
 .text-input-container input {
   outline: none;
@@ -538,31 +501,20 @@ img#usa-map {
   background-color: #eaedff;
 }
 
-#senators-list {
-  overflow-y: scroll;
-  scroll-behavior: smooth;
+/* Sorting */
+.sort-button {
+  padding: 2px;
+  margin: 2px;
+  position: relative;
 }
 
-#senators-list .content {
-  width: 840px;
+.sort-button.asc i,
+.sort-button.desc i {
+  position: absolute;
+  left: 10px;
 }
 
-#filter-header > .fa {
-  /* float: right; */
-  cursor: pointer;
-  font-size: 24px;
-  padding: 10px;
-}
-
-#filter-header > .fa:hover {
-  color: #86a3de;
-}
-
-#filter-header {
-  display: flex;
-  justify-content: flex-end;
-}
-
+/* Tags */
 #filter-tag-container {
   display: flex;
   flex-wrap: wrap;
@@ -571,8 +523,8 @@ img#usa-map {
 }
 
 .tag {
-  background-color: hsl(205, 46%, 92%);
-  color: hsl(205, 47%, 42%);
+  background-color: var(--tag-bg-color);
+  color: var(--tag-font-color);
   border-radius: 10px;
   font-size: 12px;
   padding: 5px 10px;
@@ -587,10 +539,57 @@ img#usa-map {
   cursor: pointer;
 }
 
-/* END FILTER CONTAINER */
+/* || END FILTERING & SORTING */
 
-/* START CARDS */
+/* || LEADERS SECTION */
+#leaders-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
+#leaders-container > * {
+  width: 100%;
+}
+
+#leaders-container .leader-line {
+  display: flex;
+  align-items: center;
+  margin: 1rem;
+}
+
+#leaders-container .leader-line > div {
+  width: 50%;
+}
+
+#leaders-container .leader-line .leadership-title {
+  text-align: right;
+  font-family: 'League Gothic';
+  letter-spacing: 2px;
+  font-size: 20px;
+}
+
+#leaders-container .leader-line .name {
+  text-align: left;
+  text-transform: uppercase;
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin-left: 10px;
+}
+
+#leader-list.section {
+  background: radial-gradient(circle at 50% 50%, rgb(112, 44, 246) 0%, rgb(255, 87, 87) 100%) 0px 0px / 256px 256px;
+  background-size: contain;
+  color: #fff;
+}
+
+#leader-list h4 {
+  text-align: center;
+}
+
+/* || END LEADERS SECTION */
+
+/* || SENATORS SECTION */
 #senators-container {
   display: flex;
   flex-direction: column;
@@ -602,10 +601,21 @@ img#usa-map {
   width: 840px;
   position: relative;
 }
+
 #senators-container > div h3 {
   position: absolute;
 }
 
+#senators-list {
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+}
+
+#senators-list .content {
+  width: 840px;
+}
+
+/* Senator cards */
 .senator-card {
   width: 200px;
   margin: 5px;
@@ -624,7 +634,6 @@ img#usa-map {
 }
 
 .overlay {
-  /* background-color: blue; */
   position: absolute;
   top: 0;
   height: 240px;
@@ -654,10 +663,6 @@ img#usa-map {
   font-weight: 700;
 }
 
-.senator-card .party {
-  /* Your styles for .party here */
-}
-
 .senator-card .state {
   font-style: italic;
 }
@@ -667,31 +672,11 @@ img#usa-map {
   text-align: right;
 }
 
-.senator-card .rank {
-  /* Your styles for .rank here */
-}
-
-/* END CARDS */
-
-/* START SENATOR POPUP */
-
-.pop-up-url.with-icon {
-  font-size: 1.7rem;
-  color: #3644a0;
-  /* cursor: pointer; */
-  height: 1.7rem;
-}
-
-.pop-up-url.with-icon i:hover {
-  color: #7b86cc;
-  cursor: pointer;
-}
-
-/* END SENATOR POPUP */
+/* || END SENATORS SECTION */
 
 /* START STATS SECTION */
 #stats.section {
-  color: #3644a0;
+  color: var(--primary-btn-color);
 }
 
 #stats .top {
@@ -726,10 +711,10 @@ img#usa-map {
 }
 
 #gender-stats-container .fa-female {
-  color: #41b8d5;
+  color: var(--secondary-dark-icon);
 }
 #gender-stats-container .fa-male {
-  color: #6ce5e8;
+  color: var(--secondary-light-icon);
 }
 
 #average-age-container {
