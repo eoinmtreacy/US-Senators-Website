@@ -966,7 +966,7 @@ function renderPopUp(senator) {
 
   let bioText = `${senator.secondname} is the ${senator.description} and is a ${capitalizeFirstLetter(senator.party)}. ${senator.gender === 'male' ? 'He' : 'She'} has served since ${senator.startdate}. ${senator.secondname} serves until ${
     senator.enddate
-  }. ${senator.gender === 'male' ? 'He' : 'She'} is ${senator.age} years old.`;
+  }. ${senator.gender === 'male' ? 'He' : 'She'} is ${senator.age} years old, born on ${senator.dob}.`;
 
   updatePopUpTextField({ id: 'name', value: `${senator.firstname} ${senator.nickname ? `(${senator.nickname})` : ''} ${senator.secondname}` });
   updatePopUpTextField({ id: 'description', value: bioText });
@@ -999,7 +999,6 @@ function drawCircles(senators) {
     buckets.push(bucket);
   }
   
-  console.log(buckets)
   let target = document.getElementById('senate-floor-graphic-container');
 
   function drawDots(bucket, rad, startX, startY, dist) {
@@ -1030,13 +1029,7 @@ function drawCircles(senators) {
       inc++;
       dot.style.left = `${x}px`;
       dot.style.bottom = `${y}px`;
-
-      //change color depending on party
-      if (b.party == 'democrat') {
-        dot.style.backgroundColor = 'blue';
-      } else if (b.party == 'republican') {
-        dot.style.backgroundColor = 'red';
-      }
+      dot.classList.add(b.party)
     });
   }
 
