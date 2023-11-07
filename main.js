@@ -57,9 +57,13 @@ const NAME = 'name';
 // Create promises for fetching senators and images
 const fetchSenators = fetch('./data/senators.json')
   .then((response) => response.json())
+  // Uncomment to test error catching:
+  // .then((response) => {throw new Error()})
   .catch((e) => renderErrorPopup({ title: 'Failed to load senators', errorMessage: e.message }));
 const fetchImages = fetch('./data/imgSources.json')
   .then((response) => response.json())
+  // Uncomment to test error catching:
+  // .then((response) => {throw new Error()})
   .catch((e) => renderErrorPopup({ title: 'Failed to load senator images', errorMessage: e.message }));
 
 // Fetch senators and images
@@ -128,7 +132,7 @@ function drawErrorPopup() {
   const titleEl = createElement({ tagName: 'h2', innerText: 'oh no :(' });
   const errorMessageEl = createElement({ tagName: 'p', innerText: 'An unknown error has occurred.' });
   const buttonContainerEl = createElement({ tagName: 'div', classList: 'button-container' });
-  const dismissButton = createElement({ tagName: 'button', id: 'dismiss', innerText: 'Dismiss', classList: 'filled' });
+  const dismissButton = createElement({ tagName: 'button', id: 'dismiss', innerText: 'Dismiss', classList: 'error' });
   dismissButton.onclick = () => {
     location.reload();
   };
@@ -503,7 +507,10 @@ function drawFilters(filterOptions) {
  * @returns {HTMLButtonElement} the created button
  */
 function createSortButton(filterType, value) {
-  let buttonEl = createElement({ tagName: 'button', id: `${filterType}-sort`, classList: 'sort-button', innerText: value || capitalizeFirstLetter(filterType) });
+  let ascClassList = 'sort-button dark asc'
+  let descClassList = 'sort-button dark desc'
+  let defaultClassList = 'sort-button light'
+  let buttonEl = createElement({ tagName: 'button', id: `${filterType}-sort`, classList: defaultClassList, innerText: value || capitalizeFirstLetter(filterType) });
 
   let sortByAscIconEl = createFontAwesomeIcon('sort-alpha-asc');
   let sortByDescIconEl = createFontAwesomeIcon('sort-alpha-desc');
@@ -512,7 +519,7 @@ function createSortButton(filterType, value) {
     let existingSorts = document.querySelectorAll('.desc,.asc');
     for (const sortButton of existingSorts) {
       if (!sortButton.id.includes(filterType)) {
-        sortButton.className = 'sort-button';
+        sortButton.classList = defaultClassList;
         let icon = sortButton.getElementsByTagName('i')[0];
         if (icon) {
           sortButton.removeChild(icon);
@@ -522,21 +529,20 @@ function createSortButton(filterType, value) {
     // Highlight the button
     let sortDirection;
 
-    if (buttonEl.classList.contains('asc')) {
+    if (buttonEl.classList.value === ascClassList) {
       // If ascending, toggle to descending
       sortDirection = 'desc';
-      buttonEl.classList.replace('asc', sortDirection);
-
+      buttonEl.classList = descClassList;
       buttonEl.replaceChild(sortByDescIconEl, sortByAscIconEl);
-    } else if (buttonEl.classList.contains('desc')) {
+    } else if (buttonEl.classList.value === descClassList) {
       // If descending, toggle to unselected
       sortDirection = '';
-      buttonEl.classList.remove('desc');
+      buttonEl.classList = defaultClassList;
       buttonEl.removeChild(sortByDescIconEl);
     } else {
       // If unselected, toggle to ascending
       sortDirection = 'asc';
-      buttonEl.classList += ' ' + sortDirection;
+      buttonEl.classList = ascClassList;
       buttonEl.appendChild(sortByAscIconEl);
     }
     // Sort the senators by the id
@@ -706,6 +712,7 @@ function drawSenators(senators) {
     let card = createElement({ tagName: 'div', id: senator.id, classList: 'senator-card' });
     let image = createElement({ tagName: 'img' });
     image.setAttribute('src', senator.imageUrl);
+    image.setAttribute('alt', `${senator.firstname} ${senator.lastname} headshot`)
     card.appendChild(image);
 
     let overlay = createElement({ tagName: 'div', classList: `overlay ${senator.party.toLowerCase()}` });
@@ -991,7 +998,8 @@ function drawCircles(senators) {
     const bucket = senators.slice(i, i + count);
     buckets.push(bucket);
   }
-
+  
+  console.log(buckets)
   let target = document.getElementById('senate-floor-graphic-container');
 
   function drawDots(bucket, rad, startX, startY, dist) {
@@ -1008,7 +1016,12 @@ function drawCircles(senators) {
 
       link.onmouseover = () => {
         let image = document.getElementById('hover-img');
+        if (!image) {
+          image = createElement({ tagName: 'img', id: 'hover-img' });
+          target.appendChild(image);
+        }
         image.setAttribute('src', `${b.imageUrl}`);
+        image.alt = `${b.firstname} ${b.secondname}`
       };
 
       //find coorindates for each dot based on previous
