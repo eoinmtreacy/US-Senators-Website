@@ -60,18 +60,25 @@ a {
   color: unset;
 }
 
-h1 {
+/* heading-1, heading-2, etc allows us to style an h-tag like another h-tag so we can
+maintain good header practices (ie. no h3 before h1) */
+h1, .heading-1 {
   margin: 0;
   font-family: 'League Spartan', sans-serif;
   font-weight: 800;
   font-size: 4.5rem;
 }
 
-h3 {
+h2 {
+  margin: .5rem 0;
+}
+
+h3, .heading-3 {
   font-family: 'Montserrat', sans-serif;
   font-family: 'Sanchez', serif;
   text-transform: uppercase;
   margin: 0;
+  font-size: 1.17em;
 }
 
 h4 {
@@ -383,8 +390,11 @@ img#usa-map {
   position: absolute;
 }
 
-.count-bubble h3 {
+.count-bubble .count {
   margin: 0;
+  font-family: 'League Spartan', sans-serif;
+  font-weight: 800;
+  font-size: 4.5rem;
 }
 
 .count-bubble .party {
@@ -582,7 +592,7 @@ img#usa-map {
   color: #fff;
 }
 
-#leader-list h4 {
+#leader-list h2 {
   text-align: center;
 }
 
@@ -785,10 +795,22 @@ img#usa-map {
   #senators-container .content {
     width: 300px !important;
   }
-  h1 {
-    font-size: 3rem;
+  #landing .header {
+    position: absolute;
+    top: 14%;
+    text-align: center;
+    left: calc(50% - 166px);
   }
-  .count-bubble h1 {
+  #landing h1 {
+    font-size: 6rem;
+  }
+  #landing .heading-3 {
+    font-size: 2rem;
+  }
+  h1 {
+    font-size: 2.7rem;
+  }
+  .count-bubble .count {
     font-size: 3rem !important;
   }
   .count-bubble h3 {
@@ -809,6 +831,12 @@ img#usa-map {
     left: 0px !important;
     top: 360px !important;
   }
+  #leader-list .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
   #leaders-container .leader-line {
     flex-direction: column;
     margin: 0;
@@ -819,10 +847,10 @@ img#usa-map {
     margin: 0 !important;
   }
   #leaders-container .leader-line .leadership-title {
-    font-size: 15px;
+   font-size: 18px;
   }
   #leaders-container .leader-line .name {
-    font-size: 20px;
+    font-size: 30px;
   }
   #leader-list h4 {
     font-size: 15px;
@@ -898,11 +926,13 @@ img#usa-map {
     margin-bottom: 1rem;
     margin-left: 1rem;
   }
+
+  /* senate graphic is too complex for mobile device - just hide */
   #senate-floor-graphic-container {
     display: none;
   }
   .cta.text {
-    left: calc(50vw - 75px);
+    left: 140px;
     width: unset;
   }
 }

@@ -621,7 +621,7 @@ function drawLeaders(senators) {
   });
 
   Object.keys(leadersByParty).forEach((party) => {
-    let partyTitle = createElement({ tagName: 'h4', innerText: `${capitalizeFirstLetter(party)}s` });
+    let partyTitle = createElement({ tagName: 'h2', innerText: `${capitalizeFirstLetter(party)}s` });
     const leadersContainer = document.getElementById('leaders-container');
     leadersContainer.appendChild(partyTitle);
     let partyContainer = createElement({ tagName: 'div', id: `${party}-leaders-container` });
@@ -661,18 +661,18 @@ function drawSummary(senators) {
     .sort((a, b) => b[1] - a[1])
     .forEach(([key, val], i) => {
       let bubbleEl = createElement({ tagName: 'div', classList: `count-bubble ${key}` });
-      let diameter, top, left, right, h1Size;
+      let diameter, top, left, right, numSize;
       switch (i) {
         case 0:
           diameter = `350px`;
           top = '100px';
-          h1Size = '10rem';
+          numSize = '10rem';
           break;
         case 1:
           diameter = '300px';
           top = '240px';
           right = '0';
-          h1Size = '8rem';
+          numSize = '8rem';
           break;
         case 2:
           diameter = '200px';
@@ -686,8 +686,8 @@ function drawSummary(senators) {
       bubbleEl.style.left = left;
       bubbleEl.style.right = right;
 
-      let countEl = createElement({ tagName: 'h1', classList: 'count', innerText: val });
-      countEl.style.fontSize = h1Size;
+      let countEl = createElement({ tagName: 'h2', classList: 'count', innerText: val });
+      countEl.style.fontSize = numSize;
 
       let labelEl = createElement({ tagName: 'h3', classList: key, innerText: `${capitalizeFirstLetter(key)}s` });
 
