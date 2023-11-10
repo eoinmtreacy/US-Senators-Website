@@ -799,10 +799,10 @@ img#usa-map {
     position: absolute;
     top: 14%;
     text-align: center;
-    left: calc(50% - 166px);
+    left: calc(50% - 150px);
   }
   #landing h1 {
-    font-size: 6rem;
+    font-size: 5rem;
   }
   #landing .heading-3 {
     font-size: 2rem;
