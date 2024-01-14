@@ -1,5 +1,6 @@
 # COMP30680 (Web Dev) Assignment 2
 <p>Available here: <a href="https://eoinmtreacy.github.io/US-Senators-Website/">https://eoinmtreacy.github.io/US-Senators-Website/</a></p>
+<img style="width:50%;" src="screenshots/senators_home.png"/>
 <p>
   I learned...
 </p>
@@ -20,6 +21,8 @@
 - `index.html`
 - `main.css`
 - `main.js`
+
+<img style="width:50%;" src="screenshots/filter.png"/>
 
 ## Fulfilled Requirements
 
